@@ -2,20 +2,24 @@
 #'
 #' Calculates the climatic departure of a species using historical and future climate raster data and species presence data.
 #'
-#' @aliases 
+#' @aliases
 #' @param hist.dat Raster* object, typically a brick or stack of historical climate raster layers
-#' @param fut.dat  Raster* object, future climate values
+#' @param fut.dat  Raster* object, future climate values with the same layers as hist.dat
 #' @param species.dat SpatialPolygons* object detailing species presence or abundance
-#' @param field field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.
+#' @param field field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument of \code{raster::rasterize}.
 #' @param nf integer. Specifies the number of specialization axes to keep after transformation.
-#' @param scale logical. If \code{TRUE} then the values of the Raster* object will
-#' be centered and scaled. Depending on the resolution of the climate data and the
+#' @param scale logical. If \code{TRUE} then the values of \code{hist.dat} and \code{fut.dat} will
+#' be centered and scaled by the means and sds of the historical climate data. Depending on the resolution of the data and the
 #' extent of the study area, this can be quite time consuming. If running this
 #' function for multiple species, it is recommended that the climate data be scaled beforehand.
 #' @param sp.prj character. Spatial projection of species data.
-#' @return Returns an S4 object of class \code{cnfa} with the following components:
+#' @return Returns an S4 object of class \code{cnfa} with the following slots:
 #' @return call original function call
-#' @return tab a dataframe
+#' @return departure climatic departure D of species
+#' @return distances vector of distances d_ij
+#' @return departure_ras raster of distances d_ij
+#' @return present number of cells in which species is present
+#'
 #' @export
 #'
 #'
@@ -52,15 +56,15 @@ setMethod("departure",
             d_ij <- values(fut.dat)[pres,] - values(hist.dat)[pres,]
             d <- sqrt(rowSums(d_ij^2))
             D <- 1/(1.96*Ns) * sum(d)
-            
+
             if(depart.ras == T){
               ras <- speciesdat.ras
               values(ras)[pres] <- d
-            } 
-            else ras <- NA 
-            
+            }
+            else ras <- NA
 
-         
+
+
             depart <- methods::new("departure", call = call, departure = D, distances = d, departure_ras = ras, present = Ns)
             return(depart)
           }
@@ -70,18 +74,18 @@ setMethod("departure",
 setMethod("departure",
           signature(hist.dat = "RasterBrick", fut.dat = "RasterBrick", species.dat = "cnfa"),
           function(hist.dat, fut.dat, species.dat, depart.ras = TRUE){
-            
+
             call <- match.call()
             if(!identicalCRS(hist.dat, species.dat@species_ras)) {stop("historical climate and species projections do not match")}
             if(!identicalCRS(hist.dat, fut.dat))     {stop("historical and future climate projections do not match")}
             if(!identicalCRS(fut.dat, species.dat@species_ras)) {stop("future climate and species projections do not match")}
             if(length(raster::intersect(extent(hist.dat), extent(species.dat@species_ras)))==0) {stop("climate and species data to not overlap")}
-#             if(scale == TRUE) {
-#               hist.dat <- raster::scale(hist.dat)
-#               means <- cellStats(hist.dat, mean)
-#               sds <- cellStats(fut.dat, sd)
-#               fut.dat <- scale(fut.dat, center = means, scale = sds)
-#             }
+            #             if(scale == TRUE) {
+            #               hist.dat <- raster::scale(hist.dat)
+            #               means <- cellStats(hist.dat, mean)
+            #               sds <- cellStats(fut.dat, sd)
+            #               fut.dat <- scale(fut.dat, center = means, scale = sds)
+            #             }
 
             speciesdat.ras <- species.dat@species_ras
             pres <- which(!is.na(values(speciesdat.ras)))
@@ -93,13 +97,13 @@ setMethod("departure",
             d_ij <- f_ij - z_ij
             d <- sqrt(rowSums(d_ij^2))
             D <- 1/(1.96*Ns) * sum(d, na.rm = T)
-            
+
             if(depart.ras == T){
               ras <- speciesdat.ras
               values(ras)[pres] <- d
-            } 
-            else ras <- NA 
-            
+            }
+            else ras <- NA
+
             depart <- methods::new("departure", call = call, departure = D, distances = d, departure_ras = ras, present = Ns)
             return(depart)
           }
@@ -118,7 +122,7 @@ setMethod("cnfa",
             #ext<-intersect(extent(climdat),extent(speciesdat))
             #climdat.crop<-crop(climdat,ext) %>% mask(.,speciesdat)
             climdat.crop<- mask(climdat,speciesdat)
-            
+
             climdat.present<-na.omit(values(climdat.crop))
             #speciesdat.ras<-rasterize(speciesdat,climdat[[1]],field=field,background=0) %>%mask(.,climdat[[1]])
             speciesdat.ras<-rasterize(speciesdat,climdat.crop[[1]],field=field,fun=fun)# %>%mask(.,climdat[[1]])
