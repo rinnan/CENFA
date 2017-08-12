@@ -91,7 +91,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(climdat = "GLcnfa", speciesdat = "SpatialPolygonsDataFrame"),
-          function(climdat, speciesdat, field, nf=1){
+          function(climdat, speciesdat, field, nf = 1){
 
             call <- match.call()
 
@@ -99,13 +99,12 @@ setMethod("cnfa",
               stop("climate and species projections do not match")
             }
 
-
             if(length(raster::intersect(extent(climdat@global_ras), extent(speciesdat)))==0){
               stop("climate and species data to not overlap")
             }
 
-            rr <- crop(climdat@global_ras,extent(speciesdat))
-            speciesdat.ras <- rasterize(speciesdat,rr,field=field)
+            rr <- crop(raster(climdat), extent(speciesdat))
+            speciesdat.ras <- rasterize(speciesdat, rr, field = field)
             pres <- which(!is.na(values(speciesdat.ras)) & !is.na(values(rr[[1]])))
             pres.dat <- values(rr)[pres,]
             S <- sweep(pres.dat, 2, climdat@center)
@@ -134,13 +133,13 @@ setMethod("cnfa",
             norw <- sqrt(diag(t(as.matrix(u)) %*% as.matrix(u)))
             co[, 2:(nf + 1)] <- sweep(as.matrix(u), 2, norw, "/")
             co[, 1] <- mar
-            ras<-brick(rr,nl=nf+1)
-            values(ras)[pres,]<- S %*% co
+            ras <- brick(rr, nl = nf + 1)
+            values(ras)[pres,] <- S %*% co
             names(ras) <- c("Marg", paste0("Spec", (1:nf)))
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- dimnames(pres.dat)[[2]]
-            cnfa<-methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, spec.account = s.p, co = co, species_ras = ras, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, spec.account = s.p, co = co, species_ras = ras, present = length(pres))
             return(cnfa)
           }
 )
