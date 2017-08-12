@@ -95,7 +95,7 @@ setMethod("enfa",
             } else {ras <- NA}
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
-            row.names(co) <- dimnames(dat)[[2]]
+            row.names(co) <- dimnames(ecodat)[[2]]
             enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, spec.account = s.p, co = co, ras = ras, present = length(pres))
             return(enfa)
           }
@@ -164,13 +164,13 @@ setMethod("enfa",
             co[, 1] <- mar
             if(return_values == TRUE){
               li <- S %*% co
-              ras <- raster::subset(ecodat.crop, 1:(nf+1))
+              ras <- raster::subset(ecodat.mask, 1:(nf+1))
               values(ras)[pres, ] <- li
               names(ras) <- c("Marg", paste0("Spec", (1:nf)))
             } else {ras <- NA}
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
-            row.names(co) <- dimnames(dat)[[2]]
+            row.names(co) <- dimnames(ecodat)[[2]]
             enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, co = co, ras = ras, present = length(pres))
             return(enfa)
           }

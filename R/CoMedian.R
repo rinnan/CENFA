@@ -32,6 +32,3 @@ CoMedian<-function (X, na.rm=TRUE) {
   1.4826^2 *CM
 }
 
-COM<-CoMedian(dat)
-COV<-cov(dat)
-COR<-CorMed(dat)
