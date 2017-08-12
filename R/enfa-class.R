@@ -5,12 +5,13 @@
 #' @slot mf marginality factor. Vector that describes the location of the species Hutchinsonian niche.
 #' @slot marginality. Standardized magnitude of the marginality factor.
 #' @slot s specialization factors. Matrix of specializations.
-#' @slot speciality specialization. Mahalanobis distance of something.
+#' @slot specialization specialization. Mahalanobis distance of something.
 #' @slot ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
+#' @slot present Number of cells in which species is present.
 #' @export
 
-setClass("enfa",slots=list(mf = "numeric", marginality = "numeric", s = "numeric",
-                           speciality = "numeric", co = "data.frame", ras = "Raster"))
+setClass("enfa", slots=list(call = "call", mf = "numeric", marginality = "numeric", s = "numeric",
+                           specialization = "numeric", spec.account = "numeric", co = "data.frame", ras = "Raster", present = "numeric"))
 
 setMethod ("show", "enfa", function(object){
   if (!inherits(object, "enfa"))
@@ -19,7 +20,7 @@ setMethod ("show", "enfa", function(object){
   cat("\nmarginality: ")
   cat(signif(object@marginality, 4))
   cat("\nspeciality: ")
-  cat(signif(object@speciality, 4))
+  cat(signif(object@specialization, 4))
   cat("\neigen values of specialization: ")
   l0 <- length(object@s)
   cat(signif(object@s, 4)[1:(min(5, l0))])

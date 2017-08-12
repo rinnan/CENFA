@@ -6,66 +6,66 @@
 #' @param cores numeric. Number of CPU cores you wish to utilize for parallel processing.
 #' @param scale logical. If \code{TRUE}, the Raster* object will get centered and scaled before calculating the covariance.
 #' @param progress logical. If \code{TRUE}, a progress bar will be displayed.
+#' @param sample logical. If \code{TRUE}, the sample covariance is calculated with a denominator of $n-1$.
 #' @param ... Additional arguments.
-#' @details Covariance is calculated with a denominator of $n-1$.
 #' @return Returns a matrix with the same row and column names as the layers of the Raster* object.
 #' @export
 
 
-covmat <- function(x, cores=1,scale=FALSE,progress=TRUE,...) {
-  stopifnot(is.numeric(cores) & cores>=0)
+covmat <- function(x, cores = 1, scale = FALSE, progress = TRUE, sample = TRUE, ...) {
+  stopifnot(is.numeric(cores) & cores >= 0)
 
   small <- canProcessInMemory(x)
   if(small){
     dat <- na.omit(values(x))
-    mat <- cov(dat,method="pearson")
+    mat <- cov(dat, method = "pearson")
     return(mat)
   }
   nl <- nlayers(x)
   mat <- matrix(NA, nrow=nl, ncol=nl)
   colnames(mat) <- rownames(mat) <- names(x)
 
-  ii<-rep(1,nl)
-  for(i in 2:nl) ii<-c(ii,rep(i,each=(nl-i+1)))
-  jj<-1:nl
-  for(i in 2:nl) jj<-c(jj,i:nl)
-  s<-1:length(ii)
+  ii <- rep(1,nl)
+  for(i in 2:nl) ii <- c(ii, rep(i, each = (nl - i + 1)))
+  jj <- 1:nl
+  for(i in 2:nl) jj <- c(jj, i:nl)
+  s <- 1:length(ii)
 
   if(scale){
-    means <- cellStats(x, stat='mean', na.rm=T)
-    sds <- cellStats(x, stat='sd',na.rm=T)
+    means <- cellStats(x, stat = 'mean', na.rm = T)
+    sds <- cellStats(x, stat = 'sd', na.rm = T)
     x <- (x - means)/sds
   }
 
   if(cores == 1){
     if(progress){
-      pboptions(type="txt",char="=",txt.width=NA)
-      result <- pbsapply(s, function(p) do.call(.covij,list(x=x,i=ii[p],j=jj[p])))
-    } else {result <- sapply(s, function(p) do.call(covij,list(x=x,i=ii[p],j=jj[p])))}
+      pboptions(type = "txt", char = "=", txt.width = NA)
+      result <- pbsapply(s, function(p) do.call(.covij, list(x = x, i = ii[p], j = jj[p])))
+    } else {result <- sapply(s, function(p) do.call(.covij, list(x = x, i = ii[p], j = jj[p])))}
   }
 
   if(cores > 1){
     cl <- makeCluster(getOption("cl.cores", cores))
-    clusterExport(cl,c(".covij","raster","cellStats","x","ii","jj","ser","n","canProcessInMemory","values"),envir = environment())
+    clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "ser", "n", "canProcessInMemory", "values"), envir = environment())
     registerDoSNOW(cl)
     if(progress){
       pb <- txtProgressBar(min = 0, max = length(s), style = 3)
       progress <- function(n) setTxtProgressBar(pb, n)
       opts <- list(progress = progress)
-      result <- foreach(p=s, .combine=c, .options.snow=opts) %dopar% {
-        do.call(.covij,list(x=x, i=ii[p], j=jj[p]))
+      result <- foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
+        do.call(.covij, list(x = x, i = ii[p], j = jj[p]))
       }
       close(pb)
     }   else if(!progress){
-      result <- foreach(p=s, .combine=c, .options.snow=opts) %dopar% {
-        do.call(.covij,list(x=x, i=ii[p], j=jj[p]))
+      result <- foreach(p = s, .combine = c, .options.snow = opts) %dopar% {
+        do.call(.covij, list(x = x, i = ii[p], j = jj[p]))
       }
     }
     stopCluster(cl)
   }
 
   for(p in ser){
-    mat[ii[p],jj[p]] <- mat[jj[p],ii[p]] <- result[p]
+    mat[ii[p], jj[p]] <- mat[jj[p], ii[p]] <- result[p]
   }
 
   closeAllConnections()
