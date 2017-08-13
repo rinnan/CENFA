@@ -117,3 +117,51 @@ setMethod("departure",
             return(depart)
           }
 )
+
+#' @rdname departure
+setMethod("departure",
+          signature(hist.dat = "Raster", fut.dat = "Raster", species.dat = "cnfa"),
+          function(hist.dat, fut.dat, species.dat, depart.ras = TRUE, scale = FALSE){
+
+            call <- match.call()
+            sp.ras <- raster(species.dat)
+            if(!identicalCRS(hist.dat, sp.ras)) {stop("historical climate and species projections do not match")}
+            if(!identicalCRS(hist.dat, fut.dat))     {stop("historical and future climate projections do not match")}
+            if(!identicalCRS(fut.dat, sp.ras)) {stop("future climate and species projections do not match")}
+            if(length(raster::intersect(extent(hist.dat), extent(sp.ras)))==0) {stop("climate and species data to not overlap")}
+            if(scale == TRUE) {
+              center <- cellStats(hist.dat, mean)
+              sds <- cellStats(hist.dat, sd)
+              hist.dat <- raster::scale(hist.dat, center = center, scale = sds)
+              fut.dat <- raster::scale(fut.dat, center = center, scale = sds)
+            }
+
+            pres <- which(!is.na(values(sp.ras[[1]])))
+            small <- canProcessInMemory(hist.dat, 8)
+            if(small){
+              z_ij <- values(hist.dat)[pres,] %*% as.matrix(species.dat@co)
+              f_ij <- values(fut.dat)[pres,] %*% as.matrix(species.dat@co)
+              d_ij <- (f_ij - z_ij)^2
+              d <- sqrt(rowSums(d_ij))
+              D <- 1/(1.96) * mean(d, na.rm = T)
+              sp.ras[pres] <- d
+            } else {
+              hist.dat <- calc(hist.dat, fun = function(x) {x %*% as.matrix(species.dat@co)})
+              fut.dat <- calc(fut.dat, fun = function(x) {x %*% as.matrix(species.dat@co)})
+              d_ij <- (fut.dat - hist.dat)^2
+              d <- calc(d_ij, fun = function(x) {sqrt(sum(x))})
+              values(d)[!pres] <- NA
+              D <- 1/(1.96) * cellStats(d, mean)
+              sp.ras <- d
+            }
+
+            # if(depart.ras == T){
+            #   ras <- sp.ras[[1]]
+            #   values(ras)[pres] <- d
+            # }
+            # else ras <- NA
+
+            depart <- methods::new("departure", call = call, departure = D, distances = d, departure_ras = sp.ras, present = length(pres))
+            return(depart)
+          }
+)

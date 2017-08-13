@@ -9,9 +9,9 @@
 #' @slot map Raster map of habitat suitability
 #' @export
 
-setClass("cnfa",slots=list(call = "call", mf = "numeric", marginality = "numeric", s = "numeric",
+setClass("cnfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", s = "numeric",
                            specialization = "numeric", spec.account = "numeric", co = "data.frame",
-                           species_ras = "Raster", present = "numeric"))
+                           ras = "Raster", present = "numeric"))
 
 setMethod ("show", "cnfa", function(object){
   if (!inherits(object, "cnfa"))
