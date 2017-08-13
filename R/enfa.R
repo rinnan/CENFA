@@ -16,8 +16,8 @@
 #' @return Returns an S4 object of class \code{enfa} with the following components:
 #' @param mf marginality factor. Vector that describes the location of the species Hutchinsonian niche.
 #' @param marginality. Standardized magnitude of the marginality factor.
-#' @param s specialization factors. Matrix of specializations.
-#' @param speciality specialization. Mahalanobis distance of something.
+#' @param s specialization factors.  of specializations.
+#' @param speciality specialization. Vector
 #' @param ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
 #' @export
 #'

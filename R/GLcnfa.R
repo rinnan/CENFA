@@ -1,6 +1,6 @@
-#' Climate-Niche Factor Analysis
+#' Climate Niche Factor Analysis
 #'
-#' Performs climate-niche factor analysis using climate raster data and species presence data in shapefile.
+#' Performs climate niche factor analysis using climate raster data and species presence data in shapefile.
 #'
 #' @aliases print.cnfa, show.cnfa
 #' @param climdat Raster* object, typically a brick or stack of climate raster layers
@@ -19,67 +19,60 @@
 #'
 #'
 
-setGeneric("GLcnfa", function(climdat,...) {
-  standardGeneric("GLcnfa")
+setGeneric("global_cnfa", function(x, ...) {
+  standardGeneric("global_cnfa")
 })
 
-#' @rdname GLcnfa
-setMethod("GLcnfa",
-          signature(climdat = "RasterBrick"),
-          function(climdat, scale = FALSE, filename='',progress=TRUE,cores=1){
+#' @rdname global_cnfa
+setMethod("global_cnfa",
+          signature(x = "RasterBrick"),
+          function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1){
 
-            out<-brick(climdat)
-            #             Z <- getValues(climdat)
-            #             rZ <- nrow(Z)
-            #             cZ <- ncol(Z)
-            #             center <- .colMeans(Z, rZ, cZ, na.rm=T)
-            #             sds <- apply(Z, 2, sd, na.rm=T)
-            small <- canProcessInMemory(climdat,3)
+            out <- brick(x)
+
+            small <- canProcessInMemory(x, 4)
             filename <- trim(filename)
-
-
 
             if (!small & filename == ''){
               filename <- rasterTmpFile()
             }
 
-            filename <- raster:::.fullFilename(filename, expand=TRUE)
+            filename <- raster:::.fullFilename(filename, expand = TRUE)
 
             if (!file.exists(dirname(filename))) {
               stop("Attempting to write a file to a path that does not exist:\n  ", dirname(filename))
             }
 
             if (scale){
-              Z <- .scale(climdat, filename = filename,progress=progress)
-              climdat <- Z[[1]]
+              Z <- .scale(x, filename = filename, progress = progress)
+              x <- Z[[1]]
               center <- Z[[2]]
               sds <- Z[[3]]
             }
 
             if (!scale){
-              #out <- climdat
               cat("Warning: new raster will not be written to file.")
               if(progress) cat("\nCalculating layer means...")
-              center <- cellStats(climdat,'mean')
+              center <- cellStats(x, 'mean')
               if(progress) cat("\nCalculating layer sds...")
-              sds <- cellStats(climdat, 'sd')
+              sds <- cellStats(x, 'sd')
             }
 
-            gpres <- which(!is.na(values(climdat[[1]])))
+            gpres <- which(!is.na(values(x[[1]])))
 
             if (small){
               if(progress) cat("\nCalculating covariance matrix...")
-              Z <- values(climdat)[gpres,]
+              Z <- values(x)[gpres, ]
               cov <- crossprod(Z, Z/length(gpres))
             }
 
             if (!small){
               if(progress) cat("\nCalculating covariance matrix...\n")
-              cov<-.covmat(climdat,cores=cores,.scale=F)
+              cov <- .covmat(x, cores = cores, .scale = F)
             }
-            rownames(cov) <- colnames(cov) <- names(climdat)
+            rownames(cov) <- colnames(cov) <- names(x)
 
-            gl.cnfa <- methods::new("GLcnfa", global_ras = climdat, cov = cov, center = center, sd = sds, ncells = length(gpres), scale = scale)
-            return(gl.cnfa)
+            global_cnfa <- methods::new("global_cnfa", global_ras = x, cov = cov, center = center, sd = sds, ncells = length(gpres), scale = scale)
+            return(global_cnfa)
           }
 )

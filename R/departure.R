@@ -141,7 +141,7 @@ setMethod("departure",
             fut.dat <- crop(fut.dat, sp.ras)
 
             pres <- which(!is.na(values(sp.ras[[1]])))
-            small <- canProcessInMemory(hist.dat, 8)
+            small <- canProcessInMemory(hist.dat, 5)
             if(small){
               z_ij <- values(hist.dat)[pres,] %*% as.matrix(species.dat@co)
               f_ij <- values(fut.dat)[pres,] %*% as.matrix(species.dat@co)
@@ -156,7 +156,7 @@ setMethod("departure",
               d <- calc(d_ij, fun = function(x) {sqrt(sum(x))})
               values(d)[!pres] <- NA
               D <- 1/(1.96) * cellStats(d, mean)
-              sp.ras <- d
+              distances <- values(d)[pres]
             }
 
             # if(depart.ras == T){
@@ -165,7 +165,7 @@ setMethod("departure",
             # }
             # else ras <- NA
 
-            depart <- methods::new("departure", call = call, departure = D, distances = d, departure_ras = sp.ras[[1]], present = length(pres))
+            depart <- methods::new("departure", call = call, departure = D, distances = d, departure_ras = d, present = length(pres))
             return(depart)
           }
 )
