@@ -83,7 +83,7 @@ setMethod("cnfa",
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- dimnames(dat)[[2]]
             co<-as.data.frame(co[order(abs(co$Marg),decreasing = T),])
-            cnfa<-methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, spec.account = s.p, co = co, species_ras = ras, present = length(pres))
+            cnfa<-methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, spec.account = s.p, co = co, ras = ras, present = length(pres))
             return(cnfa)
           }
 )
@@ -139,7 +139,7 @@ setMethod("cnfa",
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- dimnames(pres.dat)[[2]]
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, spec.account = s.p, co = co, species_ras = ras, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, spec.account = s.p, co = co, ras = ras, present = length(pres))
             return(cnfa)
           }
 )
