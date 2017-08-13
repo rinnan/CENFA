@@ -19,7 +19,7 @@
 #'
 #'
 
-setGeneric("cnfa", function(climdat, speciesdat,...) {
+setGeneric("cnfa", function(climdat, speciesdat, ...) {
   standardGeneric("cnfa")
 })
 

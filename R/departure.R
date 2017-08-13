@@ -86,7 +86,9 @@ setMethod("departure",
               sds <- cellStats(hist.dat, sd)
               hist.dat <- raster::scale(hist.dat, center = center, scale = sds)
               fut.dat <- raster::scale(fut.dat, center = center, scale = sds)
-              }
+            }
+            hist.dat <- crop(hist.dat, sp.ras)
+            fut.dat <- crop(fut.dat, sp.ras)
 
             pres <- which(!is.na(values(sp.ras[[1]])))
             small <- canProcessInMemory(hist.dat, 8)
@@ -135,6 +137,8 @@ setMethod("departure",
               hist.dat <- raster::scale(hist.dat, center = center, scale = sds)
               fut.dat <- raster::scale(fut.dat, center = center, scale = sds)
             }
+            hist.dat <- crop(hist.dat, sp.ras)
+            fut.dat <- crop(fut.dat, sp.ras)
 
             pres <- which(!is.na(values(sp.ras[[1]])))
             small <- canProcessInMemory(hist.dat, 8)
