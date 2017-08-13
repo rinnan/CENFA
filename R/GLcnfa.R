@@ -19,12 +19,12 @@
 #'
 #'
 
-setGeneric("global_cnfa", function(x, ...) {
-  standardGeneric("global_cnfa")
+setGeneric("GLcnfa", function(x, ...) {
+  standardGeneric("GLcnfa")
 })
 
-#' @rdname global_cnfa
-setMethod("global_cnfa",
+#' @rdname GLcnfa
+setMethod("GLcnfa",
           signature(x = "RasterBrick"),
           function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1){
 
@@ -72,7 +72,7 @@ setMethod("global_cnfa",
             }
             rownames(cov) <- colnames(cov) <- names(x)
 
-            global_cnfa <- methods::new("global_cnfa", global_ras = x, cov = cov, center = center, sd = sds, ncells = length(gpres), scale = scale)
-            return(global_cnfa)
+            GLcnfa <- methods::new("GLcnfa", global_ras = x, cov = cov, center = center, sd = sds, ncells = length(gpres), scale = scale)
+            return(GLcnfa)
           }
 )

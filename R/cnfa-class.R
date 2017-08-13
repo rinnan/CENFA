@@ -10,7 +10,7 @@
 #' @export
 
 setClass("cnfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", s = "numeric",
-                           specialization = "numeric", spec.account = "numeric", co = "data.frame",
+                           specialization = "numeric", sp.account = "numeric", co = "data.frame",
                            ras = "Raster", present = "numeric"))
 
 setMethod ("show", "cnfa", function(object){

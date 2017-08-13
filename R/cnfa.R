@@ -34,7 +34,7 @@ setGeneric("cnfa", function(x, s.dat, mar.type = "BC", ...) {
 
 #' @rdname cnfa
 setMethod("cnfa",
-          signature(x = "global_cnfa", s.dat = "SpatialPolygonsDataFrame"),
+          signature(x = "GLcnfa", s.dat = "SpatialPolygonsDataFrame"),
           function(x, s.dat, field, nf = 1){
 
             call <- match.call()
@@ -73,7 +73,7 @@ setMethod("cnfa",
             norw <- sqrt(diag(t(as.matrix(u)) %*% as.matrix(u)))
             co[, 2:(nf + 1)] <- sweep(as.matrix(u), 2, norw, "/")
             co[, 1] <- mar
-            ras <- brick(rr, nl = nf + 1)
+            ras <- brick(x.crop, nl = nf + 1)
             values(ras)[pres,] <- S %*% co
             #names(ras) <- c("Marg", paste0("Spec", (1:nf)))
             co <- as.data.frame(co)
