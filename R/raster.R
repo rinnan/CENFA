@@ -19,6 +19,15 @@ setMethod("raster",
 
 #' @rdname raster
 setMethod("raster",
+          signature(x = "cnfa"),
+          function(x){
+            temp <- x@ras
+            return(temp)
+          }
+)
+
+#' @rdname raster
+setMethod("raster",
           signature(x = "GLcnfa"),
           function(x){
             temp <- x@global_ras
