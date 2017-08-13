@@ -165,7 +165,7 @@ setMethod("departure",
             # }
             # else ras <- NA
 
-            depart <- methods::new("departure", call = call, departure = D, distances = d, departure_ras = sp.ras, present = length(pres))
+            depart <- methods::new("departure", call = call, departure = D, distances = d, departure_ras = sp.ras[[1]], present = length(pres))
             return(depart)
           }
 )

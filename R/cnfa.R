@@ -107,7 +107,7 @@ setMethod("cnfa",
             speciesdat.ras <- rasterize(speciesdat, rr, field = field)
             pres <- which(!is.na(values(speciesdat.ras)) & !is.na(values(rr[[1]])))
             pres.dat <- values(rr)[pres,]
-            S <- sweep(pres.dat, 2, climdat@center)
+            S <- sweep(pres.dat, 2, 0) #climdat@center)
             rZ <- climdat@ncells
             cZ <- nlayers(climdat@global_ras)
             rS <- nrow(S)

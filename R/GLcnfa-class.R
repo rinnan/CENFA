@@ -9,7 +9,7 @@
 #' @slot map Raster map of habitat suitability
 #' @export
 
-setClass("GLcnfa",slots=list(global_ras = "Raster", cov = "matrix", center = "numeric", sd = "numeric", ncells = "numeric", scale = "logical"))
+setClass("GLcnfa", slots = list(global_ras = "Raster", cov = "matrix", center = "numeric", sd = "numeric", ncells = "numeric", scale = "logical"))
 
 setMethod ("show", "GLcnfa", function(object){
   if (!inherits(object, "GLcnfa"))
