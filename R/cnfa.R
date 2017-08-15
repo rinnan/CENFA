@@ -40,21 +40,31 @@ setMethod("cnfa",
             call <- match.call()
 
             if(!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
+            ext <- extent(raster(x))
+            if(is.null(raster::intersect(ext, extent(s.dat)))) stop("climate and species data do not overlap")
 
-            if(is.null(raster::intersect(extent(raster(x)), extent(s.dat)))) stop("climate and species data do not overlap")
-
+            if(raster::union(ext, extent(s.dat)) != ext) stop("extent of species data not contained within extent of climate data")
             x.crop <- crop(raster(x), extent(s.dat))
             s.dat.ras <- rasterize(s.dat, x.crop, field = field)
-            pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(x.crop[[1]])))
-            S <- values(x.crop)[pres, ]
-            rZ <- x@ncells
-            cZ <- nlayers(x@global_ras)
-            rS <- nrow(S)
-            mar <- colSums(S)/rS
+
+            if(canProcessInMemory(x.crop)){
+              pres <- which(!is.na(values(s.dat.ras)))
+              S <- values(x.crop)[pres,]
+              nS <- nrow(S)
+              Rg <- x@cov
+              Rs <- crossprod(S, S)/(nS - 1)
+              mar <- colSums(S)/nS
+            } else {
+              x.mask <- mask(x.crop, s.dat)
+              pres <- which(!is.na(values(max(x.mask))))
+              Rg <- x@cov
+              Rs <- covmat(x.mask, ...)
+              mar <- cellStats(x.mask, sum)/length(pres)
+            }
+
+            cZ <- nlayers(raster(x))
             if(mar.type == "BC") m <- c(t(mar) %*% mar)
             if(mar.type == "H")  m <- norm(mar, "2")/1.96
-            Rg <- x@cov
-            Rs <- crossprod(S,S/rS)
             eigRs <- eigen(Rs)
             keep <- (eigRs$values > 1e-09)
             Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
@@ -63,22 +73,57 @@ setMethod("cnfa",
             y <- z/sqrt(sum(z^2))
             H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
             s <- eigen(H)$values[-cZ]
-            s.p <- abs(s)/sum(abs(s))
-            s.p[1] <- sum(diag(W)) - sum(diag(H))
             spec <- sqrt(sum(s))/cZ
+            s.p <- abs(sum(diag(W)) - sum(diag(H)))
+            s.p <- c(s.p, s)
+            s.p <- abs(s.p)/sum(abs(s.p))
             v <- eigen(H)$vectors
-            if (nf<=0 | nf>(cZ-1)){nf <- 1}
+            if (nf <= 0 | nf > (cZ - 1)) nf <- 1
             co <- matrix(nrow = cZ, ncol = nf + 1)
-            u <- (Rs12 %*% v)[, 1:nf]
-            norw <- sqrt(diag(t(as.matrix(u)) %*% as.matrix(u)))
-            co[, 2:(nf + 1)] <- sweep(as.matrix(u), 2, norw, "/")
             co[, 1] <- mar
+            u <- (Rs12 %*% v)[, 1:nf]
+            norw <- sqrt(diag(t(u) %*% u))
+            co[, 2:(nf + 1)] <- sweep(u, 2, norw, "/")
             ras <- brick(x.crop, nl = nf + 1)
-            values(ras)[pres,] <- S %*% co
-            #names(ras) <- c("Marg", paste0("Spec", (1:nf)))
+            values(ras)[pres, ] <- S %*% co
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
-            row.names(co) <- names(x@global_ras)
+            row.names(co) <- names(raster(x))
+
+            # pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(x.crop[[1]])))
+            # S <- values(x.crop)[pres, ]
+            # rZ <- x@ncells
+            # cZ <- nlayers(x@global_ras)
+            # rS <- nrow(S)
+            # mar <- colSums(S)/rS
+            # if(mar.type == "BC") m <- c(t(mar) %*% mar)
+            # if(mar.type == "H")  m <- norm(mar, "2")/1.96
+            # Rg <- x@cov
+            # Rs <- crossprod(S,S/rS)
+            # eigRs <- eigen(Rs)
+            # keep <- (eigRs$values > 1e-09)
+            # Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
+            # W <- Rs12 %*% Rg %*% Rs12
+            # z <- Rs12 %*% mar
+            # y <- z/sqrt(sum(z^2))
+            # H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
+            # s <- eigen(H)$values[-cZ]
+            # s.p <- abs(s)/sum(abs(s))
+            # s.p[1] <- sum(diag(W)) - sum(diag(H))
+            # spec <- sqrt(sum(s))/cZ
+            # v <- eigen(H)$vectors
+            # if (nf<=0 | nf>(cZ-1)){nf <- 1}
+            # co <- matrix(nrow = cZ, ncol = nf + 1)
+            # u <- (Rs12 %*% v)[, 1:nf]
+            # norw <- sqrt(diag(t(as.matrix(u)) %*% as.matrix(u)))
+            # co[, 2:(nf + 1)] <- sweep(as.matrix(u), 2, norw, "/")
+            # co[, 1] <- mar
+            # ras <- brick(x.crop, nl = nf + 1)
+            # values(ras)[pres,] <- S %*% co
+            # #names(ras) <- c("Marg", paste0("Spec", (1:nf)))
+            # co <- as.data.frame(co)
+            # names(co) <- c("Marg", paste0("Spec", (1:nf)))
+            # row.names(co) <- names(x@global_ras)
 
             cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, sp.account = s.p, co = co, ras = ras, present = length(pres))
             return(cnfa)
@@ -88,35 +133,46 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "RasterBrick", s.dat = "SpatialPolygonsDataFrame"),
-          function(x, s.dat, field, nf = 1, scale = FALSE){
+          function(x, s.dat, field, nf = 1, scale = FALSE, mar.type = "BC", ...){
             call <- match.call()
 
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
 
             if(is.null(raster::intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
 
+            if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
+
             if(scale == TRUE) x <- raster::scale(x)
 
-            gpres <- which(!is.na(values(x[[1]])))
-            dat <- values(x)[gpres, ]
-
             s.dat.ras <- rasterize(s.dat, raster(x), field = field)
-            pres <- which(!is.na(values(s.dat.ras)))
-            #prb<-values(speciesdat.ras)[pres]
-            pres.dat <- values(x)[pres, ]
-            #pr <- prb/sum(prb)
-            #row.w<-rep(1,nrow(dat))/nrow(dat)
-            #col.w <- rep(1,ncol(dat))
-            center <- colMeans(dat)
-            Z <- sweep(dat, 2, center)
-            S <- sweep(pres.dat, 2, center)
-            nZ <- nrow(Z)
-            nS <- nrow(S)
-            mar <- colSums(S)/nS
+
+            if(canProcessInMemory(x)){
+              gpres <- which(!is.na(values(max(x))))
+              pres <- which(!is.na(values(s.dat.ras)))
+              Z <- values(x)[gpres,]
+              S <- values(x)[pres,]
+              nZ <- nrow(Z)
+              nS <- nrow(S)
+              center <- colMeans(Z)
+              Z <- sweep(Z, 2, center)
+              S <- sweep(S, 2, center)
+              mar <- colSums(S)/nS
+              Rg <- crossprod(Z, Z)/nZ
+              Rs <- crossprod(S, S)/(nS - 1)
+            } else {
+              center <- cellStats(x, mean)
+              x.mask <- mask(x, s.dat)
+              pres <- which(!is.na(values(max(x.mask))))
+              Z <- calc(x, fun = function(p) {p - center})
+              S <- calc(x.mask, fun = function(p) {p - center})
+              mar <-
+              Rg <- covmat(Z, sample = F, ...)
+              Rs <- covmat(S, ...)
+            }
+
+
             if(mar.type == "BC") m <- c(t(mar) %*% mar)
             if(mar.type == "H")  m <- norm(mar, "2")/1.96
-            Rg <- crossprod(Z, Z/nZ)
-            Rs <- crossprod(S, S/nS)
             eigRs <- eigen(Rs)
             keep <- (eigRs$values > 1e-09)
             Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
@@ -124,28 +180,29 @@ setMethod("cnfa",
             z <- Rs12 %*% mar
             y <- z/sqrt(sum(z^2))
             H <- (diag(ncol(Z)) - y %*% t(y)) %*% W %*% (diag(ncol(Z)) - y %*% t(y))
-            s <- eigen(H)$values
-            s.p <- abs(s)/sum(abs(s))
-            s.p[1] <- sum(diag(W)) - sum(diag(H))
+            s <- eigen(H)$values[-ncol(Z)]
             spec <- sqrt(sum(s))/ncol(Z)
+            s.p <- abs(sum(diag(W)) - sum(diag(H)))
+            s.p <- c(s.p, s)
+            s.p <- abs(s.p)/sum(abs(s.p))
             v <- eigen(H)$vectors
             if (nf <= 0 | nf > (ncol(Z) - 1)) nf <- 1
             co <- matrix(nrow = ncol(Z), ncol = nf + 1)
-            u <- (Rs12 %*% v)[, 1:nf]
-            norw <- sqrt(diag(t(as.matrix(u)) %*% as.matrix(u)))
-            co[, 2:(nf + 1)] <- sweep(as.matrix(u), 2, norw, "/")
-            #co[, 2:(nf + 1)] <- as.matrix(u)#sweep(as.matrix(u), 2, norw, "/")
             co[, 1] <- mar
-            ras <- brick(raster(s.dat.ras), nl = nf + 1)
-            ss <- crop(s.dat.ras, extent(s.dat))
-            pres.c <- which(!is.na(values(ss)))
-            values(ras)[pres.c, ] <- S %*% co
+            u <- (Rs12 %*% v)[, 1:nf]
+            norw <- sqrt(diag(t(u) %*% u))
+            co[, 2:(nf + 1)] <- sweep(u, 2, norw, "/")
+            ras <- brick(x, nl = nf + 1)
+
+            ###
+            values(ras)[gpres, ] <- Z %*% co
+            ###
+
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- names(x)
-            co <- as.data.frame(co[order(abs(co$Marg), decreasing = T), ])
 
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, sp.account = s.p, co = co, ras = ras, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, sp.account = s.p, co = co, ras = ras, present = pres)
             return(cnfa)
           }
 )
