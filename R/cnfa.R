@@ -30,14 +30,14 @@
 #'
 #'
 
-setGeneric("cnfa", function(x, s.dat, nf = "BS", mar.type = "BC", ...) {
-  standardGeneric("cnfa")
-})
+# setGeneric("cnfa", function(x, s.dat, nf = "BS", mar.type = "BC", ...) {
+#   standardGeneric("cnfa")
+# })
 
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "GLcnfa", s.dat = "SpatialPolygonsDataFrame"),
-          function(x, s.dat, field, ...){
+          function(x, s.dat, field, nf = "BS", mar.type = "BC", ...){
 
             call <- match.call()
 

@@ -8,28 +8,27 @@
 \alias{departure,Raster,Raster,cnfa-method}
 \title{Climatic departure}
 \usage{
-departure(hist.dat, fut.dat, species.dat, ...)
+departure(x.hist, x.fut, s.dat, ...)
 
+\S4method{departure}{RasterBrick,RasterBrick,SpatialPolygonsDataFrame}(x.hist,
+  x.fut, s.dat, field, scale = FALSE, depart.ras = TRUE)
 
-  \S4method{departure}{RasterBrick,RasterBrick,SpatialPolygonsDataFrame}(hist.dat,
-  fut.dat, species.dat, field, scale = FALSE, depart.ras = TRUE)
-
-\S4method{departure}{Raster,Raster,enfa}(hist.dat, fut.dat, species.dat,
+\S4method{departure}{Raster,Raster,enfa}(x.hist, x.fut, s.dat,
   depart.ras = TRUE, scale = FALSE)
 
-\S4method{departure}{Raster,Raster,cnfa}(hist.dat, fut.dat, species.dat,
+\S4method{departure}{Raster,Raster,cnfa}(x.hist, x.fut, s.dat,
   depart.ras = TRUE, scale = FALSE)
 }
 \arguments{
-\item{hist.dat}{Raster* object, typically a brick or stack of historical climate raster layers}
+\item{x.hist}{Raster* object, typically a brick or stack of historical climate raster layers}
 
-\item{fut.dat}{Raster* object, future climate values with the same layers as hist.dat}
+\item{x.fut}{Raster* object, future climate values with the same layers as x.hist}
 
-\item{species.dat}{SpatialPolygons* object detailing species presence or abundance}
+\item{s.dat}{SpatialPolygons* object detailing species presence or abundance}
 
 \item{field}{field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument of \code{raster::rasterize}.}
 
-\item{scale}{logical. If \code{TRUE} then the values of \code{hist.dat} and \code{fut.dat} will
+\item{scale}{logical. If \code{TRUE} then the values of \code{x.hist} and \code{x.fut} will
 be centered and scaled by the means and sds of the historical climate data. Depending on the resolution of the data and the
 extent of the study area, this can be quite time consuming. If running this
 function for multiple species, it is recommended that the climate data be scaled beforehand.}
