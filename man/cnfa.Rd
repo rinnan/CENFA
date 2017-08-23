@@ -13,13 +13,13 @@
 \usage{
 cnfa(x, s.dat, nf = "BS", mar.type = "BC", ...)
 
-\S4method{cnfa}{GLcnfa,SpatialPolygonsDataFrame}(x, s.dat, field)
+\S4method{cnfa}{GLcnfa,SpatialPolygonsDataFrame}(x, s.dat, field, ...)
 
 \S4method{cnfa}{RasterBrick,SpatialPolygonsDataFrame}(x, s.dat, field,
   scale = FALSE, mar.type = "BC", ...)
 
 \S4method{cnfa}{Raster,SpatialPoints}(x, s.dat, field, fun = "count",
-  nf = 1, scale = FALSE)
+  scale = FALSE)
 
 \S4method{cnfa}{RasterBrick,matrix}(x, s.dat, field, nf = 1, scale = FALSE,
   sp.prj)

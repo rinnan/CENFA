@@ -3,15 +3,11 @@
 #' Performs climate niche factor analysis using climate raster data and species presence data in shapefile.
 #'
 #' @aliases print.cnfa, show.cnfa
-#' @param climdat Raster* object, typically a brick or stack of climate raster layers
-#' @param speciesdat SpatialPolygons* object detailing species presence or abundance
-#' @param field field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.
-#' @param nf integer. Specifies the number of specialization axes to keep after transformation.
+#' @param x Raster* object, typically a brick or stack of climate raster layers
 #' @param scale logical. If \code{TRUE} then the values of the Raster* object will
 #' be centered and scaled. Depending on the resolution of the climate data and the
-#' extent of the study area, this can be quite time consuming. If running this
-#' function for multiple species, it is recommended that the climate data be scaled beforehand.
-#' @param sp.prj character. Spatial projection of species data.
+#' extent of the study area, this can be quite time consuming.
+#' @param progress logical. If \code{TRUE} then progress updates are printed.
 #' @return Returns an S4 object of class \code{cnfa} with the following components:
 #' @return call original function call
 #' @return tab a dataframe

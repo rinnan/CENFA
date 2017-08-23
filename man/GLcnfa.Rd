@@ -14,20 +14,13 @@ GLcnfa(x, ...)
   progress = TRUE, cores = 1)
 }
 \arguments{
+\item{x}{Raster* object, typically a brick or stack of climate raster layers}
+
 \item{scale}{logical. If \code{TRUE} then the values of the Raster* object will
 be centered and scaled. Depending on the resolution of the climate data and the
-extent of the study area, this can be quite time consuming. If running this
-function for multiple species, it is recommended that the climate data be scaled beforehand.}
+extent of the study area, this can be quite time consuming.}
 
-\item{climdat}{Raster* object, typically a brick or stack of climate raster layers}
-
-\item{speciesdat}{SpatialPolygons* object detailing species presence or abundance}
-
-\item{field}{field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.}
-
-\item{nf}{integer. Specifies the number of specialization axes to keep after transformation.}
-
-\item{sp.prj}{character. Spatial projection of species data.}
+\item{progress}{logical. If \code{TRUE} then progress updates are printed.}
 }
 \value{
 Returns an S4 object of class \code{cnfa} with the following components:
