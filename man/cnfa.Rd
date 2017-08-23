@@ -5,49 +5,71 @@
 \alias{cnfa}
 \alias{print.cnfa,}
 \alias{show.cnfa}
-\alias{cnfa,RasterBrick,SpatialPolygonsDataFrame-method}
 \alias{cnfa,GLcnfa,SpatialPolygonsDataFrame-method}
+\alias{cnfa,RasterBrick,SpatialPolygonsDataFrame-method}
 \alias{cnfa,Raster,SpatialPoints-method}
 \alias{cnfa,RasterBrick,matrix-method}
-\title{Climate-Niche Factor Analysis}
+\title{Climate Niche Factor Analysis}
 \usage{
-cnfa(climdat, speciesdat, ...)
+cnfa(x, s.dat, nf = "BS", mar.type = "BC", ...)
 
-\S4method{cnfa}{RasterBrick,SpatialPolygonsDataFrame}(climdat, speciesdat,
-  field, nf = 1, scale = FALSE)
+\S4method{cnfa}{GLcnfa,SpatialPolygonsDataFrame}(x, s.dat, field)
 
-\S4method{cnfa}{GLcnfa,SpatialPolygonsDataFrame}(climdat, speciesdat, field,
-  nf = 1)
+\S4method{cnfa}{RasterBrick,SpatialPolygonsDataFrame}(x, s.dat, field,
+  scale = FALSE, mar.type = "BC", ...)
 
-\S4method{cnfa}{Raster,SpatialPoints}(climdat, speciesdat, field,
-  fun = "count", nf = 1, scale = FALSE)
+\S4method{cnfa}{Raster,SpatialPoints}(x, s.dat, field, fun = "count",
+  nf = 1, scale = FALSE)
 
-\S4method{cnfa}{RasterBrick,matrix}(climdat, speciesdat, field, nf = 1,
-  scale = FALSE, sp.prj)
+\S4method{cnfa}{RasterBrick,matrix}(x, s.dat, field, nf = 1, scale = FALSE,
+  sp.prj)
 }
 \arguments{
-\item{climdat}{Raster* object, typically a brick or stack of climate raster layers}
+\item{x}{Raster* or GLcnfa object, typically a brick or stack with p climate raster layers}
 
-\item{speciesdat}{SpatialPolygons* object detailing species presence or abundance}
+\item{s.dat}{Spatial* object detailing species presence or abundance}
 
-\item{field}{field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.}
+\item{nf}{integer or character. Specifies the number of specialization axes to keep after transformation. If \code{nf = "BS"} then the broken-stick method will be used to determine the number of significant factors.}
 
-\item{nf}{integer. Specifies the number of specialization axes to keep after transformation.}
+\item{mar.type}{character. Choices are "BC" (Basille) or "H" (Hirzel). See details.}
 
-\item{scale}{logical. If \code{TRUE} then the values of the Raster* object will
-be centered and scaled. Depending on the resolution of the climate data and the
+\item{field}{field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{raster::rasterize}.}
+
+\item{scale}{logical. If \code{TRUE} then the values of \code{x} will
+get centered and scaled. Depending on the resolution of the climate data and the
 extent of the study area, this can be quite time consuming. If running this
-function for multiple species, it is recommended that the climate data be scaled beforehand.}
+function for multiple species, it is recommended that the data be scaled beforehand.}
+
+\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{raster::rasterize}.}
 
 \item{sp.prj}{character. Spatial projection of species data.}
 }
 \value{
 Returns an S4 object of class \code{cnfa} with the following components:
 
-call original function call
+call Original function call.
 
-tab a dataframe
+nf Number of specialization factors kept.
+
+mf marginality factor. Vector that describes the location of the species Hutchinsonian niche relative to the global niche.
+
+marginality Standardized magnitude of the marginality factor.
+
+sf specialization factors. Vector of eigenvalues.
+
+specialization The square root of the sum of \code{sf} divided by the length of \code{sf}.
+
+s.prop Vector representing the amount of specialization found in each factor.
+
+co A data frame of variable loadings with p rows and nf + 1 columns.
+
+ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
+
+present numeric. Number of raster cells in which species is present.
 }
 \description{
-Performs climate-niche factor analysis using climate raster data and species presence data in shapefile.
+Performs climate niche factor analysis using climate raster data and species presence data.
+}
+\details{
+Hirzel et al. (2002) defined the overall marginality M as a standardized distance between the centroid of the species' niche and the global niche, given by \deqn{M = \frac{\sqrt{\sum\limits_{j=1}^P m_j^2}}{1.96}.} Basille and Calenge (2008), however, defined M as \deqn{M = \mathbf{m}^T\mathbf{m}.} The default \code{mar.type} reflects Basille and Calenge's definition so that results will by default agree with those calculated using Basille and Calenge's \code{adehabitatHS} package.
 }

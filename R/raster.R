@@ -2,7 +2,6 @@
 #'
 #' Extracts Raster* object from an object of class \code{cnfa}.
 #'
-#' @aliases
 #' @param cnfa object of class \code{cnfa}
 #' @return Raster* object.
 #'

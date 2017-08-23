@@ -3,11 +3,11 @@
 #' Performs climate niche factor analysis using climate raster data and species presence data.
 #'
 #' @aliases print.cnfa, show.cnfa
-#' @param x Raster* object, typically a brick or stack with p climate raster layers
+#' @param x Raster* or GLcnfa object, typically a brick or stack with p climate raster layers
 #' @param s.dat Spatial* object detailing species presence or abundance
 #' @param field field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{raster::rasterize}.
 #' @param fun function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{raster::rasterize}.
-#' @param nf integer. Specifies the number of specialization axes to keep after transformation.
+#' @param nf integer or character. Specifies the number of specialization axes to keep after transformation. If \code{nf = "BS"} then the broken-stick method will be used to determine the number of significant factors.
 #' @param scale logical. If \code{TRUE} then the values of \code{x} will
 #' get centered and scaled. Depending on the resolution of the climate data and the
 #' extent of the study area, this can be quite time consuming. If running this
@@ -30,14 +30,14 @@
 #'
 #'
 
-setGeneric("cnfa", function(x, s.dat, mar.type = "BC", ...) {
+setGeneric("cnfa", function(x, s.dat, nf = "BS", mar.type = "BC", ...) {
   standardGeneric("cnfa")
 })
 
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "GLcnfa", s.dat = "SpatialPolygonsDataFrame"),
-          function(x, s.dat, field, nf = 1){
+          function(x, s.dat, field, ...){
 
             call <- match.call()
 
@@ -80,6 +80,7 @@ setMethod("cnfa",
             s.p <- c(s.p, s)
             s.p <- abs(s.p)/sum(abs(s.p))
             v <- eigen(H)$vectors
+            if (nf == "BS") nf <- brStick(v)
             if (nf <= 0 | nf > (cZ - 1)) nf <- 1
             co <- matrix(nrow = cZ, ncol = nf + 1)
             co[, 1] <- mar
@@ -135,7 +136,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "RasterBrick", s.dat = "SpatialPolygonsDataFrame"),
-          function(x, s.dat, field, nf = 1, scale = FALSE, mar.type = "BC", ...){
+          function(x, s.dat, field, scale = FALSE, mar.type = "BC", ...){
             call <- match.call()
 
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
@@ -188,6 +189,7 @@ setMethod("cnfa",
             s.p <- c(s.p, s)
             s.p <- abs(s.p)/sum(abs(s.p))
             v <- eigen(H)$vectors
+            if (nf == "BS") nf <- brStick(v)
             if (nf <= 0 | nf > (ncol(Z) - 1)) nf <- 1
             co <- matrix(nrow = ncol(Z), ncol = nf + 1)
             co[, 1] <- mar
@@ -212,7 +214,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "Raster", s.dat = "SpatialPoints"),
-          function(x, s.dat, field, fun = "count", nf = 1, scale = FALSE){
+          function(x, s.dat, field, fun = "count", scale = FALSE){
             call <- match.call()
 
 
@@ -258,6 +260,7 @@ setMethod("cnfa",
             s.p[1] <- sum(diag(W)) - sum(diag(H))
             spec <- sqrt(sum(s))/ncol(Z)
             v <- eigen(H)$vectors
+            if (nf == "BS") nf <- brStick(v)
             if (nf <= 0 | nf > (ncol(Z) - 1)) nf <- 1
             co <- matrix(nrow = ncol(Z), ncol = nf + 1)
             u <- (Rs12 %*% v)[, 1:nf]
@@ -325,6 +328,7 @@ setMethod("cnfa",
             s.p[1] <- sum(diag(W)) - sum(diag(H))
             spec <- sqrt(sum(s))/ncol(Z)
             v <- eigen(H)$vectors
+            if (nf == "BS") nf <- brStick(v)
             if (nf <= 0 | nf > (ncol(Z) - 1)) nf <- 1
             co <- matrix(nrow = ncol(Z), ncol = nf + 1)
             u <- (Rs12 %*% v)[, 1:nf]

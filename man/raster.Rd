@@ -3,9 +3,15 @@
 \docType{methods}
 \name{raster,enfa-method}
 \alias{raster,enfa-method}
+\alias{raster,cnfa-method}
+\alias{raster,GLcnfa-method}
 \title{CNFA raster extraction}
 \usage{
 \S4method{raster}{enfa}(x)
+
+\S4method{raster}{cnfa}(x)
+
+\S4method{raster}{GLcnfa}(x)
 }
 \arguments{
 \item{cnfa}{object of class \code{cnfa}}

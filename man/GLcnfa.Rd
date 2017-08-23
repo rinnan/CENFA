@@ -6,20 +6,20 @@
 \alias{print.cnfa,}
 \alias{show.cnfa}
 \alias{GLcnfa,RasterBrick-method}
-\title{Climate-Niche Factor Analysis}
+\title{Climate Niche Factor Analysis}
 \usage{
-GLcnfa(climdat, ...)
+GLcnfa(x, ...)
 
-\S4method{GLcnfa}{RasterBrick}(climdat, scale = FALSE, filename = "",
+\S4method{GLcnfa}{RasterBrick}(x, scale = FALSE, filename = "",
   progress = TRUE, cores = 1)
 }
 \arguments{
-\item{climdat}{Raster* object, typically a brick or stack of climate raster layers}
-
 \item{scale}{logical. If \code{TRUE} then the values of the Raster* object will
 be centered and scaled. Depending on the resolution of the climate data and the
 extent of the study area, this can be quite time consuming. If running this
 function for multiple species, it is recommended that the climate data be scaled beforehand.}
+
+\item{climdat}{Raster* object, typically a brick or stack of climate raster layers}
 
 \item{speciesdat}{SpatialPolygons* object detailing species presence or abundance}
 
@@ -37,5 +37,5 @@ call original function call
 tab a dataframe
 }
 \description{
-Performs climate-niche factor analysis using climate raster data and species presence data in shapefile.
+Performs climate niche factor analysis using climate raster data and species presence data in shapefile.
 }

@@ -10,14 +10,24 @@ An object of class \code{cnfa} is created from performing climate-niche factor a
 \section{Slots}{
 
 \describe{
-\item{\code{call}}{original function call}
+\item{\code{call}}{Original function call.}
 
-\item{\code{nf}}{number of kept specialization factors}
+\item{\code{nf}}{Number of kept specialization factors.}
 
-\item{\code{m}}{marginalities}
+\item{\code{mf}}{marginality factor. Vector that describes the location of the species Hutchinsonian niche relative to the global niche.}
 
-\item{\code{s}}{specialization factors}
+\item{\code{marginality}}{Standardized magnitude of the marginality factor.}
 
-\item{\code{map}}{Raster map of habitat suitability}
+\item{\code{sf}}{specialization factors. Vector of eigenvalues.}
+
+\item{\code{specialization}}{The square root of the sum of \code{sf} divided by the length of \code{sf}.}
+
+\item{\code{s.prop}}{Vector representing the proportion of specialization found in each factor.}
+
+\item{\code{co}}{A data frame of variable loadings with p rows and nf + 1 columns.}
+
+\item{\code{ras}}{Raster* object of transformed climate values, with number of layers equal to nf + 1.}
+
+\item{\code{present}}{numeric. Number of raster cells in which species is present.}
 }}
 

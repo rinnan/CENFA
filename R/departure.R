@@ -2,7 +2,6 @@
 #'
 #' Calculates the climatic departure of a species using historical and future climate raster data and species presence data.
 #'
-#' @aliases
 #' @param hist.dat Raster* object, typically a brick or stack of historical climate raster layers
 #' @param fut.dat  Raster* object, future climate values with the same layers as hist.dat
 #' @param species.dat SpatialPolygons* object detailing species presence or abundance

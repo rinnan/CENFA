@@ -39,9 +39,9 @@ function for multiple species, it is recommended that the climate data be scaled
 
 \item{marginality.}{Standardized magnitude of the marginality factor.}
 
-\item{s}{specialization factors. Matrix of specializations.}
+\item{s}{specialization factors.  of specializations.}
 
-\item{speciality}{specialization. Mahalanobis distance of something.}
+\item{speciality}{specialization. Vector}
 
 \item{ras}{Raster* object of transformed climate values, with number of layers equal to nf + 1.}
 }
