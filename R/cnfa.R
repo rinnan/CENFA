@@ -16,11 +16,13 @@
 #' @param mar.type character. Choices are "BC" (Basille) or "H" (Hirzel). See details.
 #' @details Hirzel et al. (2002) defined the overall marginality M as a standardized distance between the centroid of the species' niche and the global niche, given by \deqn{M = \frac{\sqrt{\sum\limits_{j=1}^P m_j^2}}{1.96}.} Basille and Calenge (2008), however, defined M as \deqn{M = \mathbf{m}^T\mathbf{m}.} The default \code{mar.type} reflects Basille and Calenge's definition so that results will by default agree with those calculated using Basille and Calenge's \code{adehabitatHS} package.
 #' @return Returns an S4 object of class \code{cnfa} with the following components:
+#' @return call Original function call.
+#' @return nf Number of specialization factors kept.
 #' @return mf marginality factor. Vector that describes the location of the species Hutchinsonian niche relative to the global niche.
 #' @return marginality Standardized magnitude of the marginality factor.
 #' @return sf specialization factors. Vector of eigenvalues.
 #' @return specialization The square root of the sum of \code{sf} divided by the length of \code{sf}.
-#' @return sp.account Vector representing the amount of specialization found in each factor.
+#' @return s.prop Vector representing the amount of specialization found in each factor.
 #' @return co A data frame of variable loadings with p rows and nf + 1 columns.
 #' @return ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
 #' @return present numeric. Number of raster cells in which species is present.
@@ -125,7 +127,7 @@ setMethod("cnfa",
             # names(co) <- c("Marg", paste0("Spec", (1:nf)))
             # row.names(co) <- names(x@global_ras)
 
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, sp.account = s.p, co = co, ras = ras, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, present = length(pres))
             return(cnfa)
           }
 )
@@ -202,7 +204,7 @@ setMethod("cnfa",
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- names(x)
 
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, sp.account = s.p, co = co, ras = ras, present = pres)
+            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, present = pres)
             return(cnfa)
           }
 )
@@ -272,7 +274,7 @@ setMethod("cnfa",
             row.names(co) <- names(x)
             co <- as.data.frame(co[order(abs(co$Marg), decreasing = T), ])
 
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, sp.account = s.p, co = co, ras = ras, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, present = length(pres))
             class(cnfa) <- "cnfa"
             return(invisible(cnfa))
           }
@@ -339,7 +341,7 @@ setMethod("cnfa",
             row.names(co) <- names(x)
             co <- as.data.frame(co[order(abs(co$Marg), decreasing = T), ])
 
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, sp.account = s.p, co = co, ras = ras, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, present = length(pres))
             return(cnfa)
           }
 )
