@@ -33,7 +33,7 @@ setMethod("GLcnfa",
               filename <- rasterTmpFile()
             }
 
-            filename <- raster:::.fullFilename(filename, expand = TRUE)
+            filename <- raster:::.fullFilename(filename, expand = T)
 
             if (!file.exists(dirname(filename))) {
               stop("Attempting to write a file to a path that does not exist:\n  ", dirname(filename))
@@ -68,7 +68,7 @@ setMethod("GLcnfa",
             }
             rownames(cov) <- colnames(cov) <- names(x)
 
-            GLcnfa <- methods::new("GLcnfa", global_ras = x, cov = cov, center = center, sd = sds, ncells = length(gpres), scale = scale)
+            GLcnfa <- methods::new("GLcnfa", global_ras = x, cov = cov, center = center, sd = sds, ncells = length(gpres))
             return(GLcnfa)
           }
 )

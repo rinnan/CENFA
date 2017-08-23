@@ -2,12 +2,12 @@
 #'
 #' Calculates the climatic departure of a species using historical and future climate raster data and species presence data.
 #'
-#' @param hist.dat Raster* object, typically a brick or stack of historical climate raster layers
-#' @param fut.dat  Raster* object, future climate values with the same layers as hist.dat
-#' @param species.dat SpatialPolygons* object detailing species presence or abundance
+#' @param x.hist Raster* object, typically a brick or stack of historical climate raster layers
+#' @param x.fut  Raster* object, future climate values with the same layers as x.hist
+#' @param s.dat SpatialPolygons* object detailing species presence or abundance
 #' @param field field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument of \code{raster::rasterize}.
 #' @param nf integer. Specifies the number of specialization axes to keep after transformation.
-#' @param scale logical. If \code{TRUE} then the values of \code{hist.dat} and \code{fut.dat} will
+#' @param scale logical. If \code{TRUE} then the values of \code{x.hist} and \code{x.fut} will
 #' be centered and scaled by the means and sds of the historical climate data. Depending on the resolution of the data and the
 #' extent of the study area, this can be quite time consuming. If running this
 #' function for multiple species, it is recommended that the climate data be scaled beforehand.
@@ -23,7 +23,7 @@
 #'
 #'
 
-setGeneric("departure", function(hist.dat, fut.dat, species.dat, ...) {
+setGeneric("departure", function(x.hist, x.fut, s.dat, ...) {
   standardGeneric("departure")
 })
 
@@ -31,28 +31,28 @@ setClass("departure", slots = list(call = "call", departure = "numeric", distanc
 
 #' @rdname departure
 setMethod("departure",
-          signature(hist.dat = "RasterBrick", fut.dat = "RasterBrick", species.dat = "SpatialPolygonsDataFrame"),
-          function(hist.dat, fut.dat, species.dat, field,
+          signature(x.hist = "RasterBrick", x.fut = "RasterBrick", s.dat = "SpatialPolygonsDataFrame"),
+          function(x.hist, x.fut, s.dat, field,
                    scale = FALSE, depart.ras = TRUE){
             call <- match.call()
-            if(!identicalCRS(hist.dat, species.dat)) {stop("historical climate and species projections do not match")}
-            if(!identicalCRS(hist.dat, fut.dat))     {stop("historical and future climate projections do not match")}
-            if(!identicalCRS(fut.dat, species.dat)) {stop("future climate and species projections do not match")}
-            if(length(raster::intersect(extent(hist.dat), extent(species.dat)))==0) {stop("climate and species data to not overlap")}
+            if(!identicalCRS(x.hist, s.dat)) {stop("historical climate and species projections do not match")}
+            if(!identicalCRS(x.hist, x.fut))     {stop("historical and future climate projections do not match")}
+            if(!identicalCRS(x.fut, s.dat)) {stop("future climate and species projections do not match")}
+            if(length(raster::intersect(extent(x.hist), extent(s.dat))) == 0) {stop("climate and species data to not overlap")}
             if(scale == TRUE) {
-              hist.dat <- raster::scale(hist.dat)
-              means <- cellStats(hist.dat, mean)
-              sds <- cellStats(fut.dat, sd)
-              fut.dat <- scale(fut.dat, center = means, scale = sds)
+              x.hist <- raster::scale(x.hist)
+              means <- cellStats(x.hist, mean)
+              sds <- cellStats(x.fut, sd)
+              x.fut <- scale(x.fut, center = means, scale = sds)
             }
-            #gpres <- which(!is.na(values(hist.dat[[1]])))
+            #gpres <- which(!is.na(values(x.hist[[1]])))
             #dat<-values(climdat)[gpres,]
-            speciesdat.ras <- rasterize(species.dat, hist.dat, field = field)
+            speciesdat.ras <- rasterize(s.dat, x.hist, field = field)
             pres <- which(!is.na(values(speciesdat.ras)))
             Ns <- length(pres)
             #prb<-values(speciesdat.ras)[pres]
-            pres.dat <- values(hist.dat)[pres,]
-            d_ij <- values(fut.dat)[pres,] - values(hist.dat)[pres,]
+            pres.dat <- values(x.hist)[pres,]
+            d_ij <- values(x.fut)[pres,] - values(x.hist)[pres,]
             d <- sqrt(rowSums(d_ij^2))
             D <- 1/(1.96*Ns) * sum(d)
 
@@ -71,37 +71,37 @@ setMethod("departure",
 
 #' @rdname departure
 setMethod("departure",
-          signature(hist.dat = "Raster", fut.dat = "Raster", species.dat = "enfa"),
-          function(hist.dat, fut.dat, species.dat, depart.ras = TRUE, scale = FALSE){
+          signature(x.hist = "Raster", x.fut = "Raster", s.dat = "enfa"),
+          function(x.hist, x.fut, s.dat, depart.ras = TRUE, scale = FALSE){
 
             call <- match.call()
-            sp.ras <- raster(species.dat)
-            if(!identicalCRS(hist.dat, sp.ras)) {stop("historical climate and species projections do not match")}
-            if(!identicalCRS(hist.dat, fut.dat))     {stop("historical and future climate projections do not match")}
-            if(!identicalCRS(fut.dat, sp.ras)) {stop("future climate and species projections do not match")}
-            if(length(raster::intersect(extent(hist.dat), extent(sp.ras)))==0) {stop("climate and species data to not overlap")}
+            sp.ras <- raster(s.dat)
+            if(!identicalCRS(x.hist, sp.ras)) {stop("historical climate and species projections do not match")}
+            if(!identicalCRS(x.hist, x.fut))     {stop("historical and future climate projections do not match")}
+            if(!identicalCRS(x.fut, sp.ras)) {stop("future climate and species projections do not match")}
+            if(length(raster::intersect(extent(x.hist), extent(sp.ras)))==0) {stop("climate and species data to not overlap")}
             if(scale == TRUE) {
-              center <- cellStats(hist.dat, mean)
-              sds <- cellStats(hist.dat, sd)
-              hist.dat <- raster::scale(hist.dat, center = center, scale = sds)
-              fut.dat <- raster::scale(fut.dat, center = center, scale = sds)
+              center <- cellStats(x.hist, mean)
+              sds <- cellStats(x.hist, sd)
+              x.hist <- raster::scale(x.hist, center = center, scale = sds)
+              x.fut <- raster::scale(x.fut, center = center, scale = sds)
             }
-            hist.dat <- crop(hist.dat, sp.ras)
-            fut.dat <- crop(fut.dat, sp.ras)
+            x.hist <- crop(x.hist, sp.ras)
+            x.fut <- crop(x.fut, sp.ras)
 
             pres <- which(!is.na(values(sp.ras[[1]])))
-            small <- canProcessInMemory(hist.dat, 8)
+            small <- canProcessInMemory(x.hist, 8)
             if(small){
-              z_ij <- values(hist.dat)[pres,] %*% as.matrix(species.dat@co)
-              f_ij <- values(fut.dat)[pres,] %*% as.matrix(species.dat@co)
+              z_ij <- values(x.hist)[pres,] %*% as.matrix(s.dat@co)
+              f_ij <- values(x.fut)[pres,] %*% as.matrix(s.dat@co)
               d_ij <- (f_ij - z_ij)^2
               d <- sqrt(rowSums(d_ij))
               D <- 1/(1.96) * mean(d, na.rm = T)
               sp.ras[pres] <- d
             } else {
-              hist.dat <- calc(hist.dat, fun = function(x) {x %*% as.matrix(species.dat@co)})
-              fut.dat <- calc(fut.dat, fun = function(x) {x %*% as.matrix(species.dat@co)})
-              d_ij <- (fut.dat - hist.dat)^2
+              x.hist <- calc(x.hist, fun = function(x) {x %*% as.matrix(s.dat@co)})
+              x.fut <- calc(x.fut, fun = function(x) {x %*% as.matrix(s.dat@co)})
+              d_ij <- (x.fut - x.hist)^2
               d <- calc(d_ij, fun = function(x) {sqrt(sum(x))})
               values(d)[!pres] <- NA
               D <- 1/(1.96) * cellStats(d, mean)
@@ -121,37 +121,37 @@ setMethod("departure",
 
 #' @rdname departure
 setMethod("departure",
-          signature(hist.dat = "Raster", fut.dat = "Raster", species.dat = "cnfa"),
-          function(hist.dat, fut.dat, species.dat, depart.ras = TRUE, scale = FALSE){
+          signature(x.hist = "Raster", x.fut = "Raster", s.dat = "cnfa"),
+          function(x.hist, x.fut, s.dat, depart.ras = TRUE, scale = FALSE){
 
             call <- match.call()
-            sp.ras <- raster(species.dat)
-            if(!identicalCRS(hist.dat, sp.ras)) {stop("historical climate and species projections do not match")}
-            if(!identicalCRS(hist.dat, fut.dat))     {stop("historical and future climate projections do not match")}
-            if(!identicalCRS(fut.dat, sp.ras)) {stop("future climate and species projections do not match")}
-            if(length(raster::intersect(extent(hist.dat), extent(sp.ras)))==0) {stop("climate and species data to not overlap")}
+            sp.ras <- raster(s.dat)
+            if(!identicalCRS(x.hist, sp.ras)) {stop("historical climate and species projections do not match")}
+            if(!identicalCRS(x.hist, x.fut))     {stop("historical and future climate projections do not match")}
+            if(!identicalCRS(x.fut, sp.ras)) {stop("future climate and species projections do not match")}
+            if(length(raster::intersect(extent(x.hist), extent(sp.ras)))==0) {stop("climate and species data to not overlap")}
             if(scale == TRUE) {
-              center <- cellStats(hist.dat, mean)
-              sds <- cellStats(hist.dat, sd)
-              hist.dat <- raster::scale(hist.dat, center = center, scale = sds)
-              fut.dat <- raster::scale(fut.dat, center = center, scale = sds)
+              center <- cellStats(x.hist, mean)
+              sds <- cellStats(x.hist, sd)
+              x.hist <- raster::scale(x.hist, center = center, scale = sds)
+              x.fut <- raster::scale(x.fut, center = center, scale = sds)
             }
-            hist.dat <- crop(hist.dat, sp.ras)
-            fut.dat <- crop(fut.dat, sp.ras)
+            x.hist <- crop(x.hist, sp.ras)
+            x.fut <- crop(x.fut, sp.ras)
 
             pres <- which(!is.na(values(sp.ras[[1]])))
-            small <- canProcessInMemory(hist.dat, 5)
+            small <- canProcessInMemory(x.hist, 5)
             if(small){
-              z_ij <- values(hist.dat)[pres,] %*% as.matrix(species.dat@co)
-              f_ij <- values(fut.dat)[pres,] %*% as.matrix(species.dat@co)
+              z_ij <- values(x.hist)[pres,] %*% as.matrix(s.dat@co)
+              f_ij <- values(x.fut)[pres,] %*% as.matrix(s.dat@co)
               d_ij <- (f_ij - z_ij)^2
               d <- sqrt(rowSums(d_ij))
               D <- 1/(1.96) * mean(d, na.rm = T)
               sp.ras[pres] <- d
             } else {
-              hist.dat <- calc(hist.dat, fun = function(x) {x %*% as.matrix(species.dat@co)})
-              fut.dat <- calc(fut.dat, fun = function(x) {x %*% as.matrix(species.dat@co)})
-              d_ij <- (fut.dat - hist.dat)^2
+              x.hist <- calc(x.hist, fun = function(x) {x %*% as.matrix(s.dat@co)})
+              x.fut <- calc(x.fut, fun = function(x) {x %*% as.matrix(s.dat@co)})
+              d_ij <- (x.fut - x.hist)^2
               d <- calc(d_ij, fun = function(x) {sqrt(sum(x))})
               values(d)[!pres] <- NA
               D <- 1/(1.96) * cellStats(d, mean)

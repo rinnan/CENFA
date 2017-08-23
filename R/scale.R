@@ -88,7 +88,7 @@
 
   if(cores > 1){
     cl <- makeCluster(getOption("cl.cores", cores))
-    clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "n", "canProcessInMemory", "values"), envir = environment())
+    clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "nl", "canProcessInMemory", "values"), envir = environment())
     registerDoSNOW(cl)
     if(progress){
       pb <- txtProgressBar(min = 0, max = length(s), style = 3)
