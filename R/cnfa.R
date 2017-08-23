@@ -30,9 +30,9 @@
 #'
 #'
 
-# setGeneric("cnfa", function(x, s.dat, nf = "BS", mar.type = "BC", ...) {
-#   standardGeneric("cnfa")
-# })
+setGeneric("cnfa", function(x, s.dat, nf = "BS", mar.type = "BC", ...) {
+  standardGeneric("cnfa")
+})
 
 #' @rdname cnfa
 setMethod("cnfa",
