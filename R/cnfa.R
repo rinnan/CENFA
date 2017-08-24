@@ -57,9 +57,10 @@ setMethod("cnfa",
               Rs <- crossprod(S, S)/(nS - 1)
               mar <- colSums(S)/nS
             } else {
-              x.mask <- mask(x.crop, s.dat)
-              pres <- which(!is.na(values(max(x.mask))))
+              x.mask <- mask(x.crop, s.dat.ras)
+              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               Rg <- x@cov
+              cat("Calculating covariance matrix...\n")
               Rs <- covmat(x.mask, ...)
               mar <- cellStats(x.mask, sum)/length(pres)
             }
@@ -87,8 +88,13 @@ setMethod("cnfa",
             u <- (Rs12 %*% v)[, 1:nf]
             norw <- sqrt(diag(t(u) %*% u))
             co[, 2:(nf + 1)] <- sweep(u, 2, norw, "/")
-            ras <- brick(x.crop, nl = nf + 1)
-            values(ras)[pres, ] <- S %*% co
+            if(canProcessInMemory(x.crop)){
+              ras <- brick(x.crop, nl = nf + 1)
+              values(ras)[pres, ] <- S %*% co
+            } else{
+              cat("\nCreating raster of transformed variables...")
+              ras <- calc(x.mask, function(x) {x %*% co}, forceapply = T)
+            }
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- names(raster(x))
@@ -164,11 +170,11 @@ setMethod("cnfa",
               Rs <- crossprod(S, S)/(nS - 1)
             } else {
               center <- cellStats(x, mean)
-              x.mask <- mask(x, s.dat)
-              pres <- which(!is.na(values(max(x.mask))))
+              x.mask <- mask(x, s.dat.ras)
+              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               Z <- calc(x, fun = function(p) {p - center})
               S <- calc(x.mask, fun = function(p) {p - center})
-              mar <-
+              mar <- cellStats(x.mask, sum)/length(pres)
               Rg <- covmat(Z, sample = F, ...)
               Rs <- covmat(S, ...)
             }
@@ -196,12 +202,12 @@ setMethod("cnfa",
             u <- (Rs12 %*% v)[, 1:nf]
             norw <- sqrt(diag(t(u) %*% u))
             co[, 2:(nf + 1)] <- sweep(u, 2, norw, "/")
-            ras <- brick(x, nl = nf + 1)
-
-            ###
-            values(ras)[gpres, ] <- Z %*% co
-            ###
-
+            if(canProcessInMemory(x.crop)){
+              ras <- brick(x.crop, nl = nf + 1)
+              values(ras)[pres, ] <- S %*% co
+            } else{
+              ras <- calc(x.mask, function(x) {x %*% co}, forceapply = T)
+            }
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- names(x)
