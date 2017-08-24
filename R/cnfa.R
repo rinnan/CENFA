@@ -85,9 +85,9 @@ setMethod("cnfa",
             if (nf <= 0 | nf > (cZ - 1)) nf <- 1
             co <- matrix(nrow = cZ, ncol = nf + 1)
             co[, 1] <- mar
-            u <- (Rs12 %*% v)[, 1:nf]
+            u <- as.matrix((Rs12 %*% v)[, 1:nf])
             norw <- sqrt(diag(t(u) %*% u))
-            co[, 2:(nf + 1)] <- sweep(u, 2, norw, "/")
+            co[, -1] <- sweep(u, 2, norw, "/")
             if(canProcessInMemory(x.crop)){
               ras <- brick(x.crop, nl = nf + 1)
               values(ras)[pres, ] <- S %*% co
@@ -199,9 +199,9 @@ setMethod("cnfa",
             if (nf <= 0 | nf > (ncol(Z) - 1)) nf <- 1
             co <- matrix(nrow = ncol(Z), ncol = nf + 1)
             co[, 1] <- mar
-            u <- (Rs12 %*% v)[, 1:nf]
+            u <- as.matrix((Rs12 %*% v)[, 1:nf])
             norw <- sqrt(diag(t(u) %*% u))
-            co[, 2:(nf + 1)] <- sweep(u, 2, norw, "/")
+            co[, -1] <- sweep(u, 2, norw, "/")
             if(canProcessInMemory(x.crop)){
               ras <- brick(x.crop, nl = nf + 1)
               values(ras)[pres, ] <- S %*% co
