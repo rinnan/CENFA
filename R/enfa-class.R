@@ -10,8 +10,8 @@
 #' @slot present Number of cells in which species is present.
 #' @export
 
-setClass("enfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", s = "numeric",
-                           specialization = "numeric", spec.account = "numeric", co = "data.frame", ras = "Raster", present = "numeric"))
+setClass("enfa", slots = list(call = "call", nf = nf, mf = "numeric", marginality = "numeric", sf = "numeric",
+                           specialization = "numeric", s.prop = "numeric", co = "data.frame", ras = "Raster", present = "numeric"))
 
 setMethod ("show", "enfa", function(object){
   if (!inherits(object, "enfa"))

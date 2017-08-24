@@ -46,7 +46,7 @@ covmat <- function(x, cores = 1, scale = FALSE, progress = TRUE, sample = TRUE, 
 
   if(cores > 1){
     cl <- makeCluster(getOption("cl.cores", cores))
-    clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "ser", "n", "canProcessInMemory", "values"), envir = environment())
+    clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "nl", "canProcessInMemory", "values"), envir = environment())
     registerDoSNOW(cl)
     if(progress){
       pb <- txtProgressBar(min = 0, max = length(s), style = 3)
@@ -64,7 +64,7 @@ covmat <- function(x, cores = 1, scale = FALSE, progress = TRUE, sample = TRUE, 
     stopCluster(cl)
   }
 
-  for(p in ser){
+  for(p in s){
     mat[ii[p], jj[p]] <- mat[jj[p], ii[p]] <- result[p]
   }
 

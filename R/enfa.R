@@ -3,9 +3,9 @@
 #' Performs ecological-niche factor analysis using environmental raster data and species presence data in shapefile.
 #'
 #' @aliases print.enfa, show.enfa
-#' @param ecodat Raster* object, typically a brick or stack of ecological raster layers
-#' @param speciesdat SpatialPolygons* object detailing species presence or abundance
-#' @param field field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.
+#' @param x Raster* object, typically a brick or stack of ecological raster layers
+#' @param s.dat SpatialPolygons* object detailing species presence or abundance
+#' @param field field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.
 #' @param nf integer. Specifies the number of specialization axes to keep after transformation.
 #' @param scale logical. If \code{TRUE} then the values of the Raster* object will
 #' be centered and scaled. Depending on the resolution of the climate data and the
@@ -23,30 +23,30 @@
 #'
 #'
 
-setGeneric("enfa", function(ecodat, speciesdat, ...) {
+setGeneric("enfa", function(x, s.dat, ...) {
   standardGeneric("enfa")
 })
 
 #' @rdname enfa
 setMethod("enfa",
-          signature(ecodat = "Raster", speciesdat = "SpatialPolygonsDataFrame"),
-          function(ecodat, speciesdat, field,
+          signature(x = "RasterBrick", s.dat = "SpatialPolygonsDataFrame"),
+          function(x, s.dat, field,
                    nf = 1, scale = FALSE, mar.type = "Basille", return_values = FALSE, ...){
             call <- match.call()
-            if(!identicalCRS(ecodat, speciesdat)) {stop("spatial projections of environmental and species data do not match")}
-            if(scale == TRUE) {ecodat <- raster::scale(ecodat)}
+            if(!identicalCRS(x, s.dat)) {stop("spatial projections of environmental and species data do not match")}
+            if(scale == TRUE) {x <- raster::scale(x)}
 
-            ecodat.mask <- mask(ecodat, speciesdat)
-            gpres <- which(!is.na(values(ecodat[[1]])))
-            speciesdat.ras <- rasterize(speciesdat, ecodat, field = field)
-            pres <- which(!is.na(values(speciesdat.ras)))
-            prb <- c(speciesdat.ras[pres])
+            x.mask <- mask(x, s.dat)
+            gpres <- which(!is.na(values(x[[1]])))
+            s.dat.ras <- rasterize(s.dat, x, field = field)
+            pres <- which(!is.na(values(s.dat.ras)))
+            prb <- c(s.dat.ras[pres])
             pr <- prb/sum(prb)
 
-            small <- canProcessInMemory(ecodat)
+            small <- canProcessInMemory(x)
             if(small){
-              dat <- values(ecodat)[gpres, ]
-              pres.dat <- values(ecodat.mask)[pres, ]
+              dat <- values(x)[gpres, ]
+              pres.dat <- values(x.mask)[pres, ]
               center <- colMeans(dat)
               Z <- sweep(dat, 2, center)
               S <- sweep(pres.dat, 2, center)
@@ -56,9 +56,9 @@ setMethod("enfa",
               Rs <- crossprod(S,S/nS)
 
             } else {
-              center <- cellStats(ecodat, mean)
-              Z <- calc(ecodat, fun = function(x) {x - center})
-              S <- calc(ecodat.mask, fun = function(x) {x - center})
+              center <- cellStats(x, mean)
+              Z <- calc(x, fun = function(x) {x - center})
+              S <- calc(x.mask, fun = function(x) {x - center})
               nZ <- nlayers(Z)
               nS <- nlayers(S)
               Rg <- covmat(Z, sample = F, ...)
@@ -89,13 +89,13 @@ setMethod("enfa",
             co[, 1] <- mar
             if(return_values == TRUE){
               li <- S %*% co
-              ras <- raster::subset(ecodat.mask, 1:(nf+1))
+              ras <- raster::subset(x.mask, 1:(nf+1))
               values(ras)[pres, ] <- li
               names(ras) <- c("Marg", paste0("Spec", (1:nf)))
             } else {ras <- NA}
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
-            row.names(co) <- dimnames(ecodat)[[2]]
+            row.names(co) <- dimnames(x)[[2]]
             enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, spec.account = s.p, co = co, ras = ras, present = length(pres))
             return(enfa)
           }
@@ -103,24 +103,24 @@ setMethod("enfa",
 
 #' @rdname enfa
 setMethod("enfa",
-          signature(ecodat = "Raster", speciesdat = "SpatialPoints"),
-          function(ecodat, speciesdat, field,
+          signature(x = "RasterBrick", s.dat = "SpatialPoints"),
+          function(x, s.dat, field,
                    nf = 1, scale = FALSE, fun = "count", mar.type = "Basille", return_values = FALSE, ...){
             #call <- match.call()
-            if(!identicalCRS(ecodat, speciesdat)) {stop("spatial projections of environmental and species data do not match")}
-            if(scale == TRUE) {ecodat <- raster::scale(ecodat)}
+            if(!identicalCRS(x, s.dat)) {stop("spatial projections of environmental and species data do not match")}
+            if(scale == TRUE) {x <- raster::scale(x)}
 
-            ecodat.mask <- mask(ecodat, speciesdat)
-            gpres <- which(!is.na(values(ecodat[[1]])))
-            speciesdat.ras <- rasterize(speciesdat, ecodat.mask, field = field, fun = fun)
-            pres <- which(!is.na(values(speciesdat.ras)))
-            prb <- c(speciesdat.ras[pres])
+            x.mask <- mask(x, s.dat)
+            gpres <- which(!is.na(values(x[[1]])))
+            s.dat.ras <- rasterize(s.dat, x.mask, field = field, fun = fun)
+            pres <- which(!is.na(values(s.dat.ras)))
+            prb <- c(s.dat.ras[pres])
             pr <- prb/sum(prb)
 
-            small <- canProcessInMemory(ecodat)
+            small <- canProcessInMemory(x)
             if(small){
-              dat <- values(ecodat)[gpres, ]
-              pres.dat <- values(ecodat.mask)[pres, ]
+              dat <- values(x)[gpres, ]
+              pres.dat <- values(x.mask)[pres, ]
               center <- colMeans(dat)
               Z <- sweep(dat, 2, center)
               S <- sweep(pres.dat, 2, center)
@@ -130,9 +130,9 @@ setMethod("enfa",
               Rs <- crossprod(S,S/nS)
 
             } else {
-              center <- cellStats(ecodat, mean)
-              Z <- calc(ecodat, fun = function(x) {x - center})
-              S <- calc(ecodat.mask, fun = function(x) {x - center})
+              center <- cellStats(x, mean)
+              Z <- calc(x, fun = function(x) {x - center})
+              S <- calc(x.mask, fun = function(x) {x - center})
               nZ <- nlayers(Z)
               nS <- nlayers(S)
               Rg <- covmat(Z, sample = F, ...)
@@ -164,13 +164,13 @@ setMethod("enfa",
             co[, 1] <- mar
             if(return_values == TRUE){
               li <- S %*% co
-              ras <- raster::subset(ecodat.mask, 1:(nf+1))
+              ras <- raster::subset(x.mask, 1:(nf+1))
               values(ras)[pres, ] <- li
               names(ras) <- c("Marg", paste0("Spec", (1:nf)))
             } else {ras <- NA}
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
-            row.names(co) <- dimnames(ecodat)[[2]]
+            row.names(co) <- dimnames(x)[[2]]
             enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, co = co, ras = ras, present = length(pres))
             return(enfa)
           }
@@ -178,23 +178,23 @@ setMethod("enfa",
 
 #' #' @rdname enfa
 #' setMethod("enfa",
-#'           signature(climdat = "GLenfa", speciesdat = "SpatialPolygonsDataFrame"),
-#'           function(climdat, speciesdat, field, nf = 1){
+#'           signature(climdat = "GLenfa", s.dat = "SpatialPolygonsDataFrame"),
+#'           function(climdat, s.dat, field, nf = 1){
 #'
 #'             call <- match.call()
 #'
-#'             if(!identicalCRS(climdat@global_ras, speciesdat)){
+#'             if(!identicalCRS(climdat@global_ras, s.dat)){
 #'               stop("climate and species projections do not match")
 #'             }
 #'
 #'
-#'             if(length(raster::intersect(extent(climdat@global_ras), extent(speciesdat)))==0){
+#'             if(length(raster::intersect(extent(climdat@global_ras), extent(s.dat)))==0){
 #'               stop("climate and species data to not overlap")
 #'             }
 #'
-#'             rr <- crop(climdat@global_ras,extent(speciesdat))
-#'             speciesdat.ras <- rasterize(speciesdat,rr,field=field)
-#'             pres <- which(!is.na(values(speciesdat.ras)) & !is.na(values(rr[[1]])))
+#'             rr <- crop(climdat@global_ras,extent(s.dat))
+#'             s.dat.ras <- rasterize(s.dat,rr,field=field)
+#'             pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(rr[[1]])))
 #'             pres.dat <- values(rr)[pres,]
 #'             S <- sweep(pres.dat, 2, climdat@center)
 #'             rZ <- climdat@ncells

@@ -39,7 +39,7 @@ setMethod("departure",
             if(!identicalCRS(x.hist, x.fut))     {stop("historical and future climate projections do not match")}
             if(!identicalCRS(x.fut, s.dat)) {stop("future climate and species projections do not match")}
             if(length(raster::intersect(extent(x.hist), extent(s.dat))) == 0) {stop("climate and species data to not overlap")}
-            if(scale == TRUE) {
+            if(scale) {
               x.hist <- raster::scale(x.hist)
               means <- cellStats(x.hist, mean)
               sds <- cellStats(x.fut, sd)
@@ -56,7 +56,7 @@ setMethod("departure",
             d <- sqrt(rowSums(d_ij^2))
             D <- 1/(1.96*Ns) * sum(d)
 
-            if(depart.ras == T){
+            if(depart.ras){
               ras <- speciesdat.ras
               values(ras)[pres] <- d
             }
@@ -80,7 +80,7 @@ setMethod("departure",
             if(!identicalCRS(x.hist, x.fut))     {stop("historical and future climate projections do not match")}
             if(!identicalCRS(x.fut, sp.ras)) {stop("future climate and species projections do not match")}
             if(length(raster::intersect(extent(x.hist), extent(sp.ras)))==0) {stop("climate and species data to not overlap")}
-            if(scale == TRUE) {
+            if(scale) {
               center <- cellStats(x.hist, mean)
               sds <- cellStats(x.hist, sd)
               x.hist <- raster::scale(x.hist, center = center, scale = sds)
@@ -121,7 +121,7 @@ setMethod("departure",
 
 #' @rdname departure
 setMethod("departure",
-          signature(x.hist = "Raster", x.fut = "Raster", s.dat = "cnfa"),
+          signature(x.hist = "RasterBrick", x.fut = "RasterBrick", s.dat = "cnfa"),
           function(x.hist, x.fut, s.dat, depart.ras = TRUE, scale = FALSE){
 
             call <- match.call()
@@ -130,7 +130,7 @@ setMethod("departure",
             if(!identicalCRS(x.hist, x.fut))     {stop("historical and future climate projections do not match")}
             if(!identicalCRS(x.fut, sp.ras)) {stop("future climate and species projections do not match")}
             if(length(raster::intersect(extent(x.hist), extent(sp.ras)))==0) {stop("climate and species data to not overlap")}
-            if(scale == TRUE) {
+            if(scale) {
               center <- cellStats(x.hist, mean)
               sds <- cellStats(x.hist, sd)
               x.hist <- raster::scale(x.hist, center = center, scale = sds)

@@ -50,8 +50,8 @@ setMethod("cnfa",
             s.dat.ras <- rasterize(s.dat, x.crop, field = field)
 
             if(canProcessInMemory(x.crop)){
-              pres <- which(!is.na(values(s.dat.ras)))
-              S <- na.omit(values(x.crop)[pres,])
+              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.crop))))
+              S <- values(x.crop)[pres,]
               nS <- nrow(S)
               Rg <- x@cov
               Rs <- crossprod(S, S)/(nS - 1)
@@ -80,7 +80,7 @@ setMethod("cnfa",
             s.p <- c(s.p, s)
             s.p <- abs(s.p)/sum(abs(s.p))
             v <- eigen(H)$vectors
-            if (nf == "BS") nf <- brStick(s[-1]) + 1
+            if (nf == "BS") nf <- brStick(s[-1])
             if (nf <= 0 | nf > (cZ - 1)) nf <- 1
             co <- matrix(nrow = cZ, ncol = nf + 1)
             co[, 1] <- mar
