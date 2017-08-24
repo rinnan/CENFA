@@ -5,7 +5,7 @@
 \alias{departure}
 \alias{departure,RasterBrick,RasterBrick,SpatialPolygonsDataFrame-method}
 \alias{departure,Raster,Raster,enfa-method}
-\alias{departure,Raster,Raster,cnfa-method}
+\alias{departure,RasterBrick,RasterBrick,cnfa-method}
 \title{Climatic departure}
 \usage{
 departure(x.hist, x.fut, s.dat, ...)
@@ -16,7 +16,7 @@ departure(x.hist, x.fut, s.dat, ...)
 \S4method{departure}{Raster,Raster,enfa}(x.hist, x.fut, s.dat,
   depart.ras = TRUE, scale = FALSE)
 
-\S4method{departure}{Raster,Raster,cnfa}(x.hist, x.fut, s.dat,
+\S4method{departure}{RasterBrick,RasterBrick,cnfa}(x.hist, x.fut, s.dat,
   depart.ras = TRUE, scale = FALSE)
 }
 \arguments{

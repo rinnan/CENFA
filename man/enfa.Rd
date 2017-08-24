@@ -5,26 +5,25 @@
 \alias{enfa}
 \alias{print.enfa,}
 \alias{show.enfa}
-\alias{enfa,Raster,SpatialPolygonsDataFrame-method}
-\alias{enfa,Raster,SpatialPoints-method}
+\alias{enfa,RasterBrick,SpatialPolygonsDataFrame-method}
+\alias{enfa,RasterBrick,SpatialPoints-method}
 \title{Ecological-Niche Factor Analysis}
 \usage{
-enfa(ecodat, speciesdat, ...)
+enfa(x, s.dat, ...)
 
-\S4method{enfa}{Raster,SpatialPolygonsDataFrame}(ecodat, speciesdat, field,
-  nf = 1, scale = FALSE, mar.type = "Basille", return_values = FALSE,
-  ...)
+\S4method{enfa}{RasterBrick,SpatialPolygonsDataFrame}(x, s.dat, field, nf = 1,
+  scale = FALSE, mar.type = "Basille", return_values = FALSE, ...)
 
-\S4method{enfa}{Raster,SpatialPoints}(ecodat, speciesdat, field, nf = 1,
+\S4method{enfa}{RasterBrick,SpatialPoints}(x, s.dat, field, nf = 1,
   scale = FALSE, fun = "count", mar.type = "Basille",
   return_values = FALSE, ...)
 }
 \arguments{
-\item{ecodat}{Raster* object, typically a brick or stack of ecological raster layers}
+\item{x}{Raster* object, typically a brick or stack of ecological raster layers}
 
-\item{speciesdat}{SpatialPolygons* object detailing species presence or abundance}
+\item{s.dat}{SpatialPolygons* object detailing species presence or abundance}
 
-\item{field}{field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.}
+\item{field}{field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.}
 
 \item{nf}{integer. Specifies the number of specialization axes to keep after transformation.}
 
