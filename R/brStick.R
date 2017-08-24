@@ -1,4 +1,6 @@
 brStick <- function (eigs) {
+  if(max(Im(eigs)) > 1e-5) stop("broken-stick method does not work for complex eigenvalues")
+  eigs <- Re(eigs)
   p <- length(eigs)
   a <- NULL
   r <- NULL

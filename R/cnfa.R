@@ -60,7 +60,7 @@ setMethod("cnfa",
               x.mask <- mask(x.crop, s.dat.ras)
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               Rg <- x@cov
-              cat("Calculating covariance matrix...\n")
+              cat("\nCalculating covariance matrix...\n")
               Rs <- covmat(x.mask, ...)
               mar <- cellStats(x.mask, sum)/length(pres)
             }
@@ -68,19 +68,20 @@ setMethod("cnfa",
             cZ <- nlayers(raster(x))
             if(mar.type == "BC") m <- c(t(mar) %*% mar)
             if(mar.type == "H")  m <- norm(mar, "2")/1.96
-            eigRs <- eigen(Rs)
+            if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues")
+            eigRs <- lapply(eigen(Rs), Re)
             keep <- (eigRs$values > 1e-09)
             Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
             W <- Rs12 %*% Rg %*% Rs12
             z <- Rs12 %*% mar
             y <- z/sqrt(sum(z^2))
             H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
-            s <- eigen(H)$values[-cZ]
+            s <- Re(eigen(H)$values)[-cZ]
             spec <- sqrt(sum(s))/cZ
             s.p <- abs(sum(diag(W)) - sum(diag(H)))
             s.p <- c(s.p, s)
             s.p <- abs(s.p)/sum(abs(s.p))
-            v <- eigen(H)$vectors
+            v <- Re(eigen(H)$vectors)
             if (nf == "BS") nf <- brStick(s[-1])
             if (nf <= 0 | nf > (cZ - 1)) nf <- 1
             co <- matrix(nrow = cZ, ncol = nf + 1)
