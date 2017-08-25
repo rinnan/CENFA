@@ -144,18 +144,25 @@ setMethod("departure",
             if(small){
               z_ij <- values(x.hist)[pres,] %*% as.matrix(s.dat@co)
               f_ij <- values(x.fut)[pres,] %*% as.matrix(s.dat@co)
+              #z_ij <- values(x.hist)[pres,] #%*% as.matrix(s.dat@co)
+              #f_ij <- values(x.fut)[pres,] #%*% as.matrix(s.dat@co)
               d_ij <- (f_ij - z_ij)^2
-              d <- sqrt(rowSums(d_ij))
-              D <- 1/(1.96) * mean(d, na.rm = T)
-              sp.ras[pres] <- d
+              #d_ij <- (f_ij - z_ij)
+              #mar.hist <- z_ij %*% as.matrix(s.dat@co[,1])
+              #mar.fut <- f_ij %*% as.matrix(s.dat@co[,1])
+
+              distances <- sqrt(rowSums(d_ij))
+              D <- 1/(1.96) * mean(distances, na.rm = T)
+              ras <- raster(sp.ras[[1]])
+              ras[pres] <- distances
             } else {
               x.hist <- calc(x.hist, fun = function(x) {x %*% as.matrix(s.dat@co)})
               x.fut <- calc(x.fut, fun = function(x) {x %*% as.matrix(s.dat@co)})
               d_ij <- (x.fut - x.hist)^2
-              d <- calc(d_ij, fun = function(x) {sqrt(sum(x))})
-              values(d)[!pres] <- NA
-              D <- 1/(1.96) * cellStats(d, mean)
-              distances <- values(d)[pres]
+              ras <- calc(d_ij, fun = function(x) {sqrt(sum(x))})
+              values(ras)[!pres] <- NA
+              D <- 1/(1.96) * cellStats(ras, mean)
+              distances <- values(ras)[pres]
             }
 
             # if(depart.ras == T){
@@ -164,7 +171,7 @@ setMethod("departure",
             # }
             # else ras <- NA
 
-            depart <- methods::new("departure", call = call, departure = D, distances = d, departure_ras = d, present = length(pres))
+            depart <- methods::new("departure", call = call, departure = D, distances = distances, departure_ras = ras, present = length(pres))
             return(depart)
           }
 )

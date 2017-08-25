@@ -196,15 +196,15 @@ setMethod("cnfa",
             s.p <- c(s.p, s)
             s.p <- abs(s.p)/sum(abs(s.p))
             v <- eigen(H)$vectors
-            if (nf == "BS") nf <- brStick(v)
+            if (nf == "BS") nf <- brStick(s[-1])
             if (nf <= 0 | nf > (ncol(Z) - 1)) nf <- 1
             co <- matrix(nrow = ncol(Z), ncol = nf + 1)
             co[, 1] <- mar
             u <- as.matrix((Rs12 %*% v)[, 1:nf])
             norw <- sqrt(diag(t(u) %*% u))
             co[, -1] <- sweep(u, 2, norw, "/")
-            if(canProcessInMemory(x.crop)){
-              ras <- brick(x.crop, nl = nf + 1)
+            if(canProcessInMemory(x)){
+              ras <- brick(x, nl = nf + 1)
               values(ras)[pres, ] <- S %*% co
             } else{
               ras <- calc(x.mask, function(x) {x %*% co}, forceapply = T)
