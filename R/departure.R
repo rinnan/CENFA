@@ -138,33 +138,24 @@ setMethod("departure",
             }
             x.hist <- crop(x.hist, sp.ras)
             x.fut <- crop(x.fut, sp.ras)
+            Rs.inv <- solve(s.dat@s.cov)
 
             small <- canProcessInMemory(x.hist, 5)
             if(small){
               pres <- which(!is.na(values(sp.ras[[1]])))
-              z_ij <- values(x.hist)[pres,] %*% as.matrix(s.dat@co)
-              f_ij <- values(x.fut)[pres,] %*% as.matrix(s.dat@co)
-              #z_ij <- values(x.hist)[pres,] #%*% as.matrix(s.dat@co)
-              #f_ij <- values(x.fut)[pres,] #%*% as.matrix(s.dat@co)
-              d_ij <- (f_ij - z_ij)^2
-              #d_ij <- (f_ij - z_ij)
-              #mar.hist <- z_ij %*% as.matrix(s.dat@co[,1])
-              #mar.fut <- f_ij %*% as.matrix(s.dat@co[,1])
-
-              distances <- sqrt(rowSums(d_ij))
-              D <- 1/(1.96) * mean(distances, na.rm = T)
+              z_ij <- values(x.hist)[pres,]
+              f_ij <- values(x.fut)[pres,]
+              d_ij <- (f_ij - z_ij)
+              distances <- apply(d_ij, 1, function(x) sqrt(t(x) %*% Rs.inv %*% x))
+              D <- mean(distances, na.rm = T)/1.96
               ras <- raster(sp.ras[[1]])
               ras[pres] <- distances
             } else {
               x.mask.h <- mask(x.hist, sp.ras[[1]])
               x.mask.f <- mask(x.fut, sp.ras[[1]])
-              #pres <- which(!is.na(values(sp.ras[[1]])))
-              x.hist <- calc(x.mask.h, fun = function(x) {x %*% as.matrix(s.dat@co)})
-              x.fut <- calc(x.mask.f, fun = function(x) {x %*% as.matrix(s.dat@co)})
-              d_ij <- (x.fut - x.hist)^2
-              ras <- calc(d_ij, fun = function(x) {sqrt(sum(x))})
-              #values(ras)[!pres] <- NA
-              D <- 1/(1.96) * cellStats(ras, mean)
+              d_ij <- (x.mask.f - x.mask.h)
+              ras <- calc(d_ij, function(x) sqrt(t(x) %*% Rs.inv %*% x))
+              D <- cellStats(ras, mean)/1.96
               distances <- na.omit(values(ras))
             }
 
