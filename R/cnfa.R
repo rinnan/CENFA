@@ -135,7 +135,7 @@ setMethod("cnfa",
             # names(co) <- c("Marg", paste0("Spec", (1:nf)))
             # row.names(co) <- names(x@global_ras)
 
-            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, s.cov = Rs, present = length(pres))
             return(cnfa)
           }
 )
@@ -213,7 +213,7 @@ setMethod("cnfa",
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- names(x)
 
-            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, present = pres)
+            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, s.cov = Rs, present = pres)
             return(cnfa)
           }
 )
@@ -284,7 +284,7 @@ setMethod("cnfa",
             row.names(co) <- names(x)
             co <- as.data.frame(co[order(abs(co$Marg), decreasing = T), ])
 
-            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, s.cov = Rs, present = length(pres))
             class(cnfa) <- "cnfa"
             return(invisible(cnfa))
           }
@@ -352,7 +352,7 @@ setMethod("cnfa",
             row.names(co) <- names(x)
             co <- as.data.frame(co[order(abs(co$Marg), decreasing = T), ])
 
-            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, s.cov = Rs, present = length(pres))
             return(cnfa)
           }
 )

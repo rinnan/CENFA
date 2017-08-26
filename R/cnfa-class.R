@@ -16,7 +16,7 @@
 
 setClass("cnfa", slots = list(call = "call", nf = "numeric", mf = "numeric", marginality = "numeric", sf = "numeric",
                            specialization = "numeric", s.prop = "numeric", co = "data.frame",
-                           ras = "Raster", present = "numeric"))
+                           ras = "Raster", s.cov = "matrix", present = "numeric"))
 
 setMethod ("show", "cnfa", function(object){
   if (!inherits(object, "cnfa"))
