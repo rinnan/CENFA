@@ -55,14 +55,6 @@ setMethod("departure",
             d <- sqrt(rowSums(d_ij^2))
             D <- 1/(1.96*Ns) * sum(d)
 
-            if(depart.ras){
-              ras <- speciesdat.ras
-              values(ras)[pres] <- d
-            }
-            else ras <- NA
-
-
-
             depart <- methods::new("departure", call = call, departure = D, departure_ras = ras, present = Ns)
             return(depart)
           }
@@ -71,7 +63,7 @@ setMethod("departure",
 #' @rdname departure
 setMethod("departure",
           signature(x.hist = "Raster", x.fut = "Raster", s.dat = "enfa"),
-          function(x.hist, x.fut, s.dat, depart.ras = TRUE, scale = FALSE){
+          function(x.hist, x.fut, s.dat, scale = FALSE){
 
             call <- match.call()
             sp.ras <- raster(s.dat)
@@ -107,12 +99,6 @@ setMethod("departure",
               sp.ras <- d
             }
 
-            # if(depart.ras == T){
-            #   ras <- sp.ras[[1]]
-            #   values(ras)[pres] <- d
-            # }
-            # else ras <- NA
-
             depart <- methods::new("departure", call = call, departure = D, departure_ras = sp.ras, present = length(pres))
             return(depart)
           }
@@ -121,7 +107,7 @@ setMethod("departure",
 #' @rdname departure
 setMethod("departure",
           signature(x.hist = "RasterBrick", x.fut = "RasterBrick", s.dat = "cnfa"),
-          function(x.hist, x.fut, s.dat, depart.ras = TRUE, scale = FALSE){
+          function(x.hist, x.fut, s.dat, scale = FALSE){
 
             call <- match.call()
             sp.ras <- raster(s.dat)
@@ -158,12 +144,6 @@ setMethod("departure",
               distances <- na.omit(values(ras))
             }
 
-            # if(depart.ras == T){
-            #   ras <- sp.ras[[1]]
-            #   values(ras)[pres] <- d
-            # }
-            # else ras <- NA
-
             depart <- methods::new("departure", call = call, departure = D, departure_ras = ras, present = length(pres))
             return(depart)
           }
@@ -172,7 +152,7 @@ setMethod("departure",
 #' @rdname departure
 setMethod("departure",
           signature(x.hist = "RasterBrick", x.fut = "missing", s.dat = "cnfa"),
-          function(x.hist, x.fut, s.dat, depart.ras = TRUE, scale = FALSE){
+          function(x.hist, s.dat, scale = FALSE){
 
             call <- match.call()
             sp.ras <- raster(s.dat)
@@ -183,31 +163,41 @@ setMethod("departure",
               sds <- cellStats(x.hist, sd)
               x.hist <- raster::scale(x.hist, center = center, scale = sds)
             }
-            x.hist <- crop(x.hist, sp.ras)
-            Rs.inv <- solve(s.dat@s.cov)
+            x.hist <- crop(x.hist, extent(sp.ras))
+            #Rs.inv <- solve(s.dat@s.cov)
+            Rs.inv <- solve(covmat(sp.ras))
 
             small <- canProcessInMemory(x.hist, 5)
             if(small){
               pres <- which(!is.na(values(sp.ras[[1]])))
-              d_ij <- values(x.hist)[pres,]
-              distances <- apply(d_ij, 1, function(x) sqrt(t(x) %*% Rs.inv %*% x))
+              #d_ij <- values(x.hist)[pres,]
+              ref <- values(sp.ras)[pres,]
+              ref <- mean(apply(ref, 1, norm, "2"))
+              d_ij <- values(x.hist)[pres,] %*% as.matrix(s.dat@co)
+              distances <- apply(d_ij, 1, function(x) sqrt(t(x) %*% Rs.inv %*% x))/ref
               D <- mean(distances, na.rm = T)
               ras <- raster(sp.ras[[1]])
               ras[pres] <- distances
             } else {
               x.mask.h <- mask(x.hist, sp.ras[[1]])
-              ras <- calc(d_ij, function(x) sqrt(t(x) %*% Rs.inv %*% x))
+              ras <- calc(x.mask.h, function(x) sqrt(t(x) %*% Rs.inv %*% x))
               D <- cellStats(ras, mean)
-              #distances <- na.omit(values(ras))
             }
-
-            # if(depart.ras == T){
-            #   ras <- sp.ras[[1]]
-            #   values(ras)[pres] <- d
-            # }
-            # else ras <- NA
 
             depart <- methods::new("departure", call = call, departure = D, departure_ras = ras, present = length(pres))
             return(depart)
           }
+)
+
+setMethod("show",
+          signature = "departure",
+          function(depart){
+  if (!inherits(depart, "departure"))
+    stop("Object of class 'departure' expected")
+  cat("CLIMATIC DEPARTURE")
+  cat("\ndeparture: ")
+  cat(signif(depart@departure, 4))
+  cat("\nnumber of cells present: ")
+  cat(depart@present)
+}
 )

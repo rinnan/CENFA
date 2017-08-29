@@ -8,15 +8,17 @@
 #' @slot present Number of cells in which species is present.
 #' @export
 
-setClass("departure", slots = list(call = "call", departure = "numeric", departure_ras = "Raster", present = "numeric"))
-
-setMethod ("show", "departure", function(object){
-  if (!inherits(object, "departure"))
-    stop("Object of class 'departure' expected")
-  cat("CLIMATIC DEPARTURE")
-  cat("\ndeparture: ")
-  cat(signif(object@departure, 4))
-  cat("\nnumber of presence cells: ")
-  cat(object@present)
-}
-)
+# setClass("departure", slots = list(call = "call", departure = "numeric", departure_ras = "Raster", present = "numeric"))
+#
+# setMethod("show",
+#           signature = "departure",
+#           function(depart){
+#             if (!inherits(depart, "departure"))
+#               stop("Object of class 'departure' expected")
+#             cat("CLIMATIC DEPARTURE")
+#             cat("\ndeparture: ")
+#             cat(signif(depart@departure, 4))
+#             cat("\nnumber of cells present: ")
+#             cat(depart@present)
+#           }
+# )
