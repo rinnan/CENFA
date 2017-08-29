@@ -6,6 +6,7 @@
 \alias{departure,RasterBrick,RasterBrick,SpatialPolygonsDataFrame-method}
 \alias{departure,Raster,Raster,enfa-method}
 \alias{departure,RasterBrick,RasterBrick,cnfa-method}
+\alias{departure,RasterBrick,missing,cnfa-method}
 \title{Climatic departure}
 \usage{
 departure(x.hist, x.fut, s.dat, ...)
@@ -17,6 +18,9 @@ departure(x.hist, x.fut, s.dat, ...)
   depart.ras = TRUE, scale = FALSE)
 
 \S4method{departure}{RasterBrick,RasterBrick,cnfa}(x.hist, x.fut, s.dat,
+  depart.ras = TRUE, scale = FALSE)
+
+\S4method{departure}{RasterBrick,missing,cnfa}(x.hist, x.fut, s.dat,
   depart.ras = TRUE, scale = FALSE)
 }
 \arguments{
@@ -44,9 +48,7 @@ call original function call
 
 departure climatic departure D of species
 
-distances vector of distances d_ij
-
-departure_ras raster of distances d_ij
+departure_ras raster of distances d_i
 
 present number of cells in which species is present
 }

@@ -4,12 +4,11 @@
 #'
 #' @slot call marginality factor. Vector that describes the location of the species Hutchinsonian niche.
 #' @slot departure Standardized magnitude of the marginality factor.
-#' @slot distances specialization factors. Matrix of specializations.
 #' @slot departure_ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
 #' @slot present Number of cells in which species is present.
 #' @export
 
-setClass("departure", slots = list(call = "call", departure = "numeric", distances = "numeric", departure_ras = "Raster", present = "numeric"))
+setClass("departure", slots = list(call = "call", departure = "numeric", departure_ras = "Raster", present = "numeric"))
 
 setMethod ("show", "departure", function(object){
   if (!inherits(object, "departure"))

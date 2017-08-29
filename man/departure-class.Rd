@@ -14,8 +14,6 @@ An object of class \code{departure} is created from performing ecological-niche 
 
 \item{\code{departure}}{Standardized magnitude of the marginality factor.}
 
-\item{\code{distances}}{specialization factors. Matrix of specializations.}
-
 \item{\code{departure_ras}}{Raster* object of transformed climate values, with number of layers equal to nf + 1.}
 
 \item{\code{present}}{Number of cells in which species is present.}

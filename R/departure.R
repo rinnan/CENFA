@@ -15,8 +15,7 @@
 #' @return Returns an S4 object of class \code{cnfa} with the following slots:
 #' @return call original function call
 #' @return departure climatic departure D of species
-#' @return distances vector of distances d_ij
-#' @return departure_ras raster of distances d_ij
+#' @return departure_ras raster of distances d_i
 #' @return present number of cells in which species is present
 #'
 #' @export
@@ -27,7 +26,7 @@ setGeneric("departure", function(x.hist, x.fut, s.dat, ...) {
   standardGeneric("departure")
 })
 
-setClass("departure", slots = list(call = "call", departure = "numeric", distances = "numeric", departure_ras = "Raster", present = "numeric"))
+setClass("departure", slots = list(call = "call", departure = "numeric", departure_ras = "Raster", present = "numeric"))
 
 #' @rdname departure
 setMethod("departure",
@@ -64,7 +63,7 @@ setMethod("departure",
 
 
 
-            depart <- methods::new("departure", call = call, departure = D, distances = d, departure_ras = ras, present = Ns)
+            depart <- methods::new("departure", call = call, departure = D, departure_ras = ras, present = Ns)
             return(depart)
           }
 )
@@ -114,7 +113,7 @@ setMethod("departure",
             # }
             # else ras <- NA
 
-            depart <- methods::new("departure", call = call, departure = D, distances = d, departure_ras = sp.ras, present = length(pres))
+            depart <- methods::new("departure", call = call, departure = D, departure_ras = sp.ras, present = length(pres))
             return(depart)
           }
 )
@@ -165,7 +164,50 @@ setMethod("departure",
             # }
             # else ras <- NA
 
-            depart <- methods::new("departure", call = call, departure = D, distances = distances, departure_ras = ras, present = length(pres))
+            depart <- methods::new("departure", call = call, departure = D, departure_ras = ras, present = length(pres))
+            return(depart)
+          }
+)
+
+#' @rdname departure
+setMethod("departure",
+          signature(x.hist = "RasterBrick", x.fut = "missing", s.dat = "cnfa"),
+          function(x.hist, x.fut, s.dat, depart.ras = TRUE, scale = FALSE){
+
+            call <- match.call()
+            sp.ras <- raster(s.dat)
+            if(!identicalCRS(x.hist, sp.ras)) {stop("climate and species projections do not match")}
+            if(length(raster::intersect(extent(x.hist), extent(sp.ras)))==0) {stop("climate and species data to not overlap")}
+            if(scale) {
+              center <- cellStats(x.hist, mean)
+              sds <- cellStats(x.hist, sd)
+              x.hist <- raster::scale(x.hist, center = center, scale = sds)
+            }
+            x.hist <- crop(x.hist, sp.ras)
+            Rs.inv <- solve(s.dat@s.cov)
+
+            small <- canProcessInMemory(x.hist, 5)
+            if(small){
+              pres <- which(!is.na(values(sp.ras[[1]])))
+              d_ij <- values(x.hist)[pres,]
+              distances <- apply(d_ij, 1, function(x) sqrt(t(x) %*% Rs.inv %*% x))
+              D <- mean(distances, na.rm = T)
+              ras <- raster(sp.ras[[1]])
+              ras[pres] <- distances
+            } else {
+              x.mask.h <- mask(x.hist, sp.ras[[1]])
+              ras <- calc(d_ij, function(x) sqrt(t(x) %*% Rs.inv %*% x))
+              D <- cellStats(ras, mean)
+              #distances <- na.omit(values(ras))
+            }
+
+            # if(depart.ras == T){
+            #   ras <- sp.ras[[1]]
+            #   values(ras)[pres] <- d
+            # }
+            # else ras <- NA
+
+            depart <- methods::new("departure", call = call, departure = D, departure_ras = ras, present = length(pres))
             return(depart)
           }
 )
