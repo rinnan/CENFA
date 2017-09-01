@@ -164,17 +164,18 @@ setMethod("departure",
               x.hist <- raster::scale(x.hist, center = center, scale = sds)
             }
             x.hist <- crop(x.hist, extent(sp.ras))
-            #Rs.inv <- solve(s.dat@s.cov)
-            Rs.inv <- solve(covmat(sp.ras))
+            Rs.inv <- solve(s.dat@s.cov, tol = 1e-20)
+            #Rs.inv <- solve(covmat(sp.ras), tol = 1e-20)
 
             small <- canProcessInMemory(x.hist, 5)
             if(small){
               pres <- which(!is.na(values(sp.ras[[1]])))
               #d_ij <- values(x.hist)[pres,]
-              ref <- values(sp.ras)[pres,]
-              ref <- mean(apply(ref, 1, norm, "2"))
-              d_ij <- values(x.hist)[pres,] %*% as.matrix(s.dat@co)
-              distances <- apply(d_ij, 1, function(x) sqrt(t(x) %*% Rs.inv %*% x))/ref
+              # ref <- values(sp.ras)[pres,]
+              # ref[,1] <- ref[,1] - (s.dat@marginality*1.96)^2
+              # ref <- mean(apply(ref, 1, norm, "2"))
+              d_ij <- values(x.hist)[pres,] #%*% as.matrix(s.dat@co)
+              distances <- apply(d_ij, 1, function(x) sqrt(t(x) %*% Rs.inv %*% x))
               D <- mean(distances, na.rm = T)
               ras <- raster(sp.ras[[1]])
               ras[pres] <- distances
