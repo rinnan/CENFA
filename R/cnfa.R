@@ -37,7 +37,7 @@ setGeneric("cnfa", function(x, s.dat, nf = "BS", mar.type = "BC", ...) {
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "GLcnfa", s.dat = "SpatialPolygonsDataFrame"),
-          function(x, s.dat, field, nf = "BS", mar.type = "BC", ...){
+          function(x, s.dat, field, nf = "BS", mar.type = "BC", filename = "", ...){
 
             call <- match.call()
 
@@ -48,6 +48,11 @@ setMethod("cnfa",
             if(raster::union(ext, extent(s.dat)) != ext) stop("extent of species data not contained within extent of climate data")
             x.crop <- crop(raster(x), extent(s.dat))
             s.dat.ras <- rasterize(s.dat, x.crop, field = field)
+
+            filename <- trim(filename)
+            if (!canProcessInMemory(x.crop) && filename == '') {
+              filename <- rasterTmpFile()
+            }
 
             if(canProcessInMemory(x.crop)){
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.crop))))
@@ -94,7 +99,7 @@ setMethod("cnfa",
               values(ras)[pres, ] <- S %*% co
             } else{
               cat("\nCreating raster of transformed variables...")
-              ras <- calc(x.mask, function(x) {x %*% co}, forceapply = T)
+              ras <- calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename)
             }
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
