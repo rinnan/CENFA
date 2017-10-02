@@ -227,10 +227,19 @@ departure2 <- function(x.hist, s.dat, scale = FALSE, ...){
     ras[pres] <- distances
   } else {
     x.mask.h <- mask(x.hist, sp.ras[[1]])
-    x.mask.h <- calc(x.mask.h, function(x) x %*% as.matrix(s.dat@co))
-    ras <- calc(x.mask.h, function(x) sqrt(t(x) %*% Rs.inv %*% x))
-    D <- cellStats(ras, mean)
+    cl <- makeCluster(getOption("cl.cores", cores))
+    #clusterExport(cl, c("x.mask.h", "calc", "Rs.inv", "s.dat@co", "s"), envir = environment())
+    registerDoSNOW(cl)
+
+    f1 <- function(x) x %*% as.matrix(s.dat@co)
+    x.mask.h2 <- clusterR(x.mask.h, fun = calc, args = list(fun = f1), export = "s.dat@co", m = cores)
+    f2 <- function(x) sqrt(t(x) %*% Rs.inv %*% x)
+    ras <- clusterR(x.mask.h2, fun = calc, args = list(fun = f2), export = "Rs.inv", m = cores)
+    stopCluster(cl)
   }
+  #x.mask.h <- calc(x.mask.h, function(x) x %*% as.matrix(s.dat@co))
+  #ras <- calc(x.mask.h, function(x) sqrt(t(x) %*% Rs.inv %*% x))
+  D <- cellStats(ras, mean)
 
   depart <- methods::new("departure", call = call, departure = D, departure_ras = ras, present = s.dat@present)
   return(depart)

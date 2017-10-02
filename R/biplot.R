@@ -1,3 +1,32 @@
+biplot <- function(x = cnfa, global = GLcnfa, xax = 1, yax = 2, percentage = .99){
+
+
+  percentage <- .99
+  pres <- which(!is.na(values(max(raster(x)))))
+  li <- values(raster(x))[gpres, c(xax, yax)]
+  centroid  <- colMeans(li, na.rm = T)
+  dists <- sweep(li, 2, centroid, "-")
+  dists <- sqrt(rowSums(dists^2))
+  qn <- quantile(dists, probs = percentage)
+  li.qn <- li[which(dists < qn),]
+  #ch <- chull(x = li[, 1], y = li[, 2])
+  ch.qs <- chull(x = li.qn[, 1], y = li.qn[, 2])
+  plot(NA, xlim = c(-20, 50), ylim = c(-.3, 1))
+  #polygon(li[ch,c(xax, yax)])
+  polygon(li.qs[ch.qs, c(xax, yax)], col = "grey60")
+  points(li, pch=".", col = "grey60")
+
+  dat <- scale(ABPRclim)
+  dat <- calc(dat, function(p) p %*% as.matrix(x@co))
+  gpres <- which(!is.na(values(max(dat))))
+  gli <- values(dat)[gpres,]
+  gch <- chull(x = gli[, xax], y = gli[, yax])
+
+  plot(NA, xlim = c(-20, 50), ylim = c(-.3, 3))
+  polygon(gli[gch,c(xax, yax)])
+  polygon(li[ch,c(xax, yax)], col = "grey40")
+}
+
 biplot <- function (x, xax = 1, yax = 2, pts = FALSE, nc = TRUE, percent = 95,
                     clabel = 1, side = c("top", "bottom", "none"), Adensity,
                     Udensity, Aangle, Uangle, Aborder, Uborder, Acol, Ucol, Alty,
