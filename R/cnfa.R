@@ -84,6 +84,7 @@ setMethod("cnfa",
             s <- Re(eigen(H)$values)[-cZ]
             spec <- sqrt(sum(s))/cZ
             s.p <- abs(sum(diag(W)) - sum(diag(H)))
+            s <- c(s[1]*s.p[2]/s.p[1] , s)
             s.p <- c(s.p, s)
             s.p <- abs(s.p)/sum(abs(s.p))
             v <- Re(eigen(H)$vectors)

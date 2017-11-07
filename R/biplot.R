@@ -1,6 +1,5 @@
 biplot <- function(x = cnfa, global = GLcnfa, xax = 1, yax = 2, percentage = .99){
 
-
   percentage <- .99
   pres <- which(!is.na(values(max(raster(x)))))
   li <- values(raster(x))[gpres, c(xax, yax)]
