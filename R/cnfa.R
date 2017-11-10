@@ -82,11 +82,10 @@ setMethod("cnfa",
             y <- z/sqrt(sum(z^2))
             H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
             s <- Re(eigen(H)$values)[-cZ]
-            spec <- sqrt(sum(s))/cZ
             s.p <- abs(sum(diag(W)) - sum(diag(H)))
-            s <- c(s[1]*s.p[2]/s.p[1] , s)
-            s.p <- c(s.p, s)
+            s <- c(s.p, s)
             s.p <- abs(s.p)/sum(abs(s.p))
+            spec <- sqrt(sum(s))/cZ
             v <- Re(eigen(H)$vectors)
             if (nf == "BS") nf <- brStick(s[-1])
             if (nf <= 0 | nf > (cZ - 1)) nf <- 1
