@@ -14,6 +14,7 @@
 #' @param sp.prj character. Spatial projection of species data.
 #' @return Returns an S4 object of class \code{cnfa} with the following slots:
 #' @return call original function call
+#' @return df departure factor d
 #' @return departure climatic departure D of species
 #' @return departure_ras raster of distances d_i
 #' @return present number of cells in which species is present
@@ -26,7 +27,7 @@ setGeneric("departure", function(x.hist, x.fut, s.dat, ...) {
   standardGeneric("departure")
 })
 
-setClass("departure", slots = list(call = "call", departure = "numeric", departure_ras = "Raster", present = "numeric"))
+setClass("departure", slots = list(call = "call", df = d, departure = "numeric", departure_ras = "Raster", present = "numeric"))
 
 #' @rdname departure
 setMethod("departure",
