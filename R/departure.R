@@ -229,7 +229,7 @@ departure2 <- function(x.hist, s.dat, scale = FALSE, cores = 1, ...){
     #D <- mean(distances, na.rm = T)
     ras <- raster(sp.ras[[1]])
     ras[pres] <- distances
-    names(ras) <- names(sp.ras)
+    names(ras) <- paste0("D", 1:nlayers(ras))
   } else {
     x.mask.h <- mask(x.hist, sp.ras[[1]])
     d <- cellStats(x.mask.h, mean)
@@ -241,7 +241,7 @@ departure2 <- function(x.hist, s.dat, scale = FALSE, cores = 1, ...){
 
     f1 <- function(x) norm(x, "2")
     ras <- clusterR(x.mask.h, fun = f1, args = list(fun = f1), ...)
-    names(ras) <- names(sp.ras)
+    names(ras) <- paste0("D", 1:nlayers(ras))
     #f2 <- function(x) sqrt(t(x) %*% Rs.inv %*% x)
     #ras <- clusterR(x.mask.h2, fun = calc, args = list(fun = f2), export = "Rs.inv", m = cores)
     #stopCluster(cl)
