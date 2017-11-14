@@ -251,69 +251,69 @@ departure2 <- function(x.hist, s.dat, scale = FALSE, cores = 1, ...){
   return(depart)
 }
 
-departure2 <- function(x.hist, s.dat, scale = FALSE, cores = 1, filename = "", ...){
-
-  out <- raster(x.hist)
-
-  cl <- getCluster(cores)
-  on.exit( returnCluster() )
-
-  nodes <- length(cl)
-
-  bs <- blockSize(x, minblocks=nodes*4)
-  pb <- pbCreate(bs$n)
-
-  # the function to be used (simple example)
-  f1 <- function(x) x %*% as.matrix(s.dat@co)
-
-  # get all nodes going
-  for (i in 1:nodes) {
-    sendCall(cl[[i]], f1, i, tag=i)
-  }
-
-  filename <- trim(filename)
-  if (!canProcessInMemory(out) & filename == "") {
-    filename <- rasterTmpFile()
-  }
-
-  if (filename != "") {
-    out <- writeStart(out, filename=filename, ... )
-  } else {
-    vv <- matrix(ncol=nrow(out), nrow=ncol(out))
-  }
-  for (i in 1:bs$n) {
-    # receive results from a node
-    d <- recvOneData(cl)
-
-    # error?
-    if (! d$value$success) {
-      stop('cluster error')
-    }
-
-    # which block is this?
-    b <- d$value$tag
-    cat('received block: ',b,'\n'); flush.console();
-
-    if (filename != "") {
-      out <- writeValues(out, d$value$value, bs$row[b])
-    } else {
-      cols <- bs$row[b]:(bs$row[b] + bs$nrows[b]-1)
-      vv[,cols] <- matrix(d$value$value, nrow=out@ncols)
-    }
-
-    # need to send more data?
-    ni <- nodes + i
-    if (ni <= bs$n) {
-      sendCall(cl[[d$node]], clFun, ni, tag=ni)
-    }
-    pbStep(pb)
-  }
-  if (filename != "") {
-    out <- writeStop(out)
-  } else {
-    out <- setValues(out, as.vector(vv))
-  }
-  pbClose(pb)
-
-  return(out)
-}
+# departure2 <- function(x.hist, s.dat, scale = FALSE, cores = 1, filename = "", ...){
+#
+#   out <- raster(x.hist)
+#
+#   cl <- getCluster(cores)
+#   on.exit( returnCluster() )
+#
+#   nodes <- length(cl)
+#
+#   bs <- blockSize(x, minblocks=nodes*4)
+#   pb <- pbCreate(bs$n)
+#
+#   # the function to be used (simple example)
+#   f1 <- function(x) x %*% as.matrix(s.dat@co)
+#
+#   # get all nodes going
+#   for (i in 1:nodes) {
+#     sendCall(cl[[i]], f1, i, tag=i)
+#   }
+#
+#   filename <- trim(filename)
+#   if (!canProcessInMemory(out) & filename == "") {
+#     filename <- rasterTmpFile()
+#   }
+#
+#   if (filename != "") {
+#     out <- writeStart(out, filename=filename, ... )
+#   } else {
+#     vv <- matrix(ncol=nrow(out), nrow=ncol(out))
+#   }
+#   for (i in 1:bs$n) {
+#     # receive results from a node
+#     d <- recvOneData(cl)
+#
+#     # error?
+#     if (! d$value$success) {
+#       stop('cluster error')
+#     }
+#
+#     # which block is this?
+#     b <- d$value$tag
+#     cat('received block: ',b,'\n'); flush.console();
+#
+#     if (filename != "") {
+#       out <- writeValues(out, d$value$value, bs$row[b])
+#     } else {
+#       cols <- bs$row[b]:(bs$row[b] + bs$nrows[b]-1)
+#       vv[,cols] <- matrix(d$value$value, nrow=out@ncols)
+#     }
+#
+#     # need to send more data?
+#     ni <- nodes + i
+#     if (ni <= bs$n) {
+#       sendCall(cl[[d$node]], clFun, ni, tag=ni)
+#     }
+#     pbStep(pb)
+#   }
+#   if (filename != "") {
+#     out <- writeStop(out)
+#   } else {
+#     out <- setValues(out, as.vector(vv))
+#   }
+#   pbClose(pb)
+#
+#   return(out)
+# }
