@@ -14,7 +14,7 @@
 cnfa(x, s.dat, nf = "BS", mar.type = "BC", ...)
 
 \S4method{cnfa}{GLcnfa,SpatialPolygonsDataFrame}(x, s.dat, field, nf = "BS",
-  mar.type = "BC", ...)
+  mar.type = "BC", filename = "", ...)
 
 \S4method{cnfa}{RasterBrick,SpatialPolygonsDataFrame}(x, s.dat, field,
   scale = FALSE, mar.type = "BC", ...)

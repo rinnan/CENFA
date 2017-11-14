@@ -14,14 +14,12 @@ departure(x.hist, x.fut, s.dat, ...)
 \S4method{departure}{RasterBrick,RasterBrick,SpatialPolygonsDataFrame}(x.hist,
   x.fut, s.dat, field, scale = FALSE, depart.ras = TRUE)
 
-\S4method{departure}{Raster,Raster,enfa}(x.hist, x.fut, s.dat,
-  depart.ras = TRUE, scale = FALSE)
+\S4method{departure}{Raster,Raster,enfa}(x.hist, x.fut, s.dat, scale = FALSE)
 
 \S4method{departure}{RasterBrick,RasterBrick,cnfa}(x.hist, x.fut, s.dat,
-  depart.ras = TRUE, scale = FALSE)
+  scale = FALSE)
 
-\S4method{departure}{RasterBrick,missing,cnfa}(x.hist, x.fut, s.dat,
-  depart.ras = TRUE, scale = FALSE)
+\S4method{departure}{RasterBrick,missing,cnfa}(x.hist, s.dat, scale = FALSE)
 }
 \arguments{
 \item{x.hist}{Raster* object, typically a brick or stack of historical climate raster layers}
@@ -45,6 +43,8 @@ function for multiple species, it is recommended that the climate data be scaled
 Returns an S4 object of class \code{cnfa} with the following slots:
 
 call original function call
+
+df departure factor d
 
 departure climatic departure D of species
 
