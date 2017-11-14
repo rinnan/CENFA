@@ -1,30 +1,63 @@
-biplot <- function(x = cnfa, global = GLcnfa, xax = 1, yax = 2, percentage = .99){
+biplot <- function(x = cnfa1, global = GLcnfa, xax = 1, yax = 2, percentage = .99, cores = 1){
 
-  percentage <- .99
-  pres <- which(!is.na(values(max(raster(x)))))
-  li <- values(raster(x))[gpres, c(xax, yax)]
+  y <- raster(gl.cnfa)
+  co <- as.matrix(x@co)[, c(xax, yax)]
+  co[,1] <- co[,1] / sqrt(t(co[,1]) %*% co[,1])
+  xmin <- min(gli.qn[,1])
+  ymin <- min(co[,2])*1.1
+  xmax <- max(gli.qn[,1])
+  ymax <- max(co[,2])*1.1
+  f <- function(p) as.numeric(p %*% co)
+  #filename
+  beginCluster(cores, exclude = "CENFA")
+
+  dat <- clusterR(y, calc, args = list(fun=f), export = "co", progress = "text", style = 3, m = 4)
+  names(dat) <- colnames(co)
+
+  endCluster()
+
+  gpres <- which(!is.na(values(max(dat))))
+  gli <- values(dat)[gpres, ]
+  gli.c <- scale(gli, center = F, scale = apply(gli, 2, sd, na.rm = T))
+  gcentroid  <- colMeans(gli, na.rm = T)
+  gdists <- sweep(gli.c, 2, gcentroid, "-")
+  gdists <- sqrt(rowSums(gdists^2))
+  gqn <- quantile(gdists, probs = percentage)
+  gli.qn <- gli[which(gdists < gqn),]
+  gch <- chull(gli.qn)
+
+  y <- raster(cnfa1)[[c(xax, yax)]]
+  pres <- which(!is.na(values(max(y))))
+  li <- values(y)[pres, ]
+  li[,1] <- li[,1]/sqrt(t(x@mf) %*% x@mf)
+  li.c <- scale(li, center = F, scale = apply(li, 2, sd, na.rm = T))
   centroid  <- colMeans(li, na.rm = T)
-  dists <- sweep(li, 2, centroid, "-")
+  dists <- sweep(li.c, 2, centroid, "-")
   dists <- sqrt(rowSums(dists^2))
   qn <- quantile(dists, probs = percentage)
   li.qn <- li[which(dists < qn),]
-  #ch <- chull(x = li[, 1], y = li[, 2])
-  ch.qs <- chull(x = li.qn[, 1], y = li.qn[, 2])
-  plot(NA, xlim = c(-20, 50), ylim = c(-.3, 1))
-  #polygon(li[ch,c(xax, yax)])
-  polygon(li.qs[ch.qs, c(xax, yax)], col = "grey60")
-  points(li, pch=".", col = "grey60")
+  ch.qs <- chull(li.qn)
 
-  dat <- scale(ABPRclim)
-  dat <- calc(dat, function(p) p %*% as.matrix(x@co))
-  gpres <- which(!is.na(values(max(dat))))
-  gli <- values(dat)[gpres,]
-  gch <- chull(x = gli[, xax], y = gli[, yax])
+  mags <- apply(co, 1, norm, "2") %>% order(decreasing = T) %>% .[1:5]
+  fact <- (ymax - ymin)/(xmax - xmin)
+  xmin <- min(xmin, max(co[,1])/fact*1.05)
 
-  plot(NA, xlim = c(-20, 50), ylim = c(-.3, 3))
-  polygon(gli[gch,c(xax, yax)])
-  polygon(li[ch,c(xax, yax)], col = "grey40")
+  plot(NA, xlim = c(xmin, xmax), ylim = c(ymin, ymax), xlab = names(dat)[1], ylab = names(dat)[2], axes = F, ann = F)
+  #axis(1, at = c(-25,0,25,50,75,100), col = "grey70", col.ticks = "grey70", col.axis = "grey70", )
+  #axis(2, las = 1, at = c(-1,-.5,0,.5,1), col = "grey70", col.ticks = "grey70", col.axis = "grey70")
+  #mtext(names(dat)[1], side = 4, xpd = T, at = ymin, col = "grey70", las = 1, adj = 0, padj = 1)
+  #mtext(names(dat)[2], side = 3, xpd = T, at = range(gli.qn[,1])[1], col = "grey70", padj = 0, adj = 1)
+  polygon(gli.qn[gch, ])
+  polygon(li.qn[ch.qs, ], col = "grey60", xpd = T)
+  abline(v = gcentroid[1], h = gcentroid[2])#, col = "grey70")
+  arrows(x0 = 0, y0 = 0, x1 = co[, 1]/fact, y1 = co[, 2], xpd=T, length = .05)
+  points(centroid[1], centroid[2], pch = 21, bg = "white")
+  text(co[mags,1]*1.05/fact, co[mags,2]*1.05, labels = rownames(co[mags,]), cex = .5, xpd = T)
+  legend("topright",
+         legend = c(as.expression(bquote(xax == .(names(dat)[1]))), as.expression(bquote(yax == .(names(dat)[2]))), as.expression(bquote(~~~p == .(percentage)))),
+         bty = "n")
 }
+
 
 biplot <- function (x, xax = 1, yax = 2, pts = FALSE, nc = TRUE, percent = 95,
                     clabel = 1, side = c("top", "bottom", "none"), Adensity,
