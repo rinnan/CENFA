@@ -216,6 +216,7 @@ departure2 <- function(x.hist, s.dat, scale = FALSE, cores = 1, ...){
     x.hist <- raster::scale(x.hist, center = center, scale = sds)
   }
   x.hist <- crop(x.hist, extent(sp.ras))
+  names(x.hist) <- paste0("D", 1:nlayers(x.hist))
   #Rs.inv <- solve(covmat(sp.ras, ...), tol = 1e-20)
 
   small <- canProcessInMemory(x.hist, 3)
