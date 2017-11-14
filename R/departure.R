@@ -203,7 +203,7 @@ setMethod("show",
 }
 )
 
-departure2 <- function(x.hist, s.dat, scale = FALSE, ...){
+departure2 <- function(x.hist, s.dat, scale = FALSE, cores = 1, ...){
 
   call <- match.call()
   sp.ras <- raster(s.dat)
@@ -238,7 +238,7 @@ departure2 <- function(x.hist, s.dat, scale = FALSE, ...){
     #registerDoSNOW(cl)
 
     f1 <- function(x) norm(x, "2")
-    ras <- clusterR(x.mask.h, fun = f1, args = list(fun = f1))
+    ras <- clusterR(x.mask.h, fun = f1, args = list(fun = f1), ...)
     #f2 <- function(x) sqrt(t(x) %*% Rs.inv %*% x)
     #ras <- clusterR(x.mask.h2, fun = calc, args = list(fun = f2), export = "Rs.inv", m = cores)
     #stopCluster(cl)
