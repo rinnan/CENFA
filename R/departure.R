@@ -27,7 +27,7 @@ setGeneric("departure", function(x.hist, x.fut, s.dat, ...) {
   standardGeneric("departure")
 })
 
-setClass("departure", slots = list(call = "call", df = d, departure = "numeric", departure_ras = "Raster", present = "numeric"))
+setClass("departure", slots = list(call = "call", df = "numeric", departure = "numeric", departure_ras = "Raster", present = "numeric"))
 
 #' @rdname departure
 setMethod("departure",
