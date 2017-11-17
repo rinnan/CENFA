@@ -59,7 +59,8 @@ setMethod("cnfa",
               S <- values(x.crop)[pres,]
               nS <- nrow(S)
               Rg <- x@cov
-              Rs <- crossprod(S, S)/(nS - 1)
+              #Rs <- crossprod(S, S)/(nS - 1)
+              Rs <- cov(S)
               mar <- colSums(S)/nS
             } else {
               x.mask <- mask(x.crop, s.dat.ras)
@@ -99,7 +100,7 @@ setMethod("cnfa",
               values(ras)[pres, ] <- S %*% co
             } else{
               cat("\nCreating raster of transformed variables...")
-              ras <- calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename)
+              ras <- calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, ...)
             }
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
