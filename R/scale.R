@@ -1,4 +1,4 @@
-.scale <- function(x, filename = filename, progress = progress, median = F){
+.scale <- function(x, filename = filename, progress = progress, median = F, overwrite = T){
   if(!median){
     ifelse(canProcessInMemory(x), {
       br <- brick(x)
@@ -19,7 +19,7 @@
       if(progress) cat("Scaling data...")
       t <- raster::scale(x, center = center, scale = sds)
       if(progress) cat("Writing data to file...")
-      br <- writeRaster(t, filename = filename, overwrite = T)
+      br <- writeRaster(t, filename = filename, overwrite = overwrite)
       y <- list(br, center, sds)
     }
     )

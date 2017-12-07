@@ -245,7 +245,7 @@ departure2 <- function(x.hist, s.dat, scale = FALSE, cores = 1, ...){
     names(ras) <- paste0("D", 1:nlayers(ras))
     #f2 <- function(x) sqrt(t(x) %*% Rs.inv %*% x)
     #ras <- clusterR(x.mask.h2, fun = calc, args = list(fun = f2), export = "Rs.inv", m = cores)
-    #stopCluster(cl)
+    endCluster(cl)
   }
   #x.mask.h <- calc(x.mask.h, function(x) x %*% as.matrix(s.dat@co))
   #ras <- calc(x.mask.h, function(x) sqrt(t(x) %*% Rs.inv %*% x))

@@ -12,7 +12,7 @@
 #' @export
 
 
-covmat <- function(x, cores = 1, scale = FALSE, progress = TRUE, sample = TRUE, ...) {
+covmat <- function(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE, sample = TRUE, ...) {
   stopifnot(is.numeric(cores) & cores >= 0)
 
   small <- canProcessInMemory(x)
@@ -31,10 +31,14 @@ covmat <- function(x, cores = 1, scale = FALSE, progress = TRUE, sample = TRUE, 
   for(i in 2:nl) jj <- c(jj, i:nl)
   s <- 1:length(ii)
 
-  if(scale){
+  if(center){
     means <- cellStats(x, stat = 'mean', na.rm = T)
+    x <- (x - means)
+  }
+
+  if(scale){
     sds <- cellStats(x, stat = 'sd', na.rm = T)
-    x <- (x - means)/sds
+    x <- x/sds
   }
 
   if(cores == 1){

@@ -67,14 +67,13 @@ setMethod("cnfa",
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               Rg <- x@cov
               cat("\nCalculating covariance matrix...\n")
-              Rs <- covmat(x.mask, ...)
+              Rs <- covmat(x.mask, center = T, ...)
               mar <- cellStats(x.mask, sum)/length(pres)
             }
 
             cZ <- nlayers(raster(x))
-            if(mar.type == "BC") m <- c(t(mar) %*% mar)
-            if(mar.type == "H")  m <- norm(mar, "2")/1.96
-            if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues")
+            m <- sqrt(c(t(mar) %*% mar))
+            if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
             keep <- (eigRs$values > 1e-09)
             Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
@@ -85,19 +84,20 @@ setMethod("cnfa",
             s <- Re(eigen(H)$values)[-cZ]
             s.p <- abs(sum(diag(W)) - sum(diag(H)))
             s <- c(s.p, s)
-            s.p <- abs(s.p)/sum(abs(s.p))
+            s.p <- abs(s)/sum(abs(s))
             spec <- sqrt(sum(s))/cZ
             v <- Re(eigen(H)$vectors)
             if (nf == "BS") nf <- brStick(s[-1])
             if (nf <= 0 | nf > (cZ - 1)) nf <- 1
             co <- matrix(nrow = cZ, ncol = nf + 1)
-            co[, 1] <- mar
+            co[, 1] <- mar/sqrt(t(mar) %*% mar)
             u <- as.matrix((Rs12 %*% v)[, 1:nf])
             norw <- sqrt(diag(t(u) %*% u))
             co[, -1] <- sweep(u, 2, norw, "/")
             if(canProcessInMemory(x.crop)){
               ras <- brick(x.crop, nl = nf + 1)
               values(ras)[pres, ] <- S %*% co
+              names(ras) <- names(raster(x))
             } else{
               cat("\nCreating raster of transformed variables...")
               ras <- calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, ...)

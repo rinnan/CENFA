@@ -22,7 +22,7 @@ setGeneric("GLcnfa", function(x, ...) {
 #' @rdname GLcnfa
 setMethod("GLcnfa",
           signature(x = "RasterBrick"),
-          function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1){
+          function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1, ...){
 
             out <- brick(x)
 
@@ -40,7 +40,8 @@ setMethod("GLcnfa",
             }
 
             if (scale){
-              Z <- .scale(x, filename = filename, progress = progress)
+              Z <- .scale(x, filename = filename, progress = progress, ...)
+              names(Z[[1]]) <- names(x)
               x <- Z[[1]]
               center <- Z[[2]]
               sds <- Z[[3]]
