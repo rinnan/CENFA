@@ -14,9 +14,8 @@
 #' @slot present numeric. Number of raster cells in which species is present.
 #' @export
 
-setClass("cnfa", slots = list(call = "call", nf = "numeric", mf = "numeric", marginality = "numeric", sf = "numeric",
-                           specialization = "numeric", s.prop = "numeric", co = "data.frame",
-                           ras = "Raster", s.cov = "matrix", present = "numeric"))
+setClass("cnfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", sf = "numeric",
+                           sensitivity = "numeric", p.spec = "numeric", co = "matrix", cov = "matrix", present = "numeric", ras = "Raster"))
 
 setMethod ("show", "cnfa", function(object){
   if (!inherits(object, "cnfa"))
@@ -26,8 +25,8 @@ setMethod ("show", "cnfa", function(object){
   cat(object@call)
   cat("\nMarginality: ")
   cat(signif(object@marginality, 4))
-  cat("\nSpecialization: ")
-  cat(signif(object@specialization, 4))
+  cat("\nSensitivity: ")
+  cat(signif(object@sensitivity, 4))
   cat("\nEigenvalues of specialization: ")
   cat("\n")
   v <- paste0(100*object@s.prop, "%")

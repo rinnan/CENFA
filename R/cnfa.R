@@ -30,23 +30,24 @@
 #'
 #'
 
-setGeneric("cnfa", function(x, s.dat, nf = "BS", mar.type = "BC", ...) {
+setGeneric("cnfa", function(x, s.dat, field, filename = "", ...) {
   standardGeneric("cnfa")
 })
 
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "GLcnfa", s.dat = "SpatialPolygonsDataFrame"),
-          function(x, s.dat, field, nf = "BS", mar.type = "BC", filename = "", ...){
+          function(x, s.dat, field, ...){
 
             call <- match.call()
 
             if(!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
-            ext <- extent(raster(x))
+            ras <- raster(x)
+            ext <- extent(ras)
             if(is.null(raster::intersect(ext, extent(s.dat)))) stop("climate and species data do not overlap")
 
             if(raster::union(ext, extent(s.dat)) != ext) stop("extent of species data not contained within extent of climate data")
-            x.crop <- crop(raster(x), extent(s.dat))
+            x.crop <- crop(ras, extent(s.dat))
             s.dat.ras <- rasterize(s.dat, x.crop, field = field)
 
             filename <- trim(filename)
@@ -59,7 +60,6 @@ setMethod("cnfa",
               S <- values(x.crop)[pres,]
               nS <- nrow(S)
               Rg <- x@cov
-              #Rs <- crossprod(S, S)/(nS - 1)
               Rs <- cov(S)
               mar <- colSums(S)/nS
             } else {
@@ -71,7 +71,7 @@ setMethod("cnfa",
               mar <- cellStats(x.mask, sum)/length(pres)
             }
 
-            cZ <- nlayers(raster(x))
+            cZ <- nlayers(ras)
             m <- sqrt(c(t(mar) %*% mar))
             if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
@@ -85,63 +85,34 @@ setMethod("cnfa",
             s.p <- abs(sum(diag(W)) - sum(diag(H)))
             s <- c(s.p, s)
             s.p <- abs(s)/sum(abs(s))
-            spec <- sqrt(sum(s))/cZ
+
+            #sens <- sqrt(sum(s))/cZ
             v <- Re(eigen(H)$vectors)
-            if (nf == "BS") nf <- brStick(s[-1])
-            if (nf <= 0 | nf > (cZ - 1)) nf <- 1
-            co <- matrix(nrow = cZ, ncol = nf + 1)
+            #if (nf == "BS") nf <- brStick(s[-1])
+            #if (nf <= 0 | nf > (cZ - 1)) nf <- 1
+            co <- matrix(nrow = cZ, ncol = cZ)
             co[, 1] <- mar/sqrt(t(mar) %*% mar)
-            u <- as.matrix((Rs12 %*% v)[, 1:nf])
+            u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
             norw <- sqrt(diag(t(u) %*% u))
             co[, -1] <- sweep(u, 2, norw, "/")
-            if(canProcessInMemory(x.crop)){
-              ras <- brick(x.crop, nl = nf + 1)
-              values(ras)[pres, ] <- S %*% co
-              names(ras) <- names(raster(x))
-            } else{
-              cat("\nCreating raster of transformed variables...")
-              ras <- calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, ...)
-            }
-            co <- as.data.frame(co)
-            names(co) <- c("Marg", paste0("Spec", (1:nf)))
-            row.names(co) <- names(raster(x))
+            sf <- abs(co) %*% s.p
+            sf <- as.numeric(sf)
+            names(sf) <- names(ras)
+            sens <- norm(sf, "2")
+            nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
+             if(canProcessInMemory(x.crop)){
+               s.ras <- brick(x.crop)
+               values(s.ras)[pres, ] <- S %*% co
+               names(s.ras) <- nm
+             } else{
+               cat("\nCreating raster of factors...")
+               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
+             }
+            #co <- as.data.frame(co)
+            colnames(co) <- c("Marg", paste0("Spec", (1:(cZ-1))))
+            rownames(co) <- names(ras)
 
-            # pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(x.crop[[1]])))
-            # S <- values(x.crop)[pres, ]
-            # rZ <- x@ncells
-            # cZ <- nlayers(x@global_ras)
-            # rS <- nrow(S)
-            # mar <- colSums(S)/rS
-            # if(mar.type == "BC") m <- c(t(mar) %*% mar)
-            # if(mar.type == "H")  m <- norm(mar, "2")/1.96
-            # Rg <- x@cov
-            # Rs <- crossprod(S,S/rS)
-            # eigRs <- eigen(Rs)
-            # keep <- (eigRs$values > 1e-09)
-            # Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
-            # W <- Rs12 %*% Rg %*% Rs12
-            # z <- Rs12 %*% mar
-            # y <- z/sqrt(sum(z^2))
-            # H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
-            # s <- eigen(H)$values[-cZ]
-            # s.p <- abs(s)/sum(abs(s))
-            # s.p[1] <- sum(diag(W)) - sum(diag(H))
-            # spec <- sqrt(sum(s))/cZ
-            # v <- eigen(H)$vectors
-            # if (nf<=0 | nf>(cZ-1)){nf <- 1}
-            # co <- matrix(nrow = cZ, ncol = nf + 1)
-            # u <- (Rs12 %*% v)[, 1:nf]
-            # norw <- sqrt(diag(t(as.matrix(u)) %*% as.matrix(u)))
-            # co[, 2:(nf + 1)] <- sweep(as.matrix(u), 2, norw, "/")
-            # co[, 1] <- mar
-            # ras <- brick(x.crop, nl = nf + 1)
-            # values(ras)[pres,] <- S %*% co
-            # #names(ras) <- c("Marg", paste0("Spec", (1:nf)))
-            # co <- as.data.frame(co)
-            # names(co) <- c("Marg", paste0("Spec", (1:nf)))
-            # row.names(co) <- names(x@global_ras)
-
-            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, s.cov = Rs, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
             return(cnfa)
           }
 )
