@@ -4,7 +4,8 @@
 \alias{covmat}
 \title{Efficient calculation of covariance matrices}
 \usage{
-covmat(x, cores = 1, scale = FALSE, progress = TRUE, sample = TRUE, ...)
+covmat(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE,
+  sample = TRUE, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of climate raster layers}

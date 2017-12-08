@@ -11,7 +11,7 @@
 GLcnfa(x, ...)
 
 \S4method{GLcnfa}{RasterBrick}(x, scale = FALSE, filename = "",
-  progress = TRUE, cores = 1)
+  progress = TRUE, cores = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of climate raster layers}
