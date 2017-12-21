@@ -1,3 +1,5 @@
+#' @keywords internal
+
 .covij <- function(x, i, j, n = ncell(x), sample = T){
   sm <- canProcessInMemory(raster(x, layer = i))
   if(sm){

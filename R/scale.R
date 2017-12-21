@@ -1,3 +1,5 @@
+#' @keywords internal
+
 .scale <- function(x, filename = filename, progress = progress, median = F, overwrite = T){
   if(!median){
     ifelse(canProcessInMemory(x), {

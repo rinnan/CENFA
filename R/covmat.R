@@ -12,7 +12,7 @@
 #' @export
 
 
-covmat <- function(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE, sample = TRUE, ...) {
+covmat <- function(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE, sample = TRUE) {
   stopifnot(is.numeric(cores) & cores >= 0)
 
   small <- canProcessInMemory(x)

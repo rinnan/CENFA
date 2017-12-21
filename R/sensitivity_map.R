@@ -7,7 +7,7 @@
 #' @param cores numeric. Number of cores to use for calculation (optional).
 #' @param filename character. Output filename (optional).
 #' @param ... Additional arguments for file writing as for \code{\link[raster]{writeRaster}}.
-#' @details The values of the sensitivity raster are calculated by centering the habitat's climate data around \eqn{\strong{m}} and projecting onto the sensitivity factor \eqn{\strong{s}}, given by formula \deqn{|\strong{S - m}|\strong{s}.}
+#' @details The values of the sensitivity raster are calculated by centering the habitat's climate data around \strong{m} and projecting onto the sensitivity factor \strong{s}, given by formula  |\bold{S} - \bold{m}|\bold{s}.
 #' @return RasterLayer.
 #' @export
 
