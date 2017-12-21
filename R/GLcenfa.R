@@ -38,7 +38,7 @@ setMethod("GLcenfa",
               filename <- rasterTmpFile()
             }
 
-            filename <- raster:::.fullFilename(filename, expand = T)
+            filename <- .fullFilename(filename, expand = T)
 
             if (!file.exists(dirname(filename))) {
               stop("Attempting to write a file to a path that does not exist:\n  ", dirname(filename))
@@ -93,7 +93,7 @@ setMethod("GLcenfa",
               filename <- rasterTmpFile()
             }
 
-            filename <- raster:::.fullFilename(filename, expand = T)
+            filename <- .fullFilename(filename, expand = T)
 
             if (!file.exists(dirname(filename))) {
               stop("Attempting to write a file to a path that does not exist:\n  ", dirname(filename))

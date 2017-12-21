@@ -7,15 +7,15 @@ Author: D. Scott Rinnan
 Maintainer: Who to complain to <rinnan@uw.edu>
 Description: Performs climate- and ecological-niche factor analysis of spatial data. Processing of large files and parallelization is supported.
 Depends: 
-        methods,
         R (>= 3.0.0),
-        foreach,
 	raster,
-        sp,
-	doSNOW (>= 1.0.14),
-        snow
+        sp
 Imports:
-        pbapply    
+        pbapply, 
+        methods,
+        snow,
+        doSNOW (>= 1.0.14),
+        foreach
 License: GPL (>= 3)
 LazyData: TRUE
 RoxygenNote: 6.0.1

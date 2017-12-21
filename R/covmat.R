@@ -16,13 +16,13 @@
 covmat <- function(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE, sample = TRUE) {
   stopifnot(is.numeric(cores) & cores >= 0)
 
-  small <- canProcessInMemory(x)
+  small <- raster::canProcessInMemory(x)
   if(small){
-    dat <- na.omit(values(x))
+    dat <- stats::na.omit(raster::values(x))
     mat <- cov(dat, method = "pearson")
     return(mat)
   }
-  nl <- nlayers(x)
+  nl <- raster::nlayers(x)
   mat <- matrix(NA, nrow=nl, ncol=nl)
   colnames(mat) <- rownames(mat) <- names(x)
 
@@ -33,12 +33,12 @@ covmat <- function(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE,
   s <- 1:length(ii)
 
   if(center){
-    means <- cellStats(x, stat = 'mean', na.rm = T)
+    means <- raster::cellStats(x, stat = 'mean', na.rm = T)
     x <- (x - means)
   }
 
   if(scale){
-    sds <- cellStats(x, stat = 'sd', na.rm = T)
+    sds <- raster::cellStats(x, stat = 'sd', na.rm = T)
     x <- x/sds
   }
 
@@ -50,23 +50,23 @@ covmat <- function(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE,
   }
 
   if(cores > 1){
-    cl <- makeCluster(getOption("cl.cores", cores))
-    clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "nl", "canProcessInMemory", "values"), envir = environment())
-    registerDoSNOW(cl)
+    cl <- snow::makeCluster(getOption("cl.cores", cores))
+    snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "nl", "canProcessInMemory", "values"), envir = environment())
+    doSNOW::registerDoSNOW(cl)
     if(progress){
-      pb <- txtProgressBar(min = 0, max = length(s), style = 3)
-      progress <- function(n) setTxtProgressBar(pb, n)
+      pb <- utils::txtProgressBar(min = 0, max = length(s), style = 3)
+      progress <- function(n) utils::setTxtProgressBar(pb, n)
       opts <- list(progress = progress)
-      result <- foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
+      result <- foreach::foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
         do.call(.covij, list(x = x, i = ii[p], j = jj[p]))
       }
       close(pb)
     }   else if(!progress){
-      result <- foreach(p = s, .combine = c, .options.snow = opts) %dopar% {
+      result <- foreach::foreach(p = s, .combine = c, .options.snow = opts) %dopar% {
         do.call(.covij, list(x = x, i = ii[p], j = jj[p]))
       }
     }
-    stopCluster(cl)
+    snow::stopCluster(cl)
   }
 
   for(p in s){

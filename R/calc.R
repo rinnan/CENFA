@@ -265,3 +265,14 @@
   }
   return(fun)
 }
+
+.fullFilename <- function (x, expand = FALSE) {
+  x <- trim(x)
+  if (identical(basename(x), x)) {
+    x <- file.path(getwd(), x)
+  }
+  if (expand) {
+    x <- path.expand(x)
+  }
+  return(x)
+}

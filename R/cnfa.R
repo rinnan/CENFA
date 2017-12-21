@@ -27,9 +27,9 @@
 #' @return ras Raster* object of transformed climate values.
 #' @export
 #'
-#' @importFrom raster brick canProcessInMemory cellStats crop extent mask nlayers raster rasterize rasterTmpFile setValues trim values
-#' @importFrom sp CRS identicalCRS SpatialPointsDataFrame SpatialPolygonsDataFrame
+#' @import sp
 #' @importFrom stats cov
+#' @import raster
 
 setGeneric("cnfa", function(x, s.dat, field, filename = "", ...) {
   standardGeneric("cnfa")
@@ -100,7 +100,7 @@ setMethod("cnfa",
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
              if (raster::canProcessInMemory(x.crop)){
                s.ras <- raster::brick(x.crop)
-               raster::values(s.ras)[pres, ] <- S %*% co
+               raster::setValues(s.ras, S %*% co, index = pres)
                names(s.ras) <- nm
              } else {
                cat("\nCreating factor rasters...")
@@ -179,7 +179,8 @@ setMethod("cnfa",
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (raster::canProcessInMemory(x)){
               s.ras <- brick(x)
-              raster::values(s.ras)[pres, ] <- S %*% co
+              #raster::values(s.ras)[pres, ] <- S %*% co
+              raster::setValues(s.ras, S %*% co, index = pres)
               names(s.ras) <- nm
             } else {
               cat("\nCreating factor rasters...")
@@ -263,7 +264,8 @@ setMethod("cnfa",
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if(canProcessInMemory(x)){
               s.ras <- brick(x)
-              values(s.ras)[pres, ] <- S %*% co
+              #values(s.ras)[pres, ] <- S %*% co
+              raster::setValues(s.ras, S %*% co, index = pres)
               names(s.ras) <- nm
             } else{
               cat("\nCreating factor rasters...")
@@ -347,7 +349,8 @@ setMethod("cnfa",
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if(canProcessInMemory(x)){
               s.ras <- brick(x)
-              values(s.ras)[pres, ] <- S %*% co
+              #values(s.ras)[pres, ] <- S %*% co
+              raster::setValues(s.ras, S %*% co, index = pres)
               names(s.ras) <- nm
             } else{
               cat("\nCreating factor rasters...")
@@ -418,7 +421,8 @@ setMethod("cnfa",
             ras <- brick(raster(s.dat.ras), nl = nf + 1)
             ss <- crop(s.dat.ras, extent(s.dat))
             pres.c <- which(!is.na(values(ss)))
-            values(ras)[pres.c, ] <- S %*% co
+            #values(ras)[pres.c, ] <- S %*% co
+            raster::setValues(ras, S %*% co, index = pres.c)
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- names(x)

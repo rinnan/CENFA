@@ -34,20 +34,20 @@ setMethod("enfa",
           function(x, s.dat, field,
                    nf = 1, scale = FALSE, ...){
             call <- match.call()
-            if(!identicalCRS(x, s.dat)) {stop("spatial projections of environmental and species data do not match")}
+            if(!sp::identicalCRS(x, s.dat)) {stop("spatial projections of environmental and species data do not match")}
             if(scale == TRUE) {x <- raster::scale(x)}
 
-            x.mask <- mask(x, s.dat)
+            x.mask <- raster::mask(x, s.dat)
             gpres <- which(!is.na(values(x[[1]])))
-            s.dat.ras <- rasterize(s.dat, x, field = field)
+            s.dat.ras <- raster::rasterize(s.dat, x, field = field)
             pres <- which(!is.na(values(s.dat.ras)))
             prb <- c(s.dat.ras[pres])
             pr <- prb/sum(prb)
 
-            small <- canProcessInMemory(x)
+            small <- raster::canProcessInMemory(x)
             if(small){
-              dat <- values(x)[gpres, ]
-              pres.dat <- values(x.mask)[pres, ]
+              dat <- raster::values(x)[gpres, ]
+              pres.dat <- raster::values(x.mask)[pres, ]
               center <- colMeans(dat)
               Z <- sweep(dat, 2, center)
               S <- sweep(pres.dat, 2, center)
@@ -57,11 +57,11 @@ setMethod("enfa",
               Rs <- crossprod(S,S/nS)
 
             } else {
-              center <- cellStats(x, mean)
-              Z <- calc(x, fun = function(x) {x - center})
-              S <- calc(x.mask, fun = function(x) {x - center})
-              nZ <- nlayers(Z)
-              nS <- nlayers(S)
+              center <- raster::cellStats(x, mean)
+              Z <- raster::calc(x, fun = function(x) {x - center})
+              S <- raster::calc(x.mask, fun = function(x) {x - center})
+              nZ <- raster::nlayers(Z)
+              nS <- raster::nlayers(S)
               Rg <- covmat(Z, sample = F, ...)
               Rs <- covmat(S, ...)
             }
@@ -86,16 +86,16 @@ setMethod("enfa",
             norw <- sqrt(diag(t(as.matrix(u)) %*% as.matrix(u)))
             co[, 2:(nf + 1)] <- sweep(as.matrix(u), 2, norw, "/")
             co[, 1] <- mar
-            if(return_values == TRUE){
+            #if(return_values == TRUE){
               li <- S %*% co
               ras <- raster::subset(x.mask, 1:(nf+1))
-              values(ras)[pres, ] <- li
+              raster::values(ras)[pres, ] <- li
               names(ras) <- c("Marg", paste0("Spec", (1:nf)))
-            } else {ras <- NA}
+            #} else {ras <- NA}
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- dimnames(x)[[2]]
-            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
+            enfa <- methods::new("enfa", call = call, mf = mar, marginality = mar, sf = s, sensitivity = spec, p.spec = spec, co = co, cov = Rs, present = length(pres), ras = ras)
             return(enfa)
           }
 )
@@ -106,20 +106,20 @@ setMethod("enfa",
           function(x, s.dat, field,
                    nf = 1, scale = FALSE, fun = "count", ...){
             #call <- match.call()
-            if(!identicalCRS(x, s.dat)) {stop("spatial projections of environmental and species data do not match")}
+            if(!sp::identicalCRS(x, s.dat)) {stop("spatial projections of environmental and species data do not match")}
             if(scale == TRUE) {x <- raster::scale(x)}
 
-            x.mask <- mask(x, s.dat)
+            x.mask <- raster::mask(x, s.dat)
             gpres <- which(!is.na(values(x[[1]])))
-            s.dat.ras <- rasterize(s.dat, x.mask, field = field, fun = fun)
+            s.dat.ras <- raster::rasterize(s.dat, x.mask, field = field, fun = fun)
             pres <- which(!is.na(values(s.dat.ras)))
             prb <- c(s.dat.ras[pres])
             pr <- prb/sum(prb)
 
-            small <- canProcessInMemory(x)
+            small <- raster::canProcessInMemory(x)
             if(small){
               dat <- values(x)[gpres, ]
-              pres.dat <- values(x.mask)[pres, ]
+              pres.dat <- raster::values(x.mask)[pres, ]
               center <- colMeans(dat)
               Z <- sweep(dat, 2, center)
               S <- sweep(pres.dat, 2, center)
@@ -129,11 +129,11 @@ setMethod("enfa",
               Rs <- crossprod(S,S/nS)
 
             } else {
-              center <- cellStats(x, mean)
-              Z <- calc(x, fun = function(x) {x - center})
-              S <- calc(x.mask, fun = function(x) {x - center})
-              nZ <- nlayers(Z)
-              nS <- nlayers(S)
+              center <- raster::cellStats(x, mean)
+              Z <- raster::calc(x, fun = function(x) {x - center})
+              S <- raster::calc(x.mask, fun = function(x) {x - center})
+              nZ <- raster::nlayers(Z)
+              nS <- raster::nlayers(S)
               Rg <- covmat(Z, sample = F, ...)
               Rs <- covmat(S, ...)
             }
@@ -158,16 +158,16 @@ setMethod("enfa",
             norw <- sqrt(diag(t(as.matrix(u)) %*% as.matrix(u)))
             co[, 2:(nf + 1)] <- sweep(as.matrix(u), 2, norw, "/")
             co[, 1] <- mar
-            if(return_values == TRUE){
+            #if(return_values == TRUE){
               li <- S %*% co
               ras <- raster::subset(x.mask, 1:(nf+1))
-              values(ras)[pres, ] <- li
+              raster::values(ras)[pres, ] <- li
               names(ras) <- c("Marg", paste0("Spec", (1:nf)))
-            } else {ras <- NA}
+            #} else {ras <- NA}
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- dimnames(x)[[2]]
-            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
+            enfa <- methods::new("enfa", call = call, mf = mar, marginality = mar, sf = s, sensitivity = spec, p.spec = spec, co = co, cov = Rs, present = length(pres), ras = ras)
             return(enfa)
           }
 )
