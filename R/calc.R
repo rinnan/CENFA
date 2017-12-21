@@ -1,16 +1,16 @@
 #' @keywords internal
-#' @importFrom doSNOW registerDoSNOW
-#' @importFrom foreach %dopar% foreach
+# @importFrom doSNOW registerDoSNOW
+# @importFrom foreach %dopar% foreach
 #' @importFrom raster blockSize extension filename raster getValues ncell pbClose pbCreate pbStep setValues writeRaster writeStart writeStop writeValues
-#' @importFrom snow makeCluster clusterExport stopCluster
-#' @importFrom stats cov na.omit
-#' @importFrom utils setTxtProgressBar txtProgressBar
+# @importFrom snow makeCluster clusterExport stopCluster
+# @importFrom stats cov na.omit
+# @importFrom utils setTxtProgressBar txtProgressBar
 
 .calc <- function(x, fun, filename='', na.rm, forcefun=FALSE, forceapply=FALSE, names, ...) {
 
   nl <- nlayers(x)
 
-  test <- raster:::.calcTest(x[1:5], fun, na.rm, forcefun, forceapply)
+  test <- .calcTest(x[1:5], fun, na.rm, forcefun, forceapply)
   doapply <- test$doapply
   makemat <- test$makemat
   trans <- test$trans
@@ -24,10 +24,10 @@
 
   names(out) <- names
 
-  fun <- raster:::.makeTextFun(fun)
+  fun <- .makeTextFun(fun)
   if (class(fun) == 'character') {
     doapply <- FALSE
-    fun <- raster:::.getRowFun(fun)
+    fun <- .getRowFun(fun)
   }
 
   filename <- trim(filename)
@@ -104,4 +104,164 @@
   out <- writeStop(out)
   pbClose(pb)
   return(out)
+}
+
+.calcTest <- function (tstdat, fun, na.rm, forcefun = FALSE, forceapply = FALSE) {
+  if (forcefun & forceapply) {
+    forcefun <- FALSE
+    forceapply <- FALSE
+  }
+  trans <- FALSE
+  doapply <- FALSE
+  makemat <- FALSE
+  nl <- NCOL(tstdat)
+  if (nl == 1) {
+    if (forceapply) {
+      doapply <- TRUE
+      makemat <- TRUE
+      tstdat <- matrix(tstdat, ncol = 1)
+      if (missing(na.rm)) {
+        test <- try(apply(tstdat, 1, fun), silent = TRUE)
+      }
+      else {
+        test <- try(apply(tstdat, 1, fun, na.rm = na.rm),
+                    silent = TRUE)
+      }
+      if (length(test) < length(tstdat) | class(test) ==
+          "try-error") {
+        stop("cannot forceapply this function")
+      }
+      if (is.matrix(test)) {
+        if (ncol(test) > 1) {
+          trans <- TRUE
+        }
+      }
+    }
+    else {
+      if (!missing(na.rm)) {
+        test <- try(fun(tstdat, na.rm = na.rm), silent = TRUE)
+        if (class(test) == "try-error") {
+          test <- try(apply(tstdat, 1, fun, na.rm = na.rm),
+                      silent = TRUE)
+          doapply <- TRUE
+          if (class(test) == "try-error") {
+            stop("cannot use this function. Perhaps add '...' or 'na.rm' to the function arguments?")
+          }
+          if (is.matrix(test)) {
+            if (ncol(test) > 1) {
+              trans <- TRUE
+            }
+          }
+        }
+      }
+      else {
+        test <- try(fun(tstdat), silent = TRUE)
+        if (length(test) < length(tstdat) | class(test) ==
+            "try-error") {
+          doapply <- TRUE
+          makemat <- TRUE
+          tstdat <- matrix(tstdat, ncol = 1)
+          test <- try(apply(tstdat, 1, fun), silent = TRUE)
+          if (class(test) == "try-error") {
+            stop("cannot use this function")
+          }
+          if (is.matrix(test)) {
+            if (ncol(test) > 1) {
+              trans <- TRUE
+            }
+          }
+        }
+      }
+    }
+  }
+  else {
+    if (forcefun) {
+      doapply <- FALSE
+      test <- fun(tstdat)
+    }
+    else {
+      doapply <- TRUE
+      if (!missing(na.rm)) {
+        test <- try(apply(tstdat, 1, fun, na.rm = na.rm),
+                    silent = TRUE)
+        if (class(test) == "try-error") {
+          doapply <- FALSE
+          test <- try(fun(tstdat, na.rm = na.rm), silent = TRUE)
+          if (class(test) == "try-error") {
+            stop("cannot use this function. Perhaps add '...' or 'na.rm' to the function arguments?")
+          }
+        }
+        else if (is.matrix(test)) {
+          trans <- TRUE
+        }
+      }
+      else {
+        test <- try(apply(tstdat, 1, fun), silent = TRUE)
+        if (class(test) == "try-error") {
+          doapply <- FALSE
+          test <- try(fun(tstdat), silent = TRUE)
+          if (class(test) == "try-error") {
+            stop("cannot use this function")
+          }
+        }
+        else if (is.matrix(test)) {
+          trans <- TRUE
+        }
+      }
+    }
+  }
+  if (trans) {
+    test <- t(test)
+    test <- ncol(test)
+  }
+  else {
+    test <- length(test)/5
+  }
+  nlout <- as.integer(test)
+  list(doapply = doapply, makemat = makemat, trans = trans,
+       nlout = nlout)
+}
+
+.getRowFun <- function (fun) {
+  if (fun == "mean") {
+    return(rowMeans)
+  }
+  else if (fun == "sum") {
+    return(rowSums)
+  }
+  else if (fun == "min") {
+    return(.rowMin)
+  }
+  else if (fun == "max") {
+    return(.rowMax)
+  }
+  else {
+    stop("unknown fun")
+  }
+}
+
+.makeTextFun <- function (fun) {
+  if (class(fun) != "character") {
+    if (is.primitive(fun)) {
+      test <- try(deparse(fun)[[1]], silent = TRUE)
+      if (test == ".Primitive(\"sum\")") {
+        fun <- "sum"
+      }
+      else if (test == ".Primitive(\"min\")") {
+        fun <- "min"
+      }
+      else if (test == ".Primitive(\"max\")") {
+        fun <- "max"
+      }
+    }
+    else {
+      test1 <- isTRUE(try(deparse(fun)[2] == "UseMethod(\"mean\")",
+                          silent = TRUE))
+      test2 <- isTRUE(try(fun@generic == "mean", silent = TRUE))
+      if (test1 | test2) {
+        fun <- "mean"
+      }
+    }
+  }
+  return(fun)
 }

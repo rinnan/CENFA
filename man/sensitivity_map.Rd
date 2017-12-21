@@ -2,8 +2,6 @@
 % Please edit documentation in R/sensitivity_map.R
 \name{sensitivity_map}
 \alias{sensitivity_map}
-\alias{print.cnfa,}
-\alias{show.cnfa}
 \title{Create a sensitivity map}
 \usage{
 sensitivity_map(cnfa, cores = 1, filename = "", ...)

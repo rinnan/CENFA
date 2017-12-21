@@ -4,12 +4,13 @@
 #'
 #' @param x Raster* object, typically a brick or stack of climate raster layers
 #' @param cores numeric. Number of CPU cores you wish to utilize for parallel processing.
-#' @param scale logical. If \code{TRUE}, the Raster* object will get centered and scaled before calculating the covariance.
+#' @param center logical. If \code{TRUE}, the Raster* object will get centered before calculating the covariance.
+#' @param scale logical. If \code{TRUE}, the Raster* object will get scaled before calculating the covariance.
 #' @param progress logical. If \code{TRUE}, a progress bar will be displayed.
 #' @param sample logical. If \code{TRUE}, the sample covariance is calculated with a denominator of $n-1$.
-#' @param ... Additional arguments.
 #' @return Returns a matrix with the same row and column names as the layers of the Raster* object.
 #' @export
+#' @importFrom pbapply pbsapply pboptions
 
 
 covmat <- function(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE, sample = TRUE) {
@@ -43,8 +44,8 @@ covmat <- function(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE,
 
   if(cores == 1){
     if(progress){
-      pboptions(type = "txt", char = "=", txt.width = NA)
-      result <- pbsapply(s, function(p) do.call(.covij, list(x = x, i = ii[p], j = jj[p])))
+      pbapply::pboptions(type = "txt", char = "=", txt.width = NA)
+      result <- pbapply::pbsapply(s, function(p) do.call(.covij, list(x = x, i = ii[p], j = jj[p])))
     } else {result <- sapply(s, function(p) do.call(.covij, list(x = x, i = ii[p], j = jj[p])))}
   }
 

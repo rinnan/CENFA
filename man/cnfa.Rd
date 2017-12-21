@@ -34,14 +34,20 @@ cnfa(x, s.dat, field, filename = "", ...)
 
 \item{s.dat}{Spatial* object detailing species presence or abundance}
 
-\item{field}{field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{\link{raster::rasterize}}.}
+\item{field}{field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}.}
 
-\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link{raster::rasterize}}.}
+\item{filename}{character. Optional filename to save the Raster* output to file. If this is not provided, a temporary file will be created for large \code{x}.}
+
+\item{...}{Additonal arguments for rasterizing as for \code{\link[raster]{rasterize}}.}
+
+\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link[raster]{rasterize}}.}
 
 \item{scale}{logical. If \code{TRUE} then the values of \code{x} will
 get centered and scaled. Depending on the resolution of the climate data and the
 extent of the study area, this can be quite time consuming. If running this
 function for multiple species, it is recommended that the data be scaled beforehand.}
+
+\item{prj}{character. proj4string denoting projection of species observation data.}
 }
 \value{
 Returns an S4 object of class \code{cnfa} with the following components:

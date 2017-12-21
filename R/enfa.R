@@ -6,19 +6,20 @@
 #' @param x Raster* object, typically a brick or stack of ecological raster layers
 #' @param s.dat SpatialPolygons* object detailing species presence or abundance
 #' @param field field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.
+#' @param fun function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link[raster]{rasterize}}.
 #' @param nf integer. Specifies the number of specialization axes to keep after transformation.
 #' @param scale logical. If \code{TRUE} then the values of the Raster* object will
 #' be centered and scaled. Depending on the resolution of the climate data and the
 #' extent of the study area, this can be quite time consuming. If running this
 #' function for multiple species, it is recommended that the climate data be scaled beforehand.
-#' @param mar.type character. Choices are "Hirzel" or "Basille". See details.
-#' @details Hirzel et al. (2002) defined the overall marginality $M$ as a standardized distance between the centroid of the species' niche and the global niche, given by $$M = \frac{\sqrt{\sum\limits_{j=1}^P m_j^2}}{1.96}.$$ Basille and Calenge (2008), however, defined $M$ as $$M = \mathbf{m}^T\mathbf{m}$$. The default \code{mar.type} reflects Basille and Calenge's definition so that results will by default agree with those calculated using Basille and Calenge's \code{adehabitatHS} package.
+#' @param ... Additonal arguments for rasterizing as for \code{\link[raster]{rasterize}}.
+#' @details Hirzel et al. (2002) defined the overall marginality $M$ as a standardized distance between the centroid of the species' niche and the global niche. Basille and Calenge (2008), however, defined $M$ as $$M = m^Tm$$. The default \code{mar.type} reflects Basille and Calenge's definition so that results will by default agree with those calculated using Basille and Calenge's \code{adehabitatHS} package.
 #' @return Returns an S4 object of class \code{enfa} with the following components:
-#' @param mf marginality factor. Vector that describes the location of the species Hutchinsonian niche.
-#' @param marginality. Standardized magnitude of the marginality factor.
-#' @param s specialization factors.  of specializations.
-#' @param speciality specialization. Vector
-#' @param ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
+#' @return mf marginality factor. Vector that describes the location of the species Hutchinsonian niche.
+#' @return marginality. Standardized magnitude of the marginality factor.
+#' @return s specialization factors.  of specializations.
+#' @return speciality specialization. Vector
+#' @return ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
 #' @export
 #'
 #'
@@ -31,7 +32,7 @@ setGeneric("enfa", function(x, s.dat, ...) {
 setMethod("enfa",
           signature(x = "RasterBrick", s.dat = "SpatialPolygonsDataFrame"),
           function(x, s.dat, field,
-                   nf = 1, scale = FALSE, mar.type = "Basille", return_values = FALSE, ...){
+                   nf = 1, scale = FALSE, ...){
             call <- match.call()
             if(!identicalCRS(x, s.dat)) {stop("spatial projections of environmental and species data do not match")}
             if(scale == TRUE) {x <- raster::scale(x)}
@@ -69,8 +70,6 @@ setMethod("enfa",
             #col.w <- rep(1,ncol(dat))
             #center <- colMeans(dat)
             mar <- colMeans(S)/sum(prb)
-            if(mar.type == "Basille") m <- c(t(mar) %*% mar)
-            if(mar.type == "Hirzel")  m <- norm(mar, "2")/1.96
             eigRs <- eigen(Rs)
             keep <- (eigRs$values > 1e-09)
             Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
@@ -105,7 +104,7 @@ setMethod("enfa",
 setMethod("enfa",
           signature(x = "RasterBrick", s.dat = "SpatialPoints"),
           function(x, s.dat, field,
-                   nf = 1, scale = FALSE, fun = "count", mar.type = "Basille", return_values = FALSE, ...){
+                   nf = 1, scale = FALSE, fun = "count", ...){
             #call <- match.call()
             if(!identicalCRS(x, s.dat)) {stop("spatial projections of environmental and species data do not match")}
             if(scale == TRUE) {x <- raster::scale(x)}
@@ -143,9 +142,6 @@ setMethod("enfa",
             #col.w <- rep(1,ncol(dat))
             #center <- colMeans(dat)
             mar <- colMeans(S)/sum(prb)
-            ifelse(mar.type = "Basille",
-                   m <- t(mar) %*% mar,
-                   m <- norm(mar,"2")/1.96)
             eigRs <- eigen(Rs)
             keep <- (eigRs$values > 1e-09)
             Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])

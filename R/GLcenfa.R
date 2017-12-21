@@ -20,14 +20,14 @@
 #' @export
 #'
 
-setGeneric("GLcenfa", function(x, ...) {
+setGeneric("GLcenfa", function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1) {
   standardGeneric("GLcenfa")
 })
 
 #' @rdname GLcenfa
 setMethod("GLcenfa",
           signature(x = "RasterBrick"),
-          function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1, ...){
+          function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1){
 
             out <- brick(x)
 
@@ -45,7 +45,7 @@ setMethod("GLcenfa",
             }
 
             if (scale){
-              Z <- .scale(x, filename = filename, progress = progress, ...)
+              Z <- .scale(x, filename = filename, progress = progress)
               names(Z[[1]]) <- names(x)
               x <- Z[[1]]
               center <- Z[[2]]
@@ -82,7 +82,7 @@ setMethod("GLcenfa",
 #' @rdname GLcenfa
 setMethod("GLcenfa",
           signature(x = "RasterStack"),
-          function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1, ...){
+          function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1){
 
             out <- brick(x)
 
@@ -100,7 +100,7 @@ setMethod("GLcenfa",
             }
 
             if (scale){
-              Z <- .scale(x, filename = filename, progress = progress, ...)
+              Z <- .scale(x, filename = filename, progress = progress)
               names(Z[[1]]) <- names(x)
               x <- Z[[1]]
               center <- Z[[2]]

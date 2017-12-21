@@ -12,16 +12,17 @@
 enfa(x, s.dat, ...)
 
 \S4method{enfa}{RasterBrick,SpatialPolygonsDataFrame}(x, s.dat, field, nf = 1,
-  scale = FALSE, mar.type = "Basille", return_values = FALSE, ...)
+  scale = FALSE, ...)
 
 \S4method{enfa}{RasterBrick,SpatialPoints}(x, s.dat, field, nf = 1,
-  scale = FALSE, fun = "count", mar.type = "Basille",
-  return_values = FALSE, ...)
+  scale = FALSE, fun = "count", ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers}
 
 \item{s.dat}{SpatialPolygons* object detailing species presence or abundance}
+
+\item{...}{Additonal arguments for rasterizing as for \code{\link[raster]{rasterize}}.}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.}
 
@@ -32,24 +33,24 @@ be centered and scaled. Depending on the resolution of the climate data and the
 extent of the study area, this can be quite time consuming. If running this
 function for multiple species, it is recommended that the climate data be scaled beforehand.}
 
-\item{mar.type}{character. Choices are "Hirzel" or "Basille". See details.}
-
-\item{mf}{marginality factor. Vector that describes the location of the species Hutchinsonian niche.}
-
-\item{marginality.}{Standardized magnitude of the marginality factor.}
-
-\item{s}{specialization factors.  of specializations.}
-
-\item{speciality}{specialization. Vector}
-
-\item{ras}{Raster* object of transformed climate values, with number of layers equal to nf + 1.}
+\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link[raster]{rasterize}}.}
 }
 \value{
 Returns an S4 object of class \code{enfa} with the following components:
+
+mf marginality factor. Vector that describes the location of the species Hutchinsonian niche.
+
+marginality. Standardized magnitude of the marginality factor.
+
+s specialization factors.  of specializations.
+
+speciality specialization. Vector
+
+ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
 }
 \description{
 Performs ecological-niche factor analysis using environmental raster data and species presence data in shapefile.
 }
 \details{
-Hirzel et al. (2002) defined the overall marginality $M$ as a standardized distance between the centroid of the species' niche and the global niche, given by $$M = \frac{\sqrt{\sum\limits_{j=1}^P m_j^2}}{1.96}.$$ Basille and Calenge (2008), however, defined $M$ as $$M = \mathbf{m}^T\mathbf{m}$$. The default \code{mar.type} reflects Basille and Calenge's definition so that results will by default agree with those calculated using Basille and Calenge's \code{adehabitatHS} package.
+Hirzel et al. (2002) defined the overall marginality $M$ as a standardized distance between the centroid of the species' niche and the global niche. Basille and Calenge (2008), however, defined $M$ as $$M = m^Tm$$. The default \code{mar.type} reflects Basille and Calenge's definition so that results will by default agree with those calculated using Basille and Calenge's \code{adehabitatHS} package.
 }

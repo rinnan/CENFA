@@ -12,13 +12,13 @@ covmat(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE,
 
 \item{cores}{numeric. Number of CPU cores you wish to utilize for parallel processing.}
 
-\item{scale}{logical. If \code{TRUE}, the Raster* object will get centered and scaled before calculating the covariance.}
+\item{center}{logical. If \code{TRUE}, the Raster* object will get centered before calculating the covariance.}
+
+\item{scale}{logical. If \code{TRUE}, the Raster* object will get scaled before calculating the covariance.}
 
 \item{progress}{logical. If \code{TRUE}, a progress bar will be displayed.}
 
 \item{sample}{logical. If \code{TRUE}, the sample covariance is calculated with a denominator of $n-1$.}
-
-\item{...}{Additional arguments.}
 }
 \value{
 Returns a matrix with the same row and column names as the layers of the Raster* object.

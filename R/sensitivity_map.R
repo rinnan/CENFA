@@ -2,7 +2,6 @@
 #'
 #' Creates a sensitivity map of species habitat.
 #'
-#' @aliases print.cnfa, show.cnfa
 #' @param cnfa cnfa object.
 #' @param cores numeric. Number of cores to use for calculation (optional).
 #' @param filename character. Output filename (optional).

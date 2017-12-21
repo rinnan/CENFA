@@ -5,12 +5,15 @@
 #' @aliases print.cnfa, show.cnfa
 #' @param x Raster* or GLcenfa object, typically a brick or stack with p climate raster layers
 #' @param s.dat Spatial* object detailing species presence or abundance
-#' @param field field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{\link{raster::rasterize}}.
-#' @param fun function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link{raster::rasterize}}.
+#' @param field field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}.
+#' @param fun function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link[raster]{rasterize}}.
 #' @param scale logical. If \code{TRUE} then the values of \code{x} will
 #' get centered and scaled. Depending on the resolution of the climate data and the
 #' extent of the study area, this can be quite time consuming. If running this
 #' function for multiple species, it is recommended that the data be scaled beforehand.
+#' @param filename character. Optional filename to save the Raster* output to file. If this is not provided, a temporary file will be created for large \code{x}.
+#' @param prj character. proj4string denoting projection of species observation data.
+#' @param ... Additonal arguments for rasterizing as for \code{\link[raster]{rasterize}}.
 #' @details Hirzel et al. (2002) defined the overall marginality M as a standardized distance between the centroid of the species' niche and the global niche, given by \deqn{M = \frac{\sqrt{\sum\limits_{j=1}^P m_j^2}}{1.96}.} Basille and Calenge (2008), however, defined M as \deqn{M = \mathbf{m}^T\mathbf{m}.} The default \code{mar.type} reflects Basille and Calenge's definition so that results will by default agree with those calculated using Basille and Calenge's \code{adehabitatHS} package.
 #' @return Returns an S4 object of class \code{cnfa} with the following components:
 #' @return call Original function call.
@@ -24,7 +27,7 @@
 #' @return ras Raster* object of transformed climate values.
 #' @export
 #'
-#' @importFrom raster brick canProcessInMemory cellStats crop extent mask nlayers raster rasterize rasterTmpFile trim values
+#' @importFrom raster brick canProcessInMemory cellStats crop extent mask nlayers raster rasterize rasterTmpFile setValues trim values
 #' @importFrom sp CRS identicalCRS SpatialPointsDataFrame SpatialPolygonsDataFrame
 #' @importFrom stats cov
 
@@ -39,39 +42,40 @@ setMethod("cnfa",
 
             call <- match.call()
 
-            if(!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
+            if (!sp::identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
             ras <- raster(x)
-            ext <- extent(ras)
-            if(is.null(raster::intersect(ext, extent(s.dat)))) stop("climate and species data do not overlap")
+            ext <- raster::extent(ras)
+            ext.s <- raster::extent(s.dat)
+            if (is.null(raster::intersect(ext, ext.s))) stop("climate and species data do not overlap")
 
-            if(raster::union(ext, extent(s.dat)) != ext) stop("extent of species data not contained within extent of climate data")
-            x.crop <- crop(ras, extent(s.dat))
-            s.dat.ras <- rasterize(s.dat, x.crop, field = field, ...)
+            if (raster::union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
+            x.crop <- raster::crop(ras, ext.s)
+            s.dat.ras <- raster::rasterize(s.dat, x.crop, field = field, ...)
 
-            filename <- trim(filename)
-            if (!canProcessInMemory(x.crop) && filename == '') {
-              filename <- rasterTmpFile()
+            filename <- raster::trim(filename)
+            if (!raster::canProcessInMemory(x.crop) && filename == '') {
+              filename <- raster::rasterTmpFile()
             }
 
-            if(canProcessInMemory(x.crop)){
+            if (raster::canProcessInMemory(x.crop)){
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.crop))))
-              S <- values(x.crop)[pres,]
+              S <- raster::values(x.crop)[pres,]
               nS <- nrow(S)
               Rg <- x@cov
               Rs <- cov(S)
               mar <- colSums(S)/nS
             } else {
-              x.mask <- mask(x.crop, s.dat.ras)
+              x.mask <- raster::mask(x.crop, s.dat.ras)
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               Rg <- x@cov
               cat("\nCalculating species covariance matrix...\n")
               Rs <- covmat(x.mask, center = T)
-              mar <- cellStats(x.mask, sum)/length(pres)
+              mar <- raster::cellStats(x.mask, sum)/length(pres)
             }
 
-            cZ <- nlayers(ras)
+            cZ <- raster::nlayers(ras)
             m <- sqrt(c(t(mar) %*% mar))
-            if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
+            if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
             keep <- (eigRs$values > 1e-09)
             Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
@@ -94,13 +98,13 @@ setMethod("cnfa",
             names(sf) <- names(ras)
             sens <- norm(sf, "2")
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
-             if(canProcessInMemory(x.crop)){
-               s.ras <- brick(x.crop)
-               values(s.ras)[pres, ] <- S %*% co
+             if (raster::canProcessInMemory(x.crop)){
+               s.ras <- raster::brick(x.crop)
+               raster::values(s.ras)[pres, ] <- S %*% co
                names(s.ras) <- nm
-             } else{
+             } else {
                cat("\nCreating factor rasters...")
-               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
+               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm)
              }
             colnames(co) <- c("Marg", paste0("Spec", (1:(cZ-1))))
             rownames(co) <- names(ras)
@@ -117,39 +121,40 @@ setMethod("cnfa",
 
             call <- match.call()
 
-            if(!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
+            if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
             ras <- raster(x)
-            ext <- extent(ras)
-            if(is.null(raster::intersect(ext, extent(s.dat)))) stop("climate and species data do not overlap")
+            ext <- raster::extent(ras)
+            ext.s <- raster::extent(s.dat)
+            if (is.null(raster::intersect(ext, ext.s))) stop("climate and species data do not overlap")
 
-            if(raster::union(ext, extent(s.dat)) != ext) stop("extent of species data not contained within extent of climate data")
-            x.crop <- crop(ras, extent(s.dat))
-            s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun)
+            if (raster::union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
+            x.crop <- raster::crop(ras, ext.s)
+            s.dat.ras <- raster::rasterize(s.dat, x.crop, field = field, fun = fun)
 
-            filename <- trim(filename)
-            if (!canProcessInMemory(x) && filename == '') {
-              filename <- rasterTmpFile()
+            filename <- raster::trim(filename)
+            if (!raster::canProcessInMemory(x) && filename == '') {
+              filename <- raster::rasterTmpFile()
             }
 
-            if(canProcessInMemory(x)){
+            if (raster::canProcessInMemory(x)){
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x))))
-              S <- values(x)[pres, ]
+              S <- raster::values(x)[pres, ]
               nS <- nrow(S)
               Rg <- x@cov
               Rs <- cov(S)
               mar <- colSums(S)/nS
             } else {
-              x.mask <- mask(x.crop, s.dat.ras)
+              x.mask <- raster::mask(x.crop, s.dat.ras)
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               Rg <- x@cov
               cat("\nCalculating species covariance matrix...\n")
               Rs <- covmat(x.mask, center = T)
-              mar <- cellStats(x.mask, sum)/length(pres)
+              mar <- raster::cellStats(x.mask, sum)/length(pres)
             }
 
-            cZ <- nlayers(ras)
+            cZ <- raster::nlayers(ras)
             m <- sqrt(c(t(mar) %*% mar))
-            if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
+            if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
             keep <- (eigRs$values > 1e-09)
             Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
@@ -172,11 +177,11 @@ setMethod("cnfa",
             names(sf) <- names(ras)
             sens <- norm(sf, "2")
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
-            if(canProcessInMemory(x)){
+            if (raster::canProcessInMemory(x)){
               s.ras <- brick(x)
-              values(s.ras)[pres, ] <- S %*% co
+              raster::values(s.ras)[pres, ] <- S %*% co
               names(s.ras) <- nm
-            } else{
+            } else {
               cat("\nCreating factor rasters...")
               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
             }

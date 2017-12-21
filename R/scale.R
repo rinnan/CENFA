@@ -1,7 +1,7 @@
 #' @keywords internal
 
-.scale <- function(x, filename = filename, progress = progress, median = F, overwrite = T){
-  if(!median){
+.scale <- function(x, filename = filename, progress = progress, overwrite = T){
+
     ifelse(canProcessInMemory(x), {
       br <- brick(x)
       if(progress) cat("Scaling data...")
@@ -25,33 +25,7 @@
       y <- list(br, center, sds)
     }
     )
-  }
 
-  # if(median){
-  #   ifelse(canProcessInMemory(x), {
-  #     br <- brick(x)
-  #     if(progress) cat("Scaling data...")
-  #     v <- values(x)
-  #     center <- apply(v, 2, median, na.rm = T)
-  #     mads<-apply(v,2,mad,na.rm=T)
-  #     t <- (v-center)/mads
-  #     br <- setValues(br, t)
-  #     y<-list(br,center,sds)
-  #   }, {
-  #
-  #     br <- brick(x)
-  #     if(progress) cat("Calculating layer medians...")
-  #     center <- cellStats(x, 'median', na.rm=TRUE)
-  #     if(progress) cat("Calculating layer MADs...")
-  #     mads <- cellStats(x, 'mad', na.rm=TRUE)
-  #     if(progress) cat("Scaling data...")
-  #     t <- raster::scale(x, center=center, scale=mads)
-  #     if(progress) cat("Writing data to file...")
-  #     br <- writeRaster(t, filename = filename,overwrite=T)
-  #     y<-list(br,center,mads)
-  #   }
-  #   )
-  # }
 
   return(y)
 }

@@ -6,12 +6,11 @@
 #' @param x.fut  Raster* object, future climate values with the same layers as x.hist
 #' @param s.dat SpatialPolygons* object detailing species presence or abundance
 #' @param field field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument of \code{raster::rasterize}.
-#' @param nf integer. Specifies the number of specialization axes to keep after transformation.
 #' @param scale logical. If \code{TRUE} then the values of \code{x.hist} and \code{x.fut} will
 #' be centered and scaled by the means and sds of the historical climate data. Depending on the resolution of the data and the
 #' extent of the study area, this can be quite time consuming. If running this
 #' function for multiple species, it is recommended that the climate data be scaled beforehand.
-#' @param sp.prj character. Spatial projection of species data.
+#' @param ... Additional arguments for \code{\link[raster]{clusterR}}.
 #' @return Returns an S4 object of class \code{cnfa} with the following slots:
 #' @return call original function call
 #' @return df departure factor d
@@ -33,7 +32,7 @@ setClass("departure", slots = list(call = "call", df = "numeric", departure = "n
 setMethod("departure",
           signature(x.hist = "RasterBrick", x.fut = "RasterBrick", s.dat = "SpatialPolygonsDataFrame"),
           function(x.hist, x.fut, s.dat, field,
-                   scale = FALSE, depart.ras = TRUE){
+                   scale = FALSE){
             call <- match.call()
             if(!identicalCRS(x.hist, s.dat)) {stop("historical climate and species projections do not match")}
             if(!identicalCRS(x.hist, x.fut))     {stop("historical and future climate projections do not match")}

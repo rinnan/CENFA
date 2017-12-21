@@ -11,7 +11,7 @@
 departure(x.hist, x.fut, s.dat, ...)
 
 \S4method{departure}{RasterBrick,RasterBrick,SpatialPolygonsDataFrame}(x.hist,
-  x.fut, s.dat, field, scale = FALSE, depart.ras = TRUE)
+  x.fut, s.dat, field, scale = FALSE)
 
 \S4method{departure}{RasterBrick,RasterBrick,cnfa}(x.hist, x.fut, s.dat,
   scale = FALSE)
@@ -25,16 +25,14 @@ departure(x.hist, x.fut, s.dat, ...)
 
 \item{s.dat}{SpatialPolygons* object detailing species presence or abundance}
 
+\item{...}{Additional arguments for \code{\link[raster]{clusterR}}.}
+
 \item{field}{field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument of \code{raster::rasterize}.}
 
 \item{scale}{logical. If \code{TRUE} then the values of \code{x.hist} and \code{x.fut} will
 be centered and scaled by the means and sds of the historical climate data. Depending on the resolution of the data and the
 extent of the study area, this can be quite time consuming. If running this
 function for multiple species, it is recommended that the climate data be scaled beforehand.}
-
-\item{nf}{integer. Specifies the number of specialization axes to keep after transformation.}
-
-\item{sp.prj}{character. Spatial projection of species data.}
 }
 \value{
 Returns an S4 object of class \code{cnfa} with the following slots:

@@ -9,13 +9,13 @@
 \alias{GLcenfa,RasterStack-method}
 \title{GLcenfa}
 \usage{
-GLcenfa(x, ...)
+GLcenfa(x, scale = FALSE, filename = "", progress = TRUE, cores = 1)
 
 \S4method{GLcenfa}{RasterBrick}(x, scale = FALSE, filename = "",
-  progress = TRUE, cores = 1, ...)
+  progress = TRUE, cores = 1)
 
 \S4method{GLcenfa}{RasterStack}(x, scale = FALSE, filename = "",
-  progress = TRUE, cores = 1, ...)
+  progress = TRUE, cores = 1)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of p environmental raster layers.}
