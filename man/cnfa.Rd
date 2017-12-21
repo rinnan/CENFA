@@ -5,68 +5,64 @@
 \alias{cnfa}
 \alias{print.cnfa,}
 \alias{show.cnfa}
-\alias{cnfa,GLcnfa,SpatialPolygonsDataFrame-method}
+\alias{cnfa,GLcenfa,SpatialPolygonsDataFrame-method}
+\alias{cnfa,GLcenfa,SpatialPoints-method}
 \alias{cnfa,RasterBrick,SpatialPolygonsDataFrame-method}
-\alias{cnfa,Raster,SpatialPoints-method}
+\alias{cnfa,RasterBrick,SpatialPoints-method}
 \alias{cnfa,RasterBrick,matrix-method}
 \title{Climate Niche Factor Analysis}
 \usage{
 cnfa(x, s.dat, field, filename = "", ...)
 
-\S4method{cnfa}{GLcnfa,SpatialPolygonsDataFrame}(x, s.dat, field,
+\S4method{cnfa}{GLcenfa,SpatialPolygonsDataFrame}(x, s.dat, field,
   filename = "", ...)
 
+\S4method{cnfa}{GLcenfa,SpatialPoints}(x, s.dat, field, fun = "count",
+  scale = FALSE, filename = "", ...)
+
 \S4method{cnfa}{RasterBrick,SpatialPolygonsDataFrame}(x, s.dat, field,
-  scale = FALSE, mar.type = "BC", ...)
+  scale = FALSE, filename = "", ...)
 
-\S4method{cnfa}{Raster,SpatialPoints}(x, s.dat, field, fun = "count",
-  scale = FALSE)
+\S4method{cnfa}{RasterBrick,SpatialPoints}(x, s.dat, field, fun = "count",
+  scale = FALSE, filename = "", ...)
 
-\S4method{cnfa}{RasterBrick,matrix}(x, s.dat, field, nf = 1, scale = FALSE,
-  sp.prj)
+\S4method{cnfa}{RasterBrick,matrix}(x, s.dat, prj, scale = FALSE,
+  filename = "", ...)
 }
 \arguments{
-\item{x}{Raster* or GLcnfa object, typically a brick or stack with p climate raster layers}
+\item{x}{Raster* or GLcenfa object, typically a brick or stack with p climate raster layers}
 
 \item{s.dat}{Spatial* object detailing species presence or abundance}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{raster::rasterize}.}
 
+\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{raster::rasterize}.}
+
 \item{scale}{logical. If \code{TRUE} then the values of \code{x} will
 get centered and scaled. Depending on the resolution of the climate data and the
 extent of the study area, this can be quite time consuming. If running this
 function for multiple species, it is recommended that the data be scaled beforehand.}
-
-\item{mar.type}{character. Choices are "BC" (Basille) or "H" (Hirzel). See details.}
-
-\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{raster::rasterize}.}
-
-\item{nf}{integer or character. Specifies the number of specialization axes to keep after transformation. If \code{nf = "BS"} then the broken-stick method will be used to determine the number of significant factors.}
-
-\item{sp.prj}{character. Spatial projection of species data.}
 }
 \value{
 Returns an S4 object of class \code{cnfa} with the following components:
 
 call Original function call.
 
-nf Number of specialization factors kept.
-
 mf marginality factor. Vector that describes the location of the species Hutchinsonian niche relative to the global niche.
 
-marginality Standardized magnitude of the marginality factor.
+marginality Magnitude of the marginality factor.
 
-sf specialization factors. Vector of eigenvalues.
+sf sensitivity factor.
 
-specialization The square root of the sum of \code{sf} divided by the length of \code{sf}.
+sensitivity Magnitude of the sensitivity factor.
 
-s.prop Vector representing the amount of specialization found in each factor.
+s.prop Vector representing the amount of specialization found in each ENFA factor.
 
-co A data frame of variable loadings with p rows and nf + 1 columns.
-
-ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
+co A matrix describing the amount of marginality and specialization on each factor. (The marginality column is normalized.)
 
 present numeric. Number of raster cells in which species is present.
+
+ras Raster* object of transformed climate values.
 }
 \description{
 Performs climate niche factor analysis using climate raster data and species presence data.

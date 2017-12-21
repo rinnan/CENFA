@@ -10,16 +10,24 @@ An object of class \code{enfa} is created from performing ecological-niche facto
 \section{Slots}{
 
 \describe{
-\item{\code{mf}}{marginality factor. Vector that describes the location of the species Hutchinsonian niche.}
+\item{\code{call}}{Original function call.}
 
-\item{\code{marginality.}}{Standardized magnitude of the marginality factor.}
+\item{\code{mf}}{numeric. Named vector representing the marginality factor, describing the location of the species niche relative to the global niche.}
 
-\item{\code{s}}{specialization factors. Matrix of specializations.}
+\item{\code{marginality}}{numeric. Magnitude of the marginality factor \code{mf}.}
 
-\item{\code{specialization}}{specialization. Mahalanobis distance of something.}
+\item{\code{sf}}{numeric. Named vector representing the specialization factor, equivalent to the eigenvalues of specialization.}
 
-\item{\code{ras}}{Raster* object of transformed climate values, with number of layers equal to nf + 1.}
+\item{\code{specialization}}{numeric. The square of the sum of eigenvalues, divided by the length of \code{sf}.}
 
-\item{\code{present}}{Number of cells in which species is present.}
+\item{\code{p.spec}}{numeric. Named vector representing the proportion of specialization found on each factor.}
+
+\item{\code{co}}{p x p matrix of standardized variable loadings.}
+
+\item{\code{cov}}{p x p species covariance matrix.}
+
+\item{\code{present}}{numeric. Number of raster cells in which species is present.}
+
+\item{\code{ras}}{RasterBrick of transformed environmental values, with p layers.}
 }}
 

@@ -1,3 +1,11 @@
+#' @keywords internal
+#' @importFrom doSNOW registerDoSNOW
+#' @importFrom foreach %dopar% foreach
+#' @importFrom raster blockSize extension filename raster getValues ncell pbClose pbCreate pbStep setValues writeRaster writeStart writeStop writeValues
+#' @importFrom snow makeCluster clusterExport stopCluster
+#' @importFrom stats cov na.omit
+#' @importFrom utils setTxtProgressBar txtProgressBar
+
 .calc <- function(x, fun, filename='', na.rm, forcefun=FALSE, forceapply=FALSE, names, ...) {
 
   nl <- nlayers(x)

@@ -7,9 +7,12 @@ Author: D. Scott Rinnan
 Maintainer: Who to complain to <rinnan@uw.edu>
 Description: More about what it does (maybe more than one line)
 Depends: 
+        foreach,
 	raster,
+        sp,
 	doSNOW (>= 1.0.14),
-	pbapply
+	pbapply,
+        snow
 License: What license is it under?
 LazyData: TRUE
 RoxygenNote: 6.0.1

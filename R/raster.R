@@ -8,13 +8,13 @@
 #' @export
 
 #' @rdname raster
-setMethod("raster",
-          signature(x = "enfa"),
-          function(x){
-            temp <- x@ras
-            return(temp)
-          }
-)
+# setMethod("raster",
+#           signature(x = "enfa"),
+#           function(x){
+#             temp <- x@ras
+#             return(temp)
+#           }
+# )
 
 #' @rdname raster
 setMethod("raster",
@@ -27,7 +27,7 @@ setMethod("raster",
 
 #' @rdname raster
 setMethod("raster",
-          signature(x = "GLcnfa"),
+          signature(x = "GLcenfa"),
           function(x){
             temp <- x@global_ras
             return(temp)

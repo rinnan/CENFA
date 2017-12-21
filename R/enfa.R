@@ -96,7 +96,7 @@ setMethod("enfa",
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- dimnames(x)[[2]]
-            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, spec.account = s.p, co = co, ras = ras, present = length(pres))
+            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
             return(enfa)
           }
 )
@@ -171,7 +171,7 @@ setMethod("enfa",
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- dimnames(x)[[2]]
-            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, s = s, specialization = spec, co = co, ras = ras, present = length(pres))
+            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
             return(enfa)
           }
 )

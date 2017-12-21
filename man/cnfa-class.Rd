@@ -12,22 +12,22 @@ An object of class \code{cnfa} is created from performing climate-niche factor a
 \describe{
 \item{\code{call}}{Original function call.}
 
-\item{\code{nf}}{Number of kept specialization factors.}
+\item{\code{mf}}{numeric. Named vector representing the marginality factor, describing the location of the species niche relative to the global niche.}
 
-\item{\code{mf}}{marginality factor. Vector that describes the location of the species Hutchinsonian niche relative to the global niche.}
+\item{\code{marginality}}{numeric. Magnitude of the marginality factor \code{mf}.}
 
-\item{\code{marginality}}{Standardized magnitude of the marginality factor.}
+\item{\code{sf}}{numeric. Named vector representing the sensitivity factor.}
 
-\item{\code{sf}}{specialization factors. Vector of eigenvalues.}
+\item{\code{sensitivity}}{numeric. The magnitude of the sensitivity factor \code{sf}.}
 
-\item{\code{specialization}}{The square root of the sum of \code{sf} divided by the length of \code{sf}.}
+\item{\code{p.spec}}{numeric. Named vector representing the proportion of specialization found on each factor.}
 
-\item{\code{s.prop}}{Vector representing the proportion of specialization found in each factor.}
+\item{\code{co}}{p x p matrix of standardized variable loadings.}
 
-\item{\code{co}}{A data frame of variable loadings with p rows and nf + 1 columns.}
-
-\item{\code{ras}}{Raster* object of transformed climate values, with number of layers equal to nf + 1.}
+\item{\code{cov}}{p x p species covariance matrix.}
 
 \item{\code{present}}{numeric. Number of raster cells in which species is present.}
+
+\item{\code{ras}}{RasterBrick of transformed climate values, with p layers.}
 }}
 

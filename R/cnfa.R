@@ -24,7 +24,9 @@
 #' @return ras Raster* object of transformed climate values.
 #' @export
 #'
-#'
+#' @importFrom raster brick canProcessInMemory cellStats crop extent mask nlayers raster rasterize rasterTmpFile trim values
+#' @importFrom sp CRS identicalCRS SpatialPointsDataFrame SpatialPolygonsDataFrame
+#' @importFrom stats cov
 
 setGeneric("cnfa", function(x, s.dat, field, filename = "", ...) {
   standardGeneric("cnfa")

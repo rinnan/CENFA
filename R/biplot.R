@@ -1,4 +1,4 @@
-biplot <- function(x = cnfa1, global = GLcnfa, xax = 1, yax = 2, percentage = .99, cores = 1){
+biplot <- function(x = cnfa1, global = GLcenfa, xax = 1, yax = 2, percentage = .99, cores = 1){
 
   y <- raster(gl.cnfa)
   co <- as.matrix(x@co)[, c(xax, yax)]

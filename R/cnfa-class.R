@@ -17,29 +17,36 @@
 setClass("cnfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", sf = "numeric",
                            sensitivity = "numeric", p.spec = "numeric", co = "matrix", cov = "matrix", present = "numeric", ras = "Raster"))
 
-setMethod ("show", "cnfa", function(object){
-  if (!inherits(object, "cnfa"))
-    stop("Object of class 'cnfa' expected")
-  cat("CNFA")
-  cat("\nOriginal function call: ")
-  cat(object@call)
-  cat("\nMarginality factor: ")
-  cat(signif(object@mf, 3))
-  cat("\nSensitivity factor: ")
-  cat(signif(object@sf, 3))
-  cat("\nEigenvalues of specialization: ")
-  cat("\n")
-  v <- paste0(100*object@p.spec, "%")
-  #s <- data.frame(t(object@sf))
-  #names(s) <- v
-  #row.names(s) <- ""
-  #l0 <- length(object@sf)
-  #print(format(s[ , 1:(min(5, l0))]))
-  #if (l0 > 5)
-  #  cat(" ...")
-  cat("\n")
-  cat("\n")
-  co <- as.data.frame(object@co[order(abs(object@co$Marg), decreasing = T), ])
-  print(co)
-}
-)
+# setMethod("show", "cnfa", function(object){
+#   print("Hello!")
+# }
+# )
+
+
+
+# setMethod ("show", "cnfa", function(object){
+#   if (!inherits(object, "cnfa"))
+#     stop("Object of class 'cnfa' expected")
+#   cat("CNFA")
+#   # cat("\nOriginal function call: ")
+#   # cat(object@call)
+#   # cat("\nMarginality factor: ")
+#   # cat(signif(object@mf, 3))
+#   # cat("\nSensitivity factor: ")
+#   # cat(signif(object@sf, 3))
+#   # cat("\nEigenvalues of specialization: ")
+#   # cat("\n")
+#   # #v <- paste0(100*object@p.spec, "%")
+#   # #s <- data.frame(t(object@sf))
+#   # #names(s) <- v
+#   # #row.names(s) <- ""
+#   # #l0 <- length(object@sf)
+#   # #print(format(s[ , 1:(min(5, l0))]))
+#   # #if (l0 > 5)
+#   # #  cat(" ...")
+#   # cat("\n")
+#   # cat("\n")
+#   # co <- as.data.frame(object@co[order(abs(object@co$Marg), decreasing = T), ])
+#   # print(co)
+# }
+# )
