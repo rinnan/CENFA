@@ -34,9 +34,9 @@ cnfa(x, s.dat, field, filename = "", ...)
 
 \item{s.dat}{Spatial* object detailing species presence or abundance}
 
-\item{field}{field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{raster::rasterize}.}
+\item{field}{field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{\link{raster::rasterize}}.}
 
-\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{raster::rasterize}.}
+\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link{raster::rasterize}}.}
 
 \item{scale}{logical. If \code{TRUE} then the values of \code{x} will
 get centered and scaled. Depending on the resolution of the climate data and the

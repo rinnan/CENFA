@@ -62,48 +62,48 @@ setMethod("departure",
 )
 
 #' @rdname departure
-setMethod("departure",
-          signature(x.hist = "Raster", x.fut = "Raster", s.dat = "enfa"),
-          function(x.hist, x.fut, s.dat, scale = FALSE){
-
-            call <- match.call()
-            sp.ras <- raster(s.dat)
-            if(!identicalCRS(x.hist, sp.ras)) {stop("historical climate and species projections do not match")}
-            if(!identicalCRS(x.hist, x.fut))     {stop("historical and future climate projections do not match")}
-            if(!identicalCRS(x.fut, sp.ras)) {stop("future climate and species projections do not match")}
-            if(length(raster::intersect(extent(x.hist), extent(sp.ras)))==0) {stop("climate and species data to not overlap")}
-            if(scale) {
-              center <- cellStats(x.hist, mean)
-              sds <- cellStats(x.hist, sd)
-              x.hist <- raster::scale(x.hist, center = center, scale = sds)
-              x.fut <- raster::scale(x.fut, center = center, scale = sds)
-            }
-            x.hist <- crop(x.hist, sp.ras)
-            x.fut <- crop(x.fut, sp.ras)
-
-            pres <- which(!is.na(values(sp.ras[[1]])))
-            small <- canProcessInMemory(x.hist, 8)
-            if(small){
-              z_ij <- values(x.hist)[pres,] %*% as.matrix(s.dat@co)
-              f_ij <- values(x.fut)[pres,] %*% as.matrix(s.dat@co)
-              d_ij <- (f_ij - z_ij)^2
-              d <- sqrt(rowSums(d_ij))
-              D <- 1/(1.96) * mean(d, na.rm = T)
-              sp.ras[pres] <- d
-            } else {
-              x.hist <- calc(x.hist, fun = function(x) {x %*% as.matrix(s.dat@co)})
-              x.fut <- calc(x.fut, fun = function(x) {x %*% as.matrix(s.dat@co)})
-              d_ij <- (x.fut - x.hist)^2
-              d <- calc(d_ij, fun = function(x) {sqrt(sum(x))})
-              values(d)[!pres] <- NA
-              D <- 1/(1.96) * cellStats(d, mean)
-              sp.ras <- d
-            }
-
-            depart <- methods::new("departure", call = call, departure = D, departure_ras = sp.ras, present = length(pres))
-            return(depart)
-          }
-)
+# setMethod("departure",
+#           signature(x.hist = "Raster", x.fut = "Raster", s.dat = "enfa"),
+#           function(x.hist, x.fut, s.dat, scale = FALSE){
+#
+#             call <- match.call()
+#             sp.ras <- raster(s.dat)
+#             if(!identicalCRS(x.hist, sp.ras)) {stop("historical climate and species projections do not match")}
+#             if(!identicalCRS(x.hist, x.fut))     {stop("historical and future climate projections do not match")}
+#             if(!identicalCRS(x.fut, sp.ras)) {stop("future climate and species projections do not match")}
+#             if(length(raster::intersect(extent(x.hist), extent(sp.ras)))==0) {stop("climate and species data to not overlap")}
+#             if(scale) {
+#               center <- cellStats(x.hist, mean)
+#               sds <- cellStats(x.hist, sd)
+#               x.hist <- raster::scale(x.hist, center = center, scale = sds)
+#               x.fut <- raster::scale(x.fut, center = center, scale = sds)
+#             }
+#             x.hist <- crop(x.hist, sp.ras)
+#             x.fut <- crop(x.fut, sp.ras)
+#
+#             pres <- which(!is.na(values(sp.ras[[1]])))
+#             small <- canProcessInMemory(x.hist, 8)
+#             if(small){
+#               z_ij <- values(x.hist)[pres,] %*% as.matrix(s.dat@co)
+#               f_ij <- values(x.fut)[pres,] %*% as.matrix(s.dat@co)
+#               d_ij <- (f_ij - z_ij)^2
+#               d <- sqrt(rowSums(d_ij))
+#               D <- 1/(1.96) * mean(d, na.rm = T)
+#               sp.ras[pres] <- d
+#             } else {
+#               x.hist <- calc(x.hist, fun = function(x) {x %*% as.matrix(s.dat@co)})
+#               x.fut <- calc(x.fut, fun = function(x) {x %*% as.matrix(s.dat@co)})
+#               d_ij <- (x.fut - x.hist)^2
+#               d <- calc(d_ij, fun = function(x) {sqrt(sum(x))})
+#               values(d)[!pres] <- NA
+#               D <- 1/(1.96) * cellStats(d, mean)
+#               sp.ras <- d
+#             }
+#
+#             depart <- methods::new("departure", call = call, departure = D, departure_ras = sp.ras, present = length(pres))
+#             return(depart)
+#           }
+# )
 
 #' @rdname departure
 setMethod("departure",
@@ -193,14 +193,14 @@ setMethod("departure",
 
 setMethod("show",
           signature = "departure",
-          function(depart){
-  if (!inherits(depart, "departure"))
+          function(object){
+  if (!inherits(object, "departure"))
     stop("Object of class 'departure' expected")
   cat("CLIMATIC DEPARTURE")
   cat("\ndeparture: ")
-  cat(signif(depart@departure, 4))
+  cat(signif(object@departure, 4))
   cat("\nnumber of cells present: ")
-  cat(depart@present)
+  cat(object@present)
 }
 )
 

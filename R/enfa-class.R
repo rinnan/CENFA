@@ -17,26 +17,26 @@
 setClass("enfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", sf = "numeric",
                               specialization = "numeric", p.spec = "numeric", co = "matrix", cov = "matrix", present = "numeric", ras = "Raster"))
 
-# setMethod ("show", "enfa", function(object){
-#   if (!inherits(object, "enfa"))
-#     stop("Object of class 'enfa' expected")
-#   cat("ENFA")
-#   cat("\nOriginal function call: ")
-#   cat(object@call)
-#   cat("\nMarginality factor: ")
-#   cat(signif(object@mf, 3))
-#   cat("\nEigenvalues of specialization: ")
-#   cat(signif(object@sf, 3))
-#   #s <- data.frame(t(object@sf))
-#   #names(s) <- v
-#   #row.names(s) <- ""
-#   #l0 <- length(object@sf)
-#   #print(format(s[ , 1:(min(5, l0))]))
-#   #if (l0 > 5)
-#   #  cat(" ...")
-#   cat("\n")
-#   cat("\n")
-#   co <- as.data.frame(object@co[order(abs(object@co$Marg), decreasing = T), ])
-#   print(co)
-# }
-# )
+setMethod ("show", "enfa", function(object){
+  if (!inherits(object, "enfa"))
+    stop("Object of class 'enfa' expected")
+  cat("ENFA")
+  cat("\nOriginal function call: ")
+  cat(object@call)
+  cat("\nMarginality factor: ")
+  cat(signif(object@mf, 3))
+  cat("\nEigenvalues of specialization: ")
+  cat(signif(object@sf, 3))
+  #s <- data.frame(t(object@sf))
+  #names(s) <- v
+  #row.names(s) <- ""
+  #l0 <- length(object@sf)
+  #print(format(s[ , 1:(min(5, l0))]))
+  #if (l0 > 5)
+  #  cat(" ...")
+  cat("\n")
+  cat("\n")
+  co <- as.data.frame(object@co[order(abs(object@co$Marg), decreasing = T), ])
+  print(co)
+}
+)

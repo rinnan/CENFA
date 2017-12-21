@@ -5,8 +5,8 @@
 #' @aliases print.cnfa, show.cnfa
 #' @param x Raster* or GLcenfa object, typically a brick or stack with p climate raster layers
 #' @param s.dat Spatial* object detailing species presence or abundance
-#' @param field field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{raster::rasterize}.
-#' @param fun function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{raster::rasterize}.
+#' @param field field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{\link{raster::rasterize}}.
+#' @param fun function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link{raster::rasterize}}.
 #' @param scale logical. If \code{TRUE} then the values of \code{x} will
 #' get centered and scaled. Depending on the resolution of the climate data and the
 #' extent of the study area, this can be quite time consuming. If running this
