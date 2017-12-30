@@ -42,38 +42,38 @@ setMethod("cnfa",
 
             call <- match.call()
 
-            if (!sp::identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
+            if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
             ras <- raster(x)
-            ext <- raster::extent(ras)
-            ext.s <- raster::extent(s.dat)
-            if (is.null(raster::intersect(ext, ext.s))) stop("climate and species data do not overlap")
+            ext <- extent(ras)
+            ext.s <- extent(s.dat)
+            if (is.null(intersect(ext, ext.s))) stop("climate and species data do not overlap")
 
-            if (raster::union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
-            x.crop <- raster::crop(ras, ext.s)
-            s.dat.ras <- raster::rasterize(s.dat, x.crop, field = field, ...)
+            if (union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
+            x.crop <- crop(ras, ext.s)
+            s.dat.ras <- rasterize(s.dat, x.crop, field = field, ...)
 
-            filename <- raster::trim(filename)
-            if (!raster::canProcessInMemory(x.crop) && filename == '') {
-              filename <- raster::rasterTmpFile()
+            filename <- trim(filename)
+            if (!canProcessInMemory(x.crop) && filename == '') {
+              filename <- rasterTmpFile()
             }
 
-            if (raster::canProcessInMemory(x.crop)){
+            if (canProcessInMemory(x.crop)){
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.crop))))
-              S <- raster::values(x.crop)[pres,]
+              S <- values(x.crop)[pres,]
               nS <- nrow(S)
               Rg <- x@cov
               Rs <- cov(S)
               mar <- colSums(S)/nS
             } else {
-              x.mask <- raster::mask(x.crop, s.dat.ras)
+              x.mask <- mask(x.crop, s.dat.ras)
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               Rg <- x@cov
               cat("\nCalculating species covariance matrix...\n")
               Rs <- covmat(x.mask, center = T)
-              mar <- raster::cellStats(x.mask, sum)/length(pres)
+              mar <- cellStats(x.mask, sum)/length(pres)
             }
 
-            cZ <- raster::nlayers(ras)
+            cZ <- nlayers(ras)
             m <- sqrt(c(t(mar) %*% mar))
             if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
@@ -98,9 +98,9 @@ setMethod("cnfa",
             names(sf) <- names(ras)
             sens <- norm(sf, "2")
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
-             if (raster::canProcessInMemory(x.crop)){
-               s.ras <- raster::brick(x.crop)
-               raster::setValues(s.ras, S %*% co, index = pres)
+             if (canProcessInMemory(x.crop)){
+               s.ras <- brick(x.crop)
+               setValues(s.ras, S %*% co, index = pres)
                names(s.ras) <- nm
              } else {
                cat("\nCreating factor rasters...")
@@ -123,36 +123,36 @@ setMethod("cnfa",
 
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
             ras <- raster(x)
-            ext <- raster::extent(ras)
-            ext.s <- raster::extent(s.dat)
-            if (is.null(raster::intersect(ext, ext.s))) stop("climate and species data do not overlap")
+            ext <- extent(ras)
+            ext.s <- extent(s.dat)
+            if (is.null(intersect(ext, ext.s))) stop("climate and species data do not overlap")
 
-            if (raster::union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
-            x.crop <- raster::crop(ras, ext.s)
-            s.dat.ras <- raster::rasterize(s.dat, x.crop, field = field, fun = fun)
+            if (union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
+            x.crop <- crop(ras, ext.s)
+            s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun)
 
-            filename <- raster::trim(filename)
-            if (!raster::canProcessInMemory(x) && filename == '') {
-              filename <- raster::rasterTmpFile()
+            filename <- trim(filename)
+            if (!canProcessInMemory(x) && filename == '') {
+              filename <- rasterTmpFile()
             }
 
-            if (raster::canProcessInMemory(x)){
+            if (canProcessInMemory(x)){
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x))))
-              S <- raster::values(x)[pres, ]
+              S <- values(x)[pres, ]
               nS <- nrow(S)
               Rg <- x@cov
               Rs <- cov(S)
               mar <- colSums(S)/nS
             } else {
-              x.mask <- raster::mask(x.crop, s.dat.ras)
+              x.mask <- mask(x.crop, s.dat.ras)
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               Rg <- x@cov
               cat("\nCalculating species covariance matrix...\n")
               Rs <- covmat(x.mask, center = T)
-              mar <- raster::cellStats(x.mask, sum)/length(pres)
+              mar <- cellStats(x.mask, sum)/length(pres)
             }
 
-            cZ <- raster::nlayers(ras)
+            cZ <- nlayers(ras)
             m <- sqrt(c(t(mar) %*% mar))
             if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
@@ -177,10 +177,10 @@ setMethod("cnfa",
             names(sf) <- names(ras)
             sens <- norm(sf, "2")
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
-            if (raster::canProcessInMemory(x)){
+            if (canProcessInMemory(x)){
               s.ras <- brick(x)
-              #raster::values(s.ras)[pres, ] <- S %*% co
-              raster::setValues(s.ras, S %*% co, index = pres)
+              #values(s.ras)[pres, ] <- S %*% co
+              setValues(s.ras, S %*% co, index = pres)
               names(s.ras) <- nm
             } else {
               cat("\nCreating factor rasters...")
@@ -203,11 +203,11 @@ setMethod("cnfa",
 
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
 
-            if(is.null(raster::intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
+            if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
 
-            if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
+            if(union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
 
-            if(scale) x <- raster::scale(x)
+            if(scale) x <- scale(x)
 
             s.dat.ras <- rasterize(s.dat, raster(x), field = field, ...)
 
@@ -265,7 +265,7 @@ setMethod("cnfa",
             if(canProcessInMemory(x)){
               s.ras <- brick(x)
               #values(s.ras)[pres, ] <- S %*% co
-              raster::setValues(s.ras, S %*% co, index = pres)
+              setValues(s.ras, S %*% co, index = pres)
               names(s.ras) <- nm
             } else{
               cat("\nCreating factor rasters...")
@@ -288,11 +288,11 @@ setMethod("cnfa",
 
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
 
-            if(is.null(raster::intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
+            if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
 
-            if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
+            if(union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
 
-            if(scale) x <- raster::scale(x)
+            if(scale) x <- scale(x)
 
             s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
 
@@ -350,7 +350,7 @@ setMethod("cnfa",
             if(canProcessInMemory(x)){
               s.ras <- brick(x)
               #values(s.ras)[pres, ] <- S %*% co
-              raster::setValues(s.ras, S %*% co, index = pres)
+              setValues(s.ras, S %*% co, index = pres)
               names(s.ras) <- nm
             } else{
               cat("\nCreating factor rasters...")
@@ -371,17 +371,17 @@ setMethod("cnfa",
 
             call <- match.call()
 
-            s.dat <- SpatialPointsDataFrame(coords = s.dat, data = 1, proj4string = CRS(sp.prj))
+            s.dat <- SpatialPointsDataFrame(coords = s.dat, data = 1, proj4string = CRS(prj))
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
 
-            if(is.null(raster::intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
+            if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
 
-            if(scale == TRUE) x <- raster::scale(x)
+            if(scale == TRUE) x <- scale(x)
 
             gpres <- which(!is.na(values(x[[1]])))
             dat <- values(x)[gpres, ]
 
-            s.dat.ras <- rasterize(s.dat, raster(x), field = field)
+            s.dat.ras <- rasterize(s.dat, raster(x))
             pres <- which(!is.na(values(s.dat.ras)))
             #prb<-values(speciesdat.ras)[pres]
             pres.dat <- values(x)[pres, ]
@@ -394,8 +394,7 @@ setMethod("cnfa",
             nZ <- nrow(Z)
             nS <- nrow(S)
             mar <- colSums(S)/nS
-            if(mar.type == "BC") m <- c(t(mar) %*% mar)
-            if(mar.type == "H")  m <- norm(mar, "2")/1.96
+            m <- sqrt(c(t(mar) %*% mar))
             Rg <- crossprod(Z, Z/nZ)
             Rs <- crossprod(S, S/nS)
             eigRs <- eigen(Rs)
@@ -422,7 +421,7 @@ setMethod("cnfa",
             ss <- crop(s.dat.ras, extent(s.dat))
             pres.c <- which(!is.na(values(ss)))
             #values(ras)[pres.c, ] <- S %*% co
-            raster::setValues(ras, S %*% co, index = pres.c)
+            setValues(ras, S %*% co, index = pres.c)
             co <- as.data.frame(co)
             names(co) <- c("Marg", paste0("Spec", (1:nf)))
             row.names(co) <- names(x)

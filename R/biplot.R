@@ -1,6 +1,11 @@
-biplot <- function(x = cnfa1, global = GLcenfa, xax = 1, yax = 2, percentage = .99, cores = 1){
+#' @importFrom grDevices chull
+#' @importFrom magrittr %>%
+#' @importFrom graphics abline arrows legend points polygon
+#' @importFrom stats sd
 
-  y <- raster(gl.cnfa)
+biplot <- function(x, global, xax = 1, yax = 2, percentage = .99, cores = 1){
+
+  y <- raster(global)
   co <- as.matrix(x@co)[, c(xax, yax)]
   co[,1] <- co[,1] / sqrt(t(co[,1]) %*% co[,1])
   xmin <- min(gli.qn[,1])
@@ -18,7 +23,8 @@ biplot <- function(x = cnfa1, global = GLcenfa, xax = 1, yax = 2, percentage = .
 
   gpres <- which(!is.na(values(max(dat))))
   gli <- values(dat)[gpres, ]
-  gli.c <- scale(gli, center = F, scale = apply(gli, 2, sd, na.rm = T))
+  g.sds <- apply(gli, 2, sd, na.rm = T)
+  gli.c <- scale(gli, center = F, scale = g.sds)
   gcentroid  <- colMeans(gli, na.rm = T)
   gdists <- sweep(gli.c, 2, gcentroid, "-")
   gdists <- sqrt(rowSums(gdists^2))
@@ -26,11 +32,12 @@ biplot <- function(x = cnfa1, global = GLcenfa, xax = 1, yax = 2, percentage = .
   gli.qn <- gli[which(gdists < gqn),]
   gch <- chull(gli.qn)
 
-  y <- raster(cnfa1)[[c(xax, yax)]]
+  y <- raster(x)[[c(xax, yax)]]
   pres <- which(!is.na(values(max(y))))
   li <- values(y)[pres, ]
   li[,1] <- li[,1]/sqrt(t(x@mf) %*% x@mf)
-  li.c <- scale(li, center = F, scale = apply(li, 2, sd, na.rm = T))
+  sds <- apply(li, 2, sd, na.rm = T)
+  li.c <- scale(li, center = F, scale = sds)
   centroid  <- colMeans(li, na.rm = T)
   dists <- sweep(li.c, 2, centroid, "-")
   dists <- sqrt(rowSums(dists^2))

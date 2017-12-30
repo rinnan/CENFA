@@ -1,4 +1,8 @@
 #' @keywords internal
+#' @importFrom stats na.omit
+#' @importFrom doSNOW registerDoSNOW
+#' @importFrom utils setTxtProgressBar txtProgressBar
+#' @importFrom foreach %dopar% foreach
 
 .scale <- function(x, filename = filename, progress = progress, overwrite = T){
 
@@ -59,7 +63,7 @@
     if(progress){
       pboptions(type = "txt", char = "=", txt.width = NA)
       result <- pbsapply(s, function(p) do.call(.covij, list(x = x, i = ii[p], j = jj[p])))
-    } else {result <- sapply(s, function(p) do.call(covij, list(x = x, i = ii[p], j = jj[p])))}
+    } else {result <- sapply(s, function(p) do.call(.covij, list(x = x, i = ii[p], j = jj[p])))}
   }
 
   if(cores > 1){

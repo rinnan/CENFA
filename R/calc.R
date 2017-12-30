@@ -1,10 +1,9 @@
 #' @keywords internal
-# @importFrom doSNOW registerDoSNOW
-# @importFrom foreach %dopar% foreach
-#' @importFrom raster blockSize extension filename raster getValues ncell pbClose pbCreate pbStep setValues writeRaster writeStart writeStop writeValues
-# @importFrom snow makeCluster clusterExport stopCluster
-# @importFrom stats cov na.omit
-# @importFrom utils setTxtProgressBar txtProgressBar
+#' @importFrom doSNOW registerDoSNOW
+#' @importFrom foreach %dopar% foreach
+#' @importFrom snow makeCluster clusterExport stopCluster
+#' @importFrom stats cov na.omit
+#' @importFrom utils setTxtProgressBar txtProgressBar
 
 .calc <- function(x, fun, filename='', na.rm, forcefun=FALSE, forceapply=FALSE, names, ...) {
 
@@ -239,6 +238,23 @@
     stop("unknown fun")
   }
 }
+
+.rowMin <- function (x, na.rm = TRUE) {
+  .doRowMin(x, narm = na.rm)
+}
+
+.rowMax <- function (x, na.rm = TRUE) {
+  .doRowMax(x, narm = na.rm)
+}
+
+# .doRowMin <- function (x, narm) {
+#   .Call(`_CENFA_doRowMin`, x, narm)
+# }
+#
+# .doRowMax <- function (x, narm) {
+#   .Call(`_CENFA_doRowMax`, x, narm)
+# }
+
 
 .makeTextFun <- function (fun) {
   if (class(fun) != "character") {

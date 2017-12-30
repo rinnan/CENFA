@@ -19,7 +19,7 @@
 #' @return present number of cells in which species is present
 #'
 #' @export
-#'
+#' @importFrom stats sd
 #'
 
 setGeneric("departure", function(x.hist, x.fut, s.dat, ...) {
@@ -46,8 +46,8 @@ setMethod("departure",
             }
             #gpres <- which(!is.na(values(x.hist[[1]])))
             #dat<-values(climdat)[gpres,]
-            speciesdat.ras <- rasterize(s.dat, x.hist, field = field)
-            pres <- which(!is.na(values(speciesdat.ras)))
+            ras <- rasterize(s.dat, x.hist, field = field)
+            pres <- which(!is.na(values(ras)))
             Ns <- length(pres)
             #prb<-values(speciesdat.ras)[pres]
             pres.dat <- values(x.hist)[pres,]
@@ -244,7 +244,7 @@ departure2 <- function(x.hist, s.dat, scale = FALSE, cores = 1, ...){
     names(ras) <- paste0("D", 1:nlayers(ras))
     #f2 <- function(x) sqrt(t(x) %*% Rs.inv %*% x)
     #ras <- clusterR(x.mask.h2, fun = calc, args = list(fun = f2), export = "Rs.inv", m = cores)
-    endCluster(cl)
+    endCluster()
   }
   #x.mask.h <- calc(x.mask.h, function(x) x %*% as.matrix(s.dat@co))
   #ras <- calc(x.mask.h, function(x) sqrt(t(x) %*% Rs.inv %*% x))
