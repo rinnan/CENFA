@@ -5,14 +5,16 @@
 \alias{cnfa-class}
 \title{cnfa-class}
 \description{
-An object of class \code{cnfa} is created from performing climate-niche factor analysis on species presence data using the \code{cnfa} function.
+An object of class \code{cnfa} is created by performing climate-niche factor
+analysis on species presence data using the \code{cnfa} function.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{call}}{Original function call.}
 
-\item{\code{mf}}{numeric. Named vector representing the marginality factor, describing the location of the species niche relative to the global niche.}
+\item{\code{mf}}{numeric. Named vector representing the marginality factor, describing
+the location of the species niche relative to the global niche.}
 
 \item{\code{marginality}}{numeric. Magnitude of the marginality factor \code{mf}.}
 
@@ -20,7 +22,8 @@ An object of class \code{cnfa} is created from performing climate-niche factor a
 
 \item{\code{sensitivity}}{numeric. The magnitude of the sensitivity factor \code{sf}.}
 
-\item{\code{p.spec}}{numeric. Named vector representing the proportion of specialization found on each factor.}
+\item{\code{p.spec}}{numeric. Named vector representing the proportion of specialization
+found on each factor.}
 
 \item{\code{co}}{p x p matrix of standardized variable loadings.}
 

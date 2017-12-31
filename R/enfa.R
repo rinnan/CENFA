@@ -1,12 +1,12 @@
 #' Ecological-Niche Factor Analysis
 #'
 #' Performs ecological-niche factor analysis using environmental raster data and
-#' species presence data in shapefile.
+#' species presence data.
 #'
 #' @aliases print.enfa, show.enfa
 #' @param x Raster* object, typically a brick or stack of ecological raster layers
-#' @param s.dat matrix, SpatialPolygons*, or SpatialPoints* object detailing
-#'   species presence or abundance
+#' @param s.dat matrix, SpatialPolygons*, SpatialPoints*, or sf object indicating
+#'   species presence
 #' @param field field of \code{s.dat} that specifies presence or abundance. This
 #'   is equivalent to the \code{field} argument in the \code{raster} package.
 #' @param fun function or character. Determines what values to assign to cells

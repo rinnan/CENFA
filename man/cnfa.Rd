@@ -7,6 +7,7 @@
 \alias{show.cnfa}
 \alias{cnfa,GLcenfa,Spatial-method}
 \alias{cnfa,Raster,Spatial-method}
+\alias{cnfa,Raster,sf-method}
 \alias{cnfa,Raster,matrix-method}
 \title{Climate-Niche Factor Analysis}
 \usage{
@@ -18,6 +19,9 @@ cnfa(x, s.dat, field, fun = "last", filename = "", ...)
 \S4method{cnfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
   filename = "", ...)
 
+\S4method{cnfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
+  filename = "", ...)
+
 \S4method{cnfa}{Raster,matrix}(x, s.dat, prj, scale = TRUE, filename = "",
   ...)
 }
@@ -25,7 +29,8 @@ cnfa(x, s.dat, field, fun = "last", filename = "", ...)
 \item{x}{Raster* object, typically a brick or stack with p climate
 raster layers, or a \code{GLcenfa} object}
 
-\item{s.dat}{Spatial* object detailing species presence or abundance}
+\item{s.dat}{matrix, SpatialPolygons*, SpatialPoints*, or sf object indicating
+species presence}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This
 is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}.}
@@ -51,18 +56,18 @@ scaled beforehand using the \code{\link{GLcenfa}} function.}
 Returns an S4 object of class \code{cnfa} with the following components:
 \describe{
   \item{call}{Original function call.}
-  \item{mf}{Marginality factor. Vector that describes the location of the
-   species Hutchinsonian niche relative to the global niche.}
+  \item{mf}{Marginality factor. Vector of length p that describes the location
+  of the species Hutchinsonian niche relative to the global niche.}
   \item{marginality}{Magnitude of the marginality factor.}
-  \item{sf}{Sensitivity factor. Vector that describes the amount of
+  \item{sf}{Sensitivity factor. Vector of length p that describes the amount of
    sensitivity for each climate variable.}
   \item{sensitivity}{Magnitude of the sensitivity factor.}
-  \item{s.prop}{Vector representing the amount of specialization found in
-   each CNFA factor.}
-  \item{co}{A matrix describing the amount of marginality and specialization
+  \item{s.prop}{Vector of length p representing the amount of specialization
+  found in each CNFA factor.}
+  \item{co}{A p x p matrix describing the amount of marginality and specialization
    on each CNFA factor. (The marginality column is normalized.)}
   \item{present}{Number of raster cells in which species is present.}
-  \item{ras}{Raster* object of transformed climate values.}
+  \item{ras}{RasterBrick of transformed climate values, with p layers.}
 }
 }
 \description{

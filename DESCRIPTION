@@ -11,6 +11,8 @@ Depends:
 	raster,
         sp,
         snow
+Suggests:
+        sf
 Imports:
         pbapply, 
         methods,
