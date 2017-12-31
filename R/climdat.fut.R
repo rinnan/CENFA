@@ -23,8 +23,7 @@
 #'   \item{PDQ}{precip of driest quarter}
 #'   \item{PHQ}{precip of hottest quarter}
 #'   \item{PCQ}{precip of coldest quarter}
-#'   ...
 #' }
 #' @source \url{www.worldclim.org}
-#' @family example data
+#' @seealso \code{\link{climdat.hist}}, \code{\link{ABPR}}
 "climdat.fut"

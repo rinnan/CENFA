@@ -5,52 +5,68 @@
 \alias{enfa}
 \alias{print.enfa,}
 \alias{show.enfa}
-\alias{enfa,RasterBrick,SpatialPolygonsDataFrame-method}
-\alias{enfa,RasterBrick,SpatialPoints-method}
+\alias{enfa,Raster,Spatial-method}
 \title{Ecological-Niche Factor Analysis}
 \usage{
 enfa(x, s.dat, ...)
 
-\S4method{enfa}{RasterBrick,SpatialPolygonsDataFrame}(x, s.dat, field, nf = 1,
-  scale = FALSE, ...)
-
-\S4method{enfa}{RasterBrick,SpatialPoints}(x, s.dat, field, nf = 1,
-  scale = FALSE, fun = "count", ...)
+\S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
+  filename = "", ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers}
 
-\item{s.dat}{SpatialPolygons* object detailing species presence or abundance}
+\item{s.dat}{matrix, SpatialPolygons*, or SpatialPoints* object detailing species presence or abundance}
 
-\item{...}{Additonal arguments for rasterizing as for \code{\link[raster]{rasterize}}.}
+\item{...}{Additional arguments for rasterizing as for \code{\link[raster]{rasterize}}.}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in the \code{raster} package.}
 
-\item{nf}{integer. Specifies the number of specialization axes to keep after transformation.}
+\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link[raster]{rasterize}}.}
 
 \item{scale}{logical. If \code{TRUE} then the values of the Raster* object will
 be centered and scaled. Depending on the resolution of the climate data and the
 extent of the study area, this can be quite time consuming. If running this
 function for multiple species, it is recommended that the climate data be scaled beforehand.}
 
-\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link[raster]{rasterize}}.}
+\item{filename}{character. Optional filename to save the Raster* output to file. If this is not provided, a temporary file will be created for large \code{x}.}
+
+\item{nf}{integer. Specifies the number of specialization axes to keep after transformation.}
 }
 \value{
 Returns an S4 object of class \code{enfa} with the following components:
-
-mf marginality factor. Vector that describes the location of the species Hutchinsonian niche.
-
-marginality. Standardized magnitude of the marginality factor.
-
-s specialization factors.  of specializations.
-
-speciality specialization. Vector
-
-ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
+\describe{
+  \item{call}{Original function call.}
+  \item{mf}{Marginality factor. Vector that describes the location of the species Hutchinsonian niche relative to the global niche.}
+  \item{marginality}{Magnitude of the marginality factor.}
+  \item{sf}{Specialization factor. Vector of eigenvalues of specialization.}
+  \item{specialization}{Overall specialization, equal to the square root of the sum of eigenvalues of specialization.}
+  \item{s.prop}{Vector representing the amount of specialization found in each ENFA factor.}
+  \item{co}{A matrix describing the amount of marginality and specialization on each ENFA factor. (The marginality column is normalized.)}
+  \item{present}{Number of raster cells in which species is present.}
+  \item{ras}{Raster* object of transformed environmental values.}
+}
 }
 \description{
 Performs ecological-niche factor analysis using environmental raster data and species presence data in shapefile.
 }
 \details{
-Hirzel et al. (2002) defined the overall marginality $M$ as a standardized distance between the centroid of the species' niche and the global niche. Basille and Calenge (2008), however, defined $M$ as $$M = m^Tm$$. The default \code{mar.type} reflects Basille and Calenge's definition so that results will by default agree with those calculated using Basille and Calenge's \code{adehabitatHS} package.
+Hirzel et al. (2002) defined the overall marginality $M$ as a standardized distance between the centroid of the species' niche and the global niche.
+         Basille and Calenge (2008), however, defined $M$ as $$M = m^Tm$$. The default \code{mar.type} reflects Basille and Calenge's definition so that results
+         will by default agree with those calculated using Basille and Calenge's \code{adehabitatHS} package.
+}
+\examples{
+mod1 <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
+
+# using GLcenfa as an initial step
+# for multi-species comparison
+
+glc <- GLcenfa(x = climdat.hist)
+\dontrun{
+mod2 <- enfa(x = glc, s.dat = ABPR, field = "CODE")
+all.equal(mf(mod1), mf(mod2))}
+
+}
+\seealso{
+\code{\link{GLcenfa}}, \code{\link{cnfa}}
 }

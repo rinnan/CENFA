@@ -15,7 +15,6 @@ ABPR
 Historical range map for Abies procera, from "Atlas of United States Trees" by Elbert L. Little, Jr.
 }
 \seealso{
-Other example data: \code{\link{climdat.fut}},
-  \code{\link{climdat.hist}}
+\code{\link{climdat.hist}}, \code{\link{climdat.fut}}
 }
 \keyword{datasets}

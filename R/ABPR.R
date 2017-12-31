@@ -4,5 +4,5 @@
 #'
 #' @format A SpatialPolygonDataFrame.
 #' @source \url{www.usgs.gov}
-#' @family example data
+#' @seealso \code{\link{climdat.hist}}, \code{\link{climdat.fut}}
 "ABPR"

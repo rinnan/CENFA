@@ -9,42 +9,52 @@
 \alias{GLcenfa,RasterStack-method}
 \title{GLcenfa}
 \usage{
-GLcenfa(x, scale = FALSE, filename = "", progress = TRUE, cores = 1)
+GLcenfa(x, scale = TRUE, filename = "", progress = TRUE, cores = 1)
 
-\S4method{GLcenfa}{RasterBrick}(x, scale = FALSE, filename = "",
+\S4method{GLcenfa}{RasterBrick}(x, scale = TRUE, filename = "",
   progress = TRUE, cores = 1)
 
-\S4method{GLcenfa}{RasterStack}(x, scale = FALSE, filename = "",
+\S4method{GLcenfa}{RasterStack}(x, scale = TRUE, filename = "",
   progress = TRUE, cores = 1)
 }
 \arguments{
-\item{x}{Raster* object, typically a brick or stack of p environmental raster layers.}
+\item{x}{Raster* object, typically a brick or stack of p environmental raster
+layers.}
 
 \item{scale}{logical. If \code{TRUE} then the values of \code{x} will
 be centered and scaled. Depending on the resolution of the data and the
 extent of the study area, this can be quite time consuming.}
 
-\item{filename}{character. Optional filename to save the RasterBrick output to file. If this is not provided, a temporary file will be created for large \code{x}.}
+\item{filename}{character. Optional filename to save the RasterBrick output
+to file. If this is not provided, a temporary file will be created for large
+\code{x}.}
 
 \item{progress}{logical. If \code{TRUE} then progress updates are printed.}
 
-\item{cores}{numeric. Number of cores to utilize for speedier parallel computation of the covariance matrix.}
+\item{cores}{numeric. Number of cores to utilize for speedier parallel
+computation of the covariance matrix.}
 }
 \value{
 Returns an S4 object of class \code{GLcenfa} with the following components:
-
-global_ras Raster* brick \code{x} with p layers, possibly centered and scaled.
-
-cov matrix. Global p x p covariance matrix.
-
-center numeric. Layer means of \code{x}.
-
-sd numeric. Layer standard deviations of \code{x}.
-
-ncells numeric. Total number of raster cells with environmental data.
+\describe{
+  \item{global_ras}{Raster* \code{x} of p layers, possibly centered and scaled.}
+  \item{cov}{Global p x p covariance matrix.}
+  \item{center}{Vector of layer means of \code{x}.}
+  \item{sd}{Vector of layer standard deviations of \code{x}.}
+  \item{ncells}{Total number of raster cells with environmental data.}
+}
 }
 \description{
-This function is used to facilitate comparisons between species in the same study area. It speeds up the computation of multiple CNFAs or ENFAs by calculating the global covariance matrix as a first step, which can then be fed into the \code{\link{cnfa}} or \code{\link{enfa}} functions as their first argument. This saves the user from having to calculate the global covariance matrix for each species, which can take quite a bit of time.
+This function is used to facilitate comparisons between species in the same
+study area. It speeds up the computation of multiple CNFAs or ENFAs by calculating
+the global covariance matrix as a first step, which can then be fed into the
+\code{\link{cnfa}} or \code{\link{enfa}} functions as their first argument.
+This saves the user from having to calculate the global covariance matrix for
+each species, which can take quite a bit of time.
+}
+\examples{
+glc <- GLcenfa(x = climdat.hist)
+
 }
 \seealso{
 \code{\link{cnfa}}, \code{\link{enfa}}

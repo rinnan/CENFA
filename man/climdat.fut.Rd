@@ -25,7 +25,6 @@
   \item{PDQ}{precip of driest quarter}
   \item{PHQ}{precip of hottest quarter}
   \item{PCQ}{precip of coldest quarter}
-  ...
 }}
 \source{
 \url{www.worldclim.org}
@@ -37,7 +36,6 @@ climdat.fut
 Future climate dataset of 19 bioclimate variables (\url{www.worldclim.org}), cropped to the extent of occurrence for Abies procera. Based on the MIROC5 GCM projections under the RCP8.5 scenario for 2050.
 }
 \seealso{
-Other example data: \code{\link{ABPR}},
-  \code{\link{climdat.hist}}
+\code{\link{climdat.hist}}, \code{\link{ABPR}}
 }
 \keyword{datasets}

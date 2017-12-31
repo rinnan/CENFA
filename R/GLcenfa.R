@@ -1,33 +1,49 @@
 #' GLcenfa
 #'
-#' This function is used to facilitate comparisons between species in the same study area. It speeds up the computation of multiple CNFAs or ENFAs by calculating the global covariance matrix as a first step, which can then be fed into the \code{\link{cnfa}} or \code{\link{enfa}} functions as their first argument. This saves the user from having to calculate the global covariance matrix for each species, which can take quite a bit of time.
+#' This function is used to facilitate comparisons between species in the same
+#' study area. It speeds up the computation of multiple CNFAs or ENFAs by calculating
+#' the global covariance matrix as a first step, which can then be fed into the
+#' \code{\link{cnfa}} or \code{\link{enfa}} functions as their first argument.
+#' This saves the user from having to calculate the global covariance matrix for
+#' each species, which can take quite a bit of time.
 #'
 #' @aliases print.GLcenfa, show.GLcenfa
-#' @param x Raster* object, typically a brick or stack of p environmental raster layers.
+#'
+#' @param x Raster* object, typically a brick or stack of p environmental raster
+#'   layers.
 #' @param scale logical. If \code{TRUE} then the values of \code{x} will
 #' be centered and scaled. Depending on the resolution of the data and the
 #' extent of the study area, this can be quite time consuming.
 #' @param progress logical. If \code{TRUE} then progress updates are printed.
-#' @param cores numeric. Number of cores to utilize for speedier parallel computation of the covariance matrix.
-#' @param filename character. Optional filename to save the RasterBrick output to file. If this is not provided, a temporary file will be created for large \code{x}.
+#' @param cores numeric. Number of cores to utilize for speedier parallel
+#'   computation of the covariance matrix.
+#' @param filename character. Optional filename to save the RasterBrick output
+#'   to file. If this is not provided, a temporary file will be created for large
+#'   \code{x}.
+#'
+#' @examples
+#' glc <- GLcenfa(x = climdat.hist)
+#'
 #' @return Returns an S4 object of class \code{GLcenfa} with the following components:
-#' @return global_ras Raster* brick \code{x} with p layers, possibly centered and scaled.
-#' @return cov matrix. Global p x p covariance matrix.
-#' @return center numeric. Layer means of \code{x}.
-#' @return sd numeric. Layer standard deviations of \code{x}.
-#' @return ncells numeric. Total number of raster cells with environmental data.
+#' \describe{
+#'   \item{global_ras}{Raster* \code{x} of p layers, possibly centered and scaled.}
+#'   \item{cov}{Global p x p covariance matrix.}
+#'   \item{center}{Vector of layer means of \code{x}.}
+#'   \item{sd}{Vector of layer standard deviations of \code{x}.}
+#'   \item{ncells}{Total number of raster cells with environmental data.}
+#' }
+#'
 #' @seealso \code{\link{cnfa}}, \code{\link{enfa}}
 #' @export
-#'
 
-setGeneric("GLcenfa", function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1) {
+setGeneric("GLcenfa", function(x, scale = TRUE, filename = '', progress = TRUE, cores = 1) {
   standardGeneric("GLcenfa")
 })
 
 #' @rdname GLcenfa
 setMethod("GLcenfa",
           signature(x = "RasterBrick"),
-          function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1){
+          function(x, scale = TRUE, filename = '', progress = TRUE, cores = 1){
 
             out <- brick(x)
 
@@ -82,7 +98,7 @@ setMethod("GLcenfa",
 #' @rdname GLcenfa
 setMethod("GLcenfa",
           signature(x = "RasterStack"),
-          function(x, scale = FALSE, filename = '', progress = TRUE, cores = 1){
+          function(x, scale = TRUE, filename = '', progress = TRUE, cores = 1){
 
             out <- brick(x)
 

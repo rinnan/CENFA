@@ -5,74 +5,82 @@
 \alias{cnfa}
 \alias{print.cnfa,}
 \alias{show.cnfa}
-\alias{cnfa,GLcenfa,SpatialPolygonsDataFrame-method}
-\alias{cnfa,GLcenfa,SpatialPoints-method}
-\alias{cnfa,RasterBrick,SpatialPolygonsDataFrame-method}
-\alias{cnfa,RasterBrick,SpatialPoints-method}
-\alias{cnfa,RasterBrick,matrix-method}
-\title{Climate Niche Factor Analysis}
+\alias{cnfa,GLcenfa,Spatial-method}
+\alias{cnfa,Raster,Spatial-method}
+\alias{cnfa,Raster,matrix-method}
+\title{Climate-Niche Factor Analysis}
 \usage{
-cnfa(x, s.dat, field, filename = "", ...)
+cnfa(x, s.dat, field, fun = "last", filename = "", ...)
 
-\S4method{cnfa}{GLcenfa,SpatialPolygonsDataFrame}(x, s.dat, field,
+\S4method{cnfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
   filename = "", ...)
 
-\S4method{cnfa}{GLcenfa,SpatialPoints}(x, s.dat, field, fun = "count",
-  scale = FALSE, filename = "", ...)
-
-\S4method{cnfa}{RasterBrick,SpatialPolygonsDataFrame}(x, s.dat, field,
-  scale = FALSE, filename = "", ...)
-
-\S4method{cnfa}{RasterBrick,SpatialPoints}(x, s.dat, field, fun = "count",
-  scale = FALSE, filename = "", ...)
-
-\S4method{cnfa}{RasterBrick,matrix}(x, s.dat, prj, scale = FALSE,
+\S4method{cnfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
   filename = "", ...)
+
+\S4method{cnfa}{Raster,matrix}(x, s.dat, prj, scale = TRUE, filename = "",
+  ...)
 }
 \arguments{
-\item{x}{Raster* or GLcenfa object, typically a brick or stack with p climate raster layers}
+\item{x}{Raster* object, typically a brick or stack with p climate
+raster layers, or a \code{GLcenfa} object}
 
 \item{s.dat}{Spatial* object detailing species presence or abundance}
 
-\item{field}{field of \code{s.dat} that specifies presence or abundance. This is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}.}
+\item{field}{field of \code{s.dat} that specifies presence or abundance. This
+is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}.}
 
-\item{filename}{character. Optional filename to save the Raster* output to file. If this is not provided, a temporary file will be created for large \code{x}.}
+\item{fun}{function or character. Determines what values to assign to cells
+with multiple spatial features, similar to the \code{fun} argument in
+\code{\link[raster]{rasterize}}.}
+
+\item{filename}{character. Optional filename to save the Raster* output to
+file. If this is not provided, a temporary file will be created for large \code{x}.}
 
 \item{...}{Additonal arguments for rasterizing as for \code{\link[raster]{rasterize}}.}
 
-\item{fun}{function or character. Determines what values to assign to cells with multiple spatial features, similar to the \code{fun} argument in \code{\link[raster]{rasterize}}.}
-
-\item{scale}{logical. If \code{TRUE} then the values of \code{x} will
-get centered and scaled. Depending on the resolution of the climate data and the
-extent of the study area, this can be quite time consuming. If running this
-function for multiple species, it is recommended that the data be scaled beforehand.}
+\item{scale}{logical. If \code{TRUE} then the values of \code{x} will get
+centered and scaled. Depending on the resolution of the climate data and
+the extent of the study area, this can be quite time consuming. If running
+this function for multiple species, it is recommended that the data be
+scaled beforehand using the \code{\link{GLcenfa}} function.}
 
 \item{prj}{character. proj4string denoting projection of species observation data.}
 }
 \value{
 Returns an S4 object of class \code{cnfa} with the following components:
-
-call Original function call.
-
-mf marginality factor. Vector that describes the location of the species Hutchinsonian niche relative to the global niche.
-
-marginality Magnitude of the marginality factor.
-
-sf sensitivity factor.
-
-sensitivity Magnitude of the sensitivity factor.
-
-s.prop Vector representing the amount of specialization found in each ENFA factor.
-
-co A matrix describing the amount of marginality and specialization on each factor. (The marginality column is normalized.)
-
-present numeric. Number of raster cells in which species is present.
-
-ras Raster* object of transformed climate values.
+\describe{
+  \item{call}{Original function call.}
+  \item{mf}{Marginality factor. Vector that describes the location of the
+   species Hutchinsonian niche relative to the global niche.}
+  \item{marginality}{Magnitude of the marginality factor.}
+  \item{sf}{Sensitivity factor. Vector that describes the amount of
+   sensitivity for each climate variable.}
+  \item{sensitivity}{Magnitude of the sensitivity factor.}
+  \item{s.prop}{Vector representing the amount of specialization found in
+   each CNFA factor.}
+  \item{co}{A matrix describing the amount of marginality and specialization
+   on each CNFA factor. (The marginality column is normalized.)}
+  \item{present}{Number of raster cells in which species is present.}
+  \item{ras}{Raster* object of transformed climate values.}
+}
 }
 \description{
-Performs climate niche factor analysis using climate raster data and species presence data.
+Performs climate-niche factor analysis using climate raster data and species
+presence data.
 }
-\details{
-Hirzel et al. (2002) defined the overall marginality M as a standardized distance between the centroid of the species' niche and the global niche, given by \deqn{M = \frac{\sqrt{\sum\limits_{j=1}^P m_j^2}}{1.96}.} Basille and Calenge (2008), however, defined M as \deqn{M = \mathbf{m}^T\mathbf{m}.} The default \code{mar.type} reflects Basille and Calenge's definition so that results will by default agree with those calculated using Basille and Calenge's \code{adehabitatHS} package.
+\examples{
+mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
+
+# using GLcenfa as an initial step
+# for multi-species comparison
+
+glc <- GLcenfa(x = climdat.hist)
+mod2 <- cnfa(x = glc, s.dat = ABPR, field = "CODE")
+
+all.equal(mf(mod1), mf(mod2))
+
+}
+\seealso{
+\code{\link{GLcenfa}}, \code{\link{enfa}}
 }
