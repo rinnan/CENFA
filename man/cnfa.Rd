@@ -11,7 +11,7 @@
 \alias{cnfa,Raster,matrix-method}
 \title{Climate-Niche Factor Analysis}
 \usage{
-cnfa(x, s.dat, field, fun = "last", filename = "", ...)
+cnfa(x, s.dat, ...)
 
 \S4method{cnfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
   filename = "", ...)
@@ -32,6 +32,8 @@ raster layers, or a \code{GLcenfa} object}
 \item{s.dat}{matrix, SpatialPolygons*, SpatialPoints*, or sf object indicating
 species presence}
 
+\item{...}{Additonal arguments for rasterizing as for \code{\link[raster]{rasterize}}.}
+
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This
 is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}.}
 
@@ -41,8 +43,6 @@ with multiple spatial features, similar to the \code{fun} argument in
 
 \item{filename}{character. Optional filename to save the Raster* output to
 file. If this is not provided, a temporary file will be created for large \code{x}.}
-
-\item{...}{Additonal arguments for rasterizing as for \code{\link[raster]{rasterize}}.}
 
 \item{scale}{logical. If \code{TRUE} then the values of \code{x} will get
 centered and scaled. Depending on the resolution of the climate data and
@@ -83,7 +83,9 @@ mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
 glc <- GLcenfa(x = climdat.hist)
 mod2 <- cnfa(x = glc, s.dat = ABPR, field = "CODE")
 
-all.equal(mf(mod1), mf(mod2))
+# same results either way
+all.equal(m.factor(mod1), m.factor(mod2))
+all.equal(s.factor(mod1), s.factor(mod2))
 
 }
 \seealso{

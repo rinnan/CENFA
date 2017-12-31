@@ -1,4 +1,4 @@
-#' Climate Niche Factor Analysis
+#' Accessing CENFA slots
 #'
 #' Functions for extracting data from slots of objects of classes \code{cnfa} and \code{enfa}.
 #'
@@ -6,29 +6,40 @@
 #'
 #' @examples
 #' mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
-#' mf(mod1)
+#' m.factor(mod1)
 #'
-#' @export
+#' @name slot-access
+NULL
 
-mf <- function(x){
+#' @rdname slot-access
+#' @export
+m.factor <- function(x){
   return(x@mf)
 }
 
-sf <- function(x){
+#' @rdname slot-access
+#' @export
+s.factor <- function(x){
   return(x@sf)
 }
 
+#' @rdname slot-access
+#' @export
 marginality <- function(x){
   if (!inherits(x, c("cnfa", "enfa"))) stop("Object of class 'cnfa' or 'enfa' expected")
   return(x@marginality)
 }
 
+#' @rdname slot-access
+#' @export
 specialization <- function(x){
   if (!inherits(x, "enfa"))
     stop("Object of class 'enfa' expected")
   return(x@specialization)
 }
 
+#' @rdname slot-access
+#' @export
 sensitivity <- function(x){
   if (!inherits(x, "cnfa"))
     stop("Object of class 'cnfa' expected")

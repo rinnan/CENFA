@@ -68,7 +68,7 @@ setMethod("enfa",
           signature(x = "Raster", s.dat = "Spatial"),
           function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", ...){
 
-            call <- match.call()
+            call <- sys.calls()[[1]]
 
             if (! inherits(x, 'Raster')) stop('"x" should be a "Raster*" object')
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
@@ -116,7 +116,7 @@ setMethod("enfa",
             z <- Rs12 %*% mar
             y <- z/sqrt(sum(z^2))
             H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
-            sf <- eigen(H)$values
+            sf <- eigen(H)$values[-cZ]
             spec <- sqrt(sum(sf))/length(sf)
             s.p <- abs(sum(diag(W)) - sum(diag(H)))
             s <- c(s.p, sf)
@@ -137,8 +137,9 @@ setMethod("enfa",
               cat("\nCreating factor rasters...")
               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
             }
-            colnames(co) <- c("Marg", paste0("Spec", (1:(cZ-1))))
+            colnames(co) <- names(s.p) <- nm
             rownames(co) <- names(x)
+            names(sf) <- nm[-1]
 
             enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = sf, specialization = spec,
                                  p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
