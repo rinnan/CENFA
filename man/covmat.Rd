@@ -10,19 +10,27 @@ covmat(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE,
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of climate raster layers}
 
-\item{cores}{numeric. Number of CPU cores you wish to utilize for parallel processing.}
+\item{cores}{numeric. Number of CPU cores to utilize for parallel processing.}
 
-\item{center}{logical. If \code{TRUE}, the Raster* object will get centered before calculating the covariance.}
+\item{center}{logical. If \code{TRUE}, the Raster* object will get centered
+before calculating the covariance.}
 
-\item{scale}{logical. If \code{TRUE}, the Raster* object will get scaled before calculating the covariance.}
+\item{scale}{logical. If \code{TRUE}, the Raster* object will get scaled
+before calculating the covariance.}
 
 \item{progress}{logical. If \code{TRUE}, a progress bar will be displayed.}
 
-\item{sample}{logical. If \code{TRUE}, the sample covariance is calculated with a denominator of $n-1$.}
+\item{sample}{logical. If \code{TRUE}, the sample covariance is calculated
+with a denominator of $n-1$.}
 }
 \value{
 Returns a matrix with the same row and column names as the layers of the Raster* object.
 }
 \description{
 \code{covmat} efficiently calculates the covariance between different climate and ecological variables, taking advantage of parallel processing and pulling data into memory only as necessary. For large datasets with lots of variables, calculating the covariance matrix rapidly becomes unwieldy, as the number of calculations required grows quadratically with the number of variables.
+}
+\examples{
+mat1 <- covmat(x = climdat.hist)
+mat2 <- covmat(x = climdat.hist, center = TRUE, scale = TRUE)
+
 }

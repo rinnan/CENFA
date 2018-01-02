@@ -5,12 +5,20 @@
 \alias{enfa}
 \alias{print.enfa,}
 \alias{show.enfa}
+\alias{enfa,GLcenfa,Spatial-method}
 \alias{enfa,Raster,Spatial-method}
+\alias{enfa,Raster,sf-method}
 \title{Ecological-Niche Factor Analysis}
 \usage{
 enfa(x, s.dat, ...)
 
+\S4method{enfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
+  filename = "", ...)
+
 \S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
+  filename = "", ...)
+
+\S4method{enfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
   filename = "", ...)
 }
 \arguments{
@@ -28,14 +36,14 @@ is equivalent to the \code{field} argument in the \code{raster} package.}
 with multiple spatial features, similar to the \code{fun} argument in
 \code{\link[raster]{rasterize}}.}
 
+\item{filename}{character. Optional filename to save the Raster* output to
+file. If this is not provided, a temporary file will be created for large \code{x}.}
+
 \item{scale}{logical. If \code{TRUE} then the values of the Raster* object will
 be centered and scaled. Depending on the resolution of the climate data and
 the extent of the study area, this can be quite time consuming. If running
 this function for multiple species, it is recommended that the climate data
 be scaled beforehand using the \code{\link{GLcenfa}} function.}
-
-\item{filename}{character. Optional filename to save the Raster* output to
-file. If this is not provided, a temporary file will be created for large \code{x}.}
 }
 \value{
 Returns an S4 object of class \code{enfa} with the following components:
@@ -74,9 +82,8 @@ mod1 <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
 # for multi-species comparison
 
 glc <- GLcenfa(x = climdat.hist)
-\dontrun{
 mod2 <- enfa(x = glc, s.dat = ABPR, field = "CODE")
-all.equal(mf(mod1), mf(mod2))}
+all.equal(m.factor(mod1), m.factor(mod2))
 
 }
 \seealso{

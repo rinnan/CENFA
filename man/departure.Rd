@@ -3,50 +3,65 @@
 \docType{methods}
 \name{departure}
 \alias{departure}
-\alias{departure,RasterBrick,RasterBrick,SpatialPolygonsDataFrame-method}
-\alias{departure,RasterBrick,RasterBrick,cnfa-method}
-\alias{departure,RasterBrick,missing,cnfa-method}
+\alias{departure,Raster,missing,cnfa-method}
+\alias{departure,Raster,Raster,cnfa-method}
+\alias{departure,Raster,Raster,SpatialPolygons-method}
 \title{Climatic departure}
 \usage{
 departure(x.hist, x.fut, s.dat, ...)
 
-\S4method{departure}{RasterBrick,RasterBrick,SpatialPolygonsDataFrame}(x.hist,
-  x.fut, s.dat, field, scale = FALSE)
+\S4method{departure}{Raster,missing,cnfa}(x.hist, s.dat, field, fun = "last",
+  ...)
 
-\S4method{departure}{RasterBrick,RasterBrick,cnfa}(x.hist, x.fut, s.dat,
-  scale = FALSE)
+\S4method{departure}{Raster,Raster,cnfa}(x.hist, x.fut, s.dat, field,
+  fun = "last", scale = TRUE, parallel = FALSE, ...)
 
-\S4method{departure}{RasterBrick,missing,cnfa}(x.hist, s.dat, scale = FALSE)
+\S4method{departure}{Raster,Raster,SpatialPolygons}(x.hist, x.fut, s.dat, field,
+  fun = "last", scale = TRUE, parallel = FALSE, n, ...)
 }
 \arguments{
-\item{x.hist}{Raster* object, typically a brick or stack of historical climate raster layers}
+\item{x.hist}{Raster* object, typically a brick or stack of historical climate
+raster layers}
 
 \item{x.fut}{Raster* object, future climate values with the same layers as x.hist}
 
-\item{s.dat}{SpatialPolygons* object detailing species presence or abundance}
+\item{s.dat}{SpatialPolygons*, sf, or cnfa object detailing species presence}
 
 \item{...}{Additional arguments for \code{\link[raster]{clusterR}}.}
 
-\item{field}{field of \code{speciesdat} that specifies presence or abundance. This is equivalent to the \code{field} argument of \code{raster::rasterize}.}
+\item{field}{field of \code{speciesdat} that specifies presence. This is
+equivalent to the \code{field} argument of \code{raster::rasterize}.}
 
-\item{scale}{logical. If \code{TRUE} then the values of \code{x.hist} and \code{x.fut} will
-be centered and scaled by the means and sds of the historical climate data. Depending on the resolution of the data and the
-extent of the study area, this can be quite time consuming. If running this
-function for multiple species, it is recommended that the climate data be scaled beforehand.}
+\item{fun}{function or character. Determines what values to assign to cells
+with multiple spatial features, similar to the \code{fun} argument in
+\code{\link[raster]{rasterize}}.}
+
+\item{scale}{logical. If \code{TRUE} then the values of \code{x.hist} and
+\code{x.fut} will be centered and scaled by the means and sds of the historical
+climate data. Depending on the resolution of the data and the extent of the
+study area, this can be quite time consuming. If running this function for
+multiple species, it is recommended that the climate data be scaled beforehand.}
+
+\item{parallel}{logical. If \code{TRUE} then multiple cores are utilized.}
+
+\item{n}{numeric. Optional number of CPU cores to utilize for parallel processing.}
 }
 \value{
-Returns an S4 object of class \code{cnfa} with the following slots:
-
-call original function call
-
-df departure factor d
-
-departure climatic departure D of species
-
-departure_ras raster of distances d_i
-
-present number of cells in which species is present
+Returns an S4 object of class \code{departure} with the following slots:
+\describe{
+  \item{call}{Original function call.}
+  \item{df}{Departure factor. Vector of length p that describes the amount of
+   departure between future and historical conditions for each climate variable.}
+  \item{departure}{Magnitude of the departure factor.}
+  \item{present}{Number of raster cells in which species is present.}
+  \item{ras}{RasterBrick of climate departures, with p layers.}
+}
 }
 \description{
-Calculates the climatic departure of a species using historical and future climate raster data and species presence data.
+Calculates the climatic departure of a species using historical and future
+climate raster data and species presence data.
+}
+\examples{
+dep <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR)
+
 }

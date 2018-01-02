@@ -3,12 +3,21 @@
 #' \code{covmat} efficiently calculates the covariance between different climate and ecological variables, taking advantage of parallel processing and pulling data into memory only as necessary. For large datasets with lots of variables, calculating the covariance matrix rapidly becomes unwieldy, as the number of calculations required grows quadratically with the number of variables.
 #'
 #' @param x Raster* object, typically a brick or stack of climate raster layers
-#' @param cores numeric. Number of CPU cores you wish to utilize for parallel processing.
-#' @param center logical. If \code{TRUE}, the Raster* object will get centered before calculating the covariance.
-#' @param scale logical. If \code{TRUE}, the Raster* object will get scaled before calculating the covariance.
+#' @param cores numeric. Number of CPU cores to utilize for parallel processing.
+#' @param center logical. If \code{TRUE}, the Raster* object will get centered
+#'   before calculating the covariance.
+#' @param scale logical. If \code{TRUE}, the Raster* object will get scaled
+#'   before calculating the covariance.
 #' @param progress logical. If \code{TRUE}, a progress bar will be displayed.
-#' @param sample logical. If \code{TRUE}, the sample covariance is calculated with a denominator of $n-1$.
+#' @param sample logical. If \code{TRUE}, the sample covariance is calculated
+#'   with a denominator of $n-1$.
+#'
+#' @examples
+#' mat1 <- covmat(x = climdat.hist)
+#' mat2 <- covmat(x = climdat.hist, center = TRUE, scale = TRUE)
+#'
 #' @return Returns a matrix with the same row and column names as the layers of the Raster* object.
+#'
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 
@@ -19,6 +28,10 @@ covmat <- function(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE,
   small <- raster::canProcessInMemory(x)
   if(small){
     dat <- stats::na.omit(raster::values(x))
+    if(center) dat <- dat - colMeans(dat)
+    if(scale) {
+      sds <- apply(dat, 2, sd)
+      dat <- dat/sds}
     mat <- cov(dat, method = "pearson")
     return(mat)
   }

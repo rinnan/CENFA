@@ -22,3 +22,8 @@ Raster* object.
 \description{
 Extracts Raster* objects from objects of classes \code{\link{cnfa}}, \code{\link{enfa}}, and \code{\link{GLcenfa}}.
 }
+\examples{
+mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
+ras <- raster(mod1)
+
+}
