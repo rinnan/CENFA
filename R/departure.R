@@ -71,7 +71,7 @@ setMethod("departure",
 #' @rdname departure
 setMethod("departure",
           signature(x.hist = "Raster", x.fut = "Raster", s.dat = "cnfa"),
-          function(x.hist, x.fut, s.dat, field, fun = "last", scale = TRUE, parallel = FALSE, ...) {
+          function(x.hist, x.fut, s.dat, field, fun = "last", scale = TRUE, parallel = FALSE, n, ...) {
 
             call <- sys.calls()[[1]]
             sp.ras <- raster(s.dat)

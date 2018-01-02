@@ -11,8 +11,6 @@ Depends:
 	raster,
         sp,
         snow
-Suggests:
-        sf
 Imports:
         pbapply, 
         methods,
@@ -21,7 +19,8 @@ Imports:
         graphics,
         grDevices,
         magrittr,
-        Rcpp
+        Rcpp,
+        sf
 LinkingTo: Rcpp
 License: GPL (>= 3)
 LazyData: TRUE

@@ -14,7 +14,7 @@ departure(x.hist, x.fut, s.dat, ...)
   ...)
 
 \S4method{departure}{Raster,Raster,cnfa}(x.hist, x.fut, s.dat, field,
-  fun = "last", scale = TRUE, parallel = FALSE, ...)
+  fun = "last", scale = TRUE, parallel = FALSE, n, ...)
 
 \S4method{departure}{Raster,Raster,SpatialPolygons}(x.hist, x.fut, s.dat, field,
   fun = "last", scale = TRUE, parallel = FALSE, n, ...)

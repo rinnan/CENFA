@@ -4,7 +4,7 @@
 #'
 #' @slot call Original function call.
 #' @slot df departure factor.
-#' @slot departure Standardized magnitude of the marginality factor.
+#' @slot departure Magnitude of the departure factor.
 #' @slot present Number of cells in which species is present.
 #' @slot ras Raster* object of transformed climate values, with number of layers equal to nf + 1.
 #' @export

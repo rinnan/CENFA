@@ -14,7 +14,7 @@ An object of class \code{departure} is created from performing ecological-niche 
 
 \item{\code{df}}{departure factor.}
 
-\item{\code{departure}}{Standardized magnitude of the marginality factor.}
+\item{\code{departure}}{Magnitude of the departure factor.}
 
 \item{\code{present}}{Number of cells in which species is present.}
 

@@ -4,23 +4,35 @@
 \alias{sensitivity_map}
 \title{Create a sensitivity map}
 \usage{
-sensitivity_map(cnfa, cores = 1, filename = "", ...)
+sensitivity_map(cnfa, parallel = FALSE, n, filename = "", ...)
 }
 \arguments{
-\item{cnfa}{cnfa object.}
+\item{cnfa}{Object of class \code{cnfa}.}
 
-\item{cores}{numeric. Number of cores to use for calculation (optional).}
+\item{parallel}{logical. If \code{TRUE} then multiple cores are utilized.}
+
+\item{n}{numeric. Number of cores to use for calculation (optional).}
 
 \item{filename}{character. Output filename (optional).}
 
 \item{...}{Additional arguments for file writing as for \code{\link[raster]{writeRaster}}.}
 }
 \value{
-RasterLayer.
+RasterLayer of sensitivity values.
 }
 \description{
 Creates a sensitivity map of species habitat.
 }
 \details{
-The values of the sensitivity raster are calculated by centering the habitat's climate data around \strong{m} and projecting onto the sensitivity factor \strong{s}, given by formula  |\bold{S} - \bold{m}|\bold{s}.
+The values of the sensitivity raster are calculated by centering the
+habitat's climate data around \strong{m} and projecting onto the sensitivity
+factor \strong{s}, given by formula  |\bold{S} - \bold{m}|\bold{s}.
+}
+\examples{
+mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
+sens.map <- sensitivity_map(mod1)
+
+}
+\seealso{
+\code{\link{cnfa}}
 }
