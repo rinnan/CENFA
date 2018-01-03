@@ -6,7 +6,7 @@ Date: 2016-09-10
 Author: D. Scott Rinnan
 Maintainer: Who to complain to <rinnan@uw.edu>
 Description: Performs climate- and ecological-niche factor analysis of spatial data. Processing of large files and parallelization is supported.
-Depends: 
+Depends:
         R (>= 3.0.0),
 	raster,
         sp
@@ -25,3 +25,6 @@ LinkingTo: Rcpp
 License: GPL (>= 3)
 LazyData: TRUE
 RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

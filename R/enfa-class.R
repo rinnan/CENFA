@@ -1,13 +1,18 @@
 #' enfa-class
 #'
-#' An object of class \code{enfa} is created from performing ecological-niche factor analysis on species presence data using the \code{enfa} function.
+#' An object of class \code{enfa} is created from performing ecological-niche
+#' factor analysis on species presence data using the \code{enfa} function.
 #'
 #' @slot call Original function call.
-#' @slot mf numeric. Named vector representing the marginality factor, describing the location of the species niche relative to the global niche.
+#' @slot mf numeric. Named vector representing the marginality factor, describing
+#'   the location of the species niche relative to the global niche.
 #' @slot marginality numeric. Magnitude of the marginality factor \code{mf}.
-#' @slot sf numeric. Named vector representing the specialization factor, equivalent to the eigenvalues of specialization.
-#' @slot specialization numeric. The square of the sum of eigenvalues, divided by the length of \code{sf}.
-#' @slot p.spec numeric. Named vector representing the proportion of specialization found on each factor.
+#' @slot sf numeric. Named vector representing the specialization factor,
+#'   equivalent to the eigenvalues of specialization.
+#' @slot specialization numeric. The square of the sum of eigenvalues, divided
+#'   by the length of \code{sf}.
+#' @slot p.spec numeric. Named vector representing the proportion of
+#'   specialization found on each factor.
 #' @slot co p x p matrix of standardized variable loadings.
 #' @slot cov p x p species covariance matrix.
 #' @slot present numeric. Number of raster cells in which species is present.
@@ -24,7 +29,8 @@ setMethod ("show", "enfa", function(object){
   cat("\nOriginal function call: ")
   print(object@call)
   cat("\nMarginality factor: \n")
-  print(sort(abs(round(object@mf, 2)), decreasing = T))
+  j <- order(abs(object@mf), decreasing = T)
+  print(round(object@mf[j], 2))
   cat("\nEigenvalues of specialization: \n")
   print(sort(round(object@sf, 2), decreasing = T))
   cat("\nPercentage of specialization contained in factors: \n")

@@ -25,5 +25,5 @@
 #'   \item{PCQ}{precip of coldest quarter}
 #' }
 #' @source \url{www.worldclim.org}
-#' @seealso \code{\link{climdat.fut}}, \code{\link{ABPR}}
+#' @seealso \code{\link{climdat.fut}}, \code{\link{tree-data}}
 "climdat.hist"

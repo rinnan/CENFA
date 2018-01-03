@@ -36,6 +36,6 @@ climdat.hist
 Historical climate dataset of 19 bioclimate variables (\url{www.worldclim.org}), cropped to the extent of occurrence for Abies procera.
 }
 \seealso{
-\code{\link{climdat.fut}}, \code{\link{ABPR}}
+\code{\link{climdat.fut}}, \code{\link{tree-data}}
 }
 \keyword{datasets}
