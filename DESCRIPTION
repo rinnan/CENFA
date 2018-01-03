@@ -9,8 +9,7 @@ Description: Performs climate- and ecological-niche factor analysis of spatial d
 Depends: 
         R (>= 3.0.0),
 	raster,
-        sp,
-        snow
+        sp
 Imports:
         pbapply, 
         methods,
@@ -20,7 +19,8 @@ Imports:
         grDevices,
         magrittr,
         Rcpp,
-        sf
+        sf,
+        snow
 LinkingTo: Rcpp
 License: GPL (>= 3)
 LazyData: TRUE

@@ -1,3 +1,18 @@
+#' Broken-stick method
+#'
+#' This function provides a simple way to determine the number of significant
+#' factors in a factor analysis. This is done by comparing the eigenvalues of
+#' each factor with those expected from a broken-stick distribution.
+#'
+#' @param eigs numeric. Vector of eigenvalues.
+#'
+#' @examples
+#' mod1 <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
+#' brStick(s.factor(mod1))
+#'
+#' @return Returns the number of significant factors.
+#' @export
+
 brStick <- function (eigs) {
   if(max(Im(eigs)) > 1e-5) stop("broken-stick method does not work for complex eigenvalues")
   eigs <- Re(eigs)

@@ -60,9 +60,6 @@
 #'
 #' @importFrom stats cov
 #' @importFrom methods as
-#' @import raster
-#' @import sp
-#' @import methods
 
 setGeneric("cnfa", function(x, s.dat, ...){
   standardGeneric("cnfa")})
