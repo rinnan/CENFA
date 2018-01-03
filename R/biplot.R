@@ -12,6 +12,7 @@
 #'   the minimum convex polygons
 #' @param n the number of projected variables to label
 #' @param plot if \code{TRUE}, plot will be returned on function call
+#' @param ... additional \code{plot} arguments
 #'
 #' @examples
 #' mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
@@ -34,7 +35,7 @@
 #' @rdname biplot
 setMethod("biplot",
           signature(x = "cnfa", global = "GLcenfa"),
-          function(x, global, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, xlim, ylim, ...){
+          function(x, global, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...){
 
             s.ras <- raster(x)
             g.ras <- raster(global)
@@ -112,31 +113,30 @@ setMethod("biplot",
             #   } else error("percentage must be in the range [0, 100]")
             # }
 
-            if (missing(xlim)) {
+
               xmin <- min(g.in[ ,1], s.in[ ,1])
               xmax <- max(g.in[ ,1], s.in[ ,1])
               xfact <- xmax - xmin
               xmin <- xmin - xfact*.1
               xmax <- xmax + xfact*.1
-            }
-            if (missing(ylim)) {
+
               ymin <- min(g.in[ ,2], s.in[ ,2])
               ymax <- max(g.in[ ,2], s.in[ ,2])
               yfact <- ymax - ymin
               ymin <- ymin - yfact*.1
               ymax <- ymax + yfact*.1
-            }
+
             mags <- apply(co, 1, norm, "2") %>% order(decreasing = T) %>% .[1:n]
 
             par(mar = c(1, 1, 1, 1))
             plot(NA, xlim = c(xmin, xmax), ylim = c(ymin, ymax),
-                 xlab = NA, ylab = NA, axes = F, ann = F)
+                 xlab = NA, ylab = NA, axes = F, ann = F, ...)
             abline(v = g.centroid[1], h = g.centroid[2])#, col = "grey70")
             polygon(g.in[g.ch, ])
             polygon(s.in[s.ch, ], col = "grey60", xpd = T)
             points(s.centroid[1], s.centroid[2], pch = 21, bg = "white")
 
-            .adjust_arrows(x = co[, 1], y = co[, 2], xpd=T, length = .05)
+            .adjust_arrows(x = co[, 1], y = co[, 2], xfact, yfact, xpd=T, length = .05)
 
             # x <- rep(xfact/40, length(co[ ,1]))
             # x[co[, 1] < 0] <- -x[co[, 1] < 0]
@@ -144,7 +144,7 @@ setMethod("biplot",
             # y[co[, 2] < 0] <- -y[co[, 2] < 0]
 
             #text(co[mags, 1] * xfact + x[mags], co[mags, 2] * yfact + y[mags], labels = rownames(co[mags, ]), cex = .7, xpd = T)
-            .adjust_labels(co[mags, 1], co[mags, 2], labels = rownames(co[mags, ]), cex = .7, xpd = T)
+            .adjust_labels(co[mags, 1], co[mags, 2], xfact, yfact, labels = rownames(co[mags, ]), cex = .7, xpd = T)
             legend("topright",
                    legend = c(as.expression(bquote(xax == .(names(s.ras)[xax]))),
                               as.expression(bquote(yax == .(names(s.ras)[yax]))),
@@ -163,9 +163,9 @@ setMethod("biplot",
 )
 
 #' @keywords internal
-.adjust_labels <- function(x, y, ...) {
-  xfact <- xmax - xmin
-  yfact <- ymax - ymin
+.adjust_labels <- function(x, y, xfact, yfact, ...) {
+  #xfact <- xmax - xmin
+  #yfact <- ymax - ymin
 
   p <- rep(xfact/40, length(x))
   p[x < 0] <- -p[x < 0]
@@ -177,9 +177,9 @@ setMethod("biplot",
 }
 
 #' @keywords internal
-.adjust_arrows <- function(x, y, ...) {
-  xfact <- xmax - xmin
-  yfact <- ymax - ymin
+.adjust_arrows <- function(x, y, xfact, yfact, ...) {
+  #xfact <- xmax - xmin
+  #yfact <- ymax - ymin
 
   arrows(x0 = 0, y0 = 0, x1 = x * xfact, y1 = y * yfact, ...)
 }

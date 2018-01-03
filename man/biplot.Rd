@@ -9,7 +9,7 @@
 biplot(x, global, ...)
 
 \S4method{biplot}{cnfa,GLcenfa}(x, global, xax = 1, yax = 2, p = 0.99,
-  n = 5, plot = TRUE, xlim, ylim, ...)
+  n = 5, plot = TRUE, ...)
 }
 \arguments{
 \item{x}{an object of class \code{cnfa} or \code{enfa} describing the
@@ -17,6 +17,8 @@ occupied habitat}
 
 \item{global}{an object of class \code{GLcnfa} describing the global reference
 habitat}
+
+\item{...}{additional \code{plot} arguments}
 
 \item{xax}{the column number of the x-axis}
 
