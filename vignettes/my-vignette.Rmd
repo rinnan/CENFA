@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{An introduction to Climate- and Ecological-Niche Factor Analysis with the CENFA package}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -14,9 +14,93 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library(devtools)
+load_all("~/Dropbox/GitHub/CENFA")
+```
+
+## Introduction
+
+Ecological-niche factor analysis (ENFA) is a popular approach for quantitatively describing the relationship between a species and its environment. ENFA offers a description of a species' Hutchinsonian \emph{n}-dimensional niche by describing the location and shape of its occupied habitat relative to the larger available habitat in an \emph{n}-dimensional space comprised of \emph{n} ecological variables. ENFA was first introduced by Hirzel et al. (2002), and has since been generalized and expanded upon by others (Basille et al., 2008; Calenge and Basille, 2008).
+
+With the publication of the 2002 paper, Hirzel et al. also released the Biomapper software, a free tool for implementing the ENFA method. Unfortunately, Biomapper has not kept up to date with the rapid advances of technology, and does not appear to have been updated since 2009. In that time, R has become the overwhelming standard for ecological data analysis. Calenge (2006) introduced the `adehabitat` R package, which eventually became a suite of four packages, each focusing on a different aspect of analysis of space and habitat use. In particular, the `adehabitatHS` package features (among many other things) an implementation of ENFA via the `enfa` function.
+
+Nonetheless, technology continues to advance. "Big data" is now a ubiquituous phenomenon, and practically synonymous with certain fields of ecology. This presents a problem from an analysis perspective, due to the inherent memory limitations of R. Fortunately, many other tools for spatial analysis in R are available to make these issues more tractable. Most prominently, the `raster` package offers methods for processing large files in chunks, without the need for loading data into memory all at once.
+
+This package was created with three goals in mind:
+
+1. To update the ENFA method for use with large datasets and modern data formats.
+2. To correct a critical error in the ENFA method itself, that has managed to persist since 2002.
+3. To expand the application of ENFA in the context of climate change in order to quantify different aspects of species vulnerability to climate change, and to facilitate quantitative comparisons of vulnerability between species.
+
+`CENFA` utilizes the `raster` and `sp` packages in a manner that allows the user to implement ENFA functions directly with raster, shapefile, and point data, and to handle large datasets efficiently via partial data loading and parallelization.
+
+
+## Classes
+
+`CENFA` is built around five new S4 classes: `enfa`, `cnfa`, `GLcenfa`, `departure`, and `vulnerability`.
+
+## Creating an `enfa` object
+
+Let's load an example raster dataset of historical climate values:
+
+```{r}
+climdat.hist
+```
+
+This dataset was downloaded from \url{www.worldclim.org}, and is stored as a `RasterBrick` with 19 layers of bioclimate variables. It has been cropped to an area comprising much of the western coast of the contiguous United States.
+
+Similarly, let's take a look at a dataset of species habitat, using the Garry oak (\emph{Quercus garryana}) as our example:
+
+```{r}
+QUGA
+```
+
+This dataset was downloaded from \url{www.usgs.gov}, and is stored as a `SpatialPolygonsDataFrame`.
+
+```{r fig.align='center'}
+par(mar = c(0,0,0,0))
+plot(QUGA, col = "darkgreen")
+plot(climdat.hist[[1]], legend = F, add = T)
+plot(QUGA, add = T, col = "darkgreen")
+```
+
+Using the historical climate data as our ecological variables and the `QUGA` as our species presence data, implementing ENFA is quite simple. We simply specify the field of `QUGA` that indicates presence (in this case, `CODE`):
+
+```{r cache=TRUE}
+mod1 <- enfa(x = climdat.hist, s.dat = QUGA, field = "CODE")
 ```
 
 
+
+
+For a set of $P$ environmental rasters with $N$ cells each, let $\mathbf{X}$ denote the $N \times P$ matrix such that $x_{ij}$ is the value of variable $j$ at location $i$. The variables are then standardized as $\mathbf{Z}$, so that 
+\begin{equation}
+	z_{ij} = \frac{x_{ij} - \bar{x}_j}{\sigma_{x_j}},
+\end{equation}
+where $\bar{x}_j$ is the mean of $x_j$ over all cells and $\sigma_{x_j}$ is the standard deviation of $x_j$ over all cells. The $P \times P$ global covariance matrix is 
+\begin{equation}
+	\mathbf{R_G} = \frac{1}{N}\mathbf{Z}^T\mathbf{Z}.
+\end{equation}
+From $\mathbf{Z}$ we construct a new matrix $\mathbf{S}$, comprised of the $N_S$ rows of $\mathbf{Z}$ that correspond to the locations in which the species is present. Hirzel et al. (2002) defined the marginality of variable $j$ as the average value of $z_{ij}$ in the locations $i$ where the species is present, given by
+\begin{equation}
+	m_j = \frac{1}{N_S}\sum_{i=1}^{N_S} s_{ij}.
+	\label{eq:mar1}
+\end{equation}
+The vector $\mathbf{m}$ of length $P$ is called the marginality factor, and describes the position of the centroid of the species' habitat relative to the reference habitat.
+
+Hirzel et al. (2002) described the species sample covariance matrix by the formula
+\begin{equation}
+	\mathbf{R_S} = \frac{1}{N_S - 1} \mathbf{S^T S},
+\end{equation}
+but this formula is incorrect, because the columns of $\mathbf{S}$ were centered on the column means of $\mathbf{Z}$. The covariance of $\mathbf{S}$ must be centered on the column means of $\mathbf{S}$; the correct formula is
+\begin{equation}
+	\mathbf{R_S} = \frac{1}{N_S - 1} \mathbf{(S - m)^T (S - m)},
+\end{equation}
+where the difference $\mathbf{S - m}$ signifies $s_{ij} - m_j$ for each of the $N_S$ rows of $\mathbf{S}$. This is an important distinction with significant ramifications, which we will later discuss in greater detail.
+
+
+
+\cite{hirzel2002ecological}'s mistake in the formula for the habitat covariance $\mathbf{R_S}$ appeared only in the original publication, but not the Biomapper software that accompanied it. Fortunately, this means that the body of literature that has derived results from Biomapper remains unaffected. \cite{calenge2006package}'s popular `adehabitat' suite of R packages, however, provides an `enfa' function that does contain the error. We strongly recommend that any studies that have used this R function to implement ENFA be reevaluated, because the error leads to mischaracterizations of habitat specialization that do not reflect the true relationship between a species and its environment. Among other features, our R package offers an alternative `enfa' function that can be used for this purpose.
 
 
 Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:

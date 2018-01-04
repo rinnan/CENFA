@@ -28,8 +28,8 @@
 
 # @rdname biplot
 #if (!isGeneric("biplot")) {
-  setGeneric("biplot", function(x, global, ...)
-    standardGeneric("biplot"))
+  setGeneric("biplot", function(x, global, ...){
+    standardGeneric("biplot")})
 #}
 
 #' @rdname biplot

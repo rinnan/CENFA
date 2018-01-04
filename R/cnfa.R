@@ -64,6 +64,8 @@
 setGeneric("cnfa", function(x, s.dat, ...){
   standardGeneric("cnfa")})
 
+# text
+
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "GLcenfa", s.dat = "Spatial"),

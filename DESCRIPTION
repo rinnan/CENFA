@@ -20,7 +20,8 @@ Imports:
         magrittr,
         Rcpp,
         sf,
-        snow
+        snow,
+        devtools
 LinkingTo: Rcpp
 License: GPL (>= 3)
 LazyData: TRUE
