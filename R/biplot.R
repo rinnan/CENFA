@@ -24,6 +24,7 @@
 #' @importFrom stats ecdf sd
 #' @importFrom graphics abline arrows legend par points polygon
 #'
+#' @include cnfa-class.R enfa-class.R GLcenfa-class.R
 #' @export
 
 # @rdname biplot
