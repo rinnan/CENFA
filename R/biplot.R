@@ -27,11 +27,8 @@
 #' @include cnfa-class.R enfa-class.R GLcenfa-class.R
 #' @export
 
-#' @rdname biplot
-#if (!isGeneric("biplot")) {
   setGeneric("biplot", function(x, global, ...){
     standardGeneric("biplot")})
-#}
 
 #' @rdname biplot
 setMethod("biplot",
