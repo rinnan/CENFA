@@ -1,7 +1,9 @@
 #' @keywords internal
 
 .covij <- function(x, y, w, sample = sample){
+
   sm <- canProcessInMemory(x)
+
   if(sm){
     x <- values(x)
     x <- x - mean(x, na.rm = T)
@@ -18,8 +20,8 @@
       nn <- length(r)
       v <- sum(r, na.rm = T)/(nn - sample)
     }
-  }
-  if(!sm){
+  } else if(!sm){
+
     x <- scale(x, scale = F)
     y <- scale(y, scale = F)
     if(!is.null(w)){

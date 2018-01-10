@@ -5,8 +5,7 @@
 \alias{covmat}
 \alias{covmat,Raster,missing-method}
 \alias{covmat,Raster,Raster-method}
-\title{covmat
-Efficient calculation of covariance matrices of Raster* objects}
+\title{Efficient calculation of covariance matrices for Raster* objects}
 \usage{
 covmat(x, y, ...)
 
