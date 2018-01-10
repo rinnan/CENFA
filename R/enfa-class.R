@@ -15,12 +15,12 @@
 #'   specialization found on each factor.
 #' @slot co p x p matrix of standardized variable loadings.
 #' @slot cov p x p species covariance matrix.
-#' @slot present numeric. Number of raster cells in which species is present.
-#' @slot ras RasterBrick of transformed environmental values, with p layers.
+#' @slot ras RasterBrick of transformed climate values, with p layers
+#' @slot weights Raster layer of weights used for ENFA calculation
 #' @export
 
 setClass("enfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", sf = "numeric",
-                              specialization = "numeric", p.spec = "numeric", co = "matrix", cov = "matrix", present = "numeric", ras = "Raster"))
+                              specialization = "numeric", p.spec = "numeric", co = "matrix", cov = "matrix", ras = "Raster", weights = "Raster"))
 
 setMethod ("show", "enfa", function(object){
   if (!inherits(object, "enfa"))
@@ -37,7 +37,7 @@ setMethod ("show", "enfa", function(object){
   print(round(100*object@p.spec, 2))
   cat("\nOverall marginality: ", round(object@marginality, 3), "\n")
   cat("\nOverall specialization: ", round(object@specialization, 3), "\n")
-  cat("\nSignificant CNFA factors: \n")
+  cat("\nSignificant ENFA factors: \n")
   n <- brStick(object@p.spec[-1])
   co <- as.data.frame(object@co[order(abs(object@co[,1]), decreasing = T), ])
   print(round(co[, 1:(n+1)], 2))

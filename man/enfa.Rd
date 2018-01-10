@@ -8,18 +8,22 @@
 \alias{enfa,GLcenfa,Spatial-method}
 \alias{enfa,Raster,Spatial-method}
 \alias{enfa,Raster,sf-method}
+\alias{enfa,Raster,matrix-method}
 \title{Ecological-Niche Factor Analysis}
 \usage{
 enfa(x, s.dat, ...)
 
 \S4method{enfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", ...)
+  filename = "", parallel = F, ...)
 
 \S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", ...)
+  filename = "", parallel = F, ...)
 
 \S4method{enfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", ...)
+  filename = "", parallel = F, ...)
+
+\S4method{enfa}{Raster,matrix}(x, s.dat, prj, field, fun = "last",
+  scale = TRUE, filename = "", parallel = F, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers}
@@ -27,7 +31,8 @@ enfa(x, s.dat, ...)
 \item{s.dat}{matrix, SpatialPolygons*, SpatialPoints*, or sf object indicating
 species presence}
 
-\item{...}{Additional arguments for rasterizing as for \code{\link[raster]{rasterize}}.}
+\item{...}{Additonal arguments for the \code{\link{covmat}} function, such as the
+number of cores \code{n}.}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This
 is equivalent to the \code{field} argument in the \code{raster} package.}
@@ -59,8 +64,8 @@ Returns an S4 object of class \code{enfa} with the following components:
    ENFA factor.}
   \item{co}{A matrix describing the amount of marginality and specialization
    on each ENFA factor. (The marginality column is normalized.)}
-  \item{present}{Number of raster cells in which species is present.}
-  \item{ras}{Raster* object of transformed environmental values.}
+  \item{ras}{RasterBrick of transformed climate values, with p layers.}
+  \item{weights}{Raster layer of weights used for ENFA calculation.}
 }
 }
 \description{

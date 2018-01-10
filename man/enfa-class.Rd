@@ -31,8 +31,8 @@ specialization found on each factor.}
 
 \item{\code{cov}}{p x p species covariance matrix.}
 
-\item{\code{present}}{numeric. Number of raster cells in which species is present.}
+\item{\code{ras}}{RasterBrick of transformed climate values, with p layers}
 
-\item{\code{ras}}{RasterBrick of transformed environmental values, with p layers.}
+\item{\code{weights}}{Raster layer of weights used for ENFA calculation}
 }}
 
