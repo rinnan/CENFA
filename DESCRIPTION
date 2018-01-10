@@ -30,6 +30,7 @@ Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
 Collate: 
+    'CENFA.R'
     'GLcenfa-class.R'
     'GLcenfa.R'
     'RcppExports.R'
@@ -47,7 +48,6 @@ Collate:
     'departure.R'
     'enfa.R'
     'exposure_map.R'
-    'init.R'
     'raster.R'
     'scale.R'
     'sensitivity_map.R'
