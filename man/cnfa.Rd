@@ -14,16 +14,16 @@
 cnfa(x, s.dat, ...)
 
 \S4method{cnfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", ...)
+  filename = "", parallel = F, ...)
 
 \S4method{cnfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", ...)
+  filename = "", parallel = F, ...)
 
 \S4method{cnfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", ...)
+  filename = "", parallel = F, ...)
 
 \S4method{cnfa}{Raster,matrix}(x, s.dat, prj, field, fun = "last",
-  scale = TRUE, filename = "", ...)
+  scale = TRUE, filename = "", parallel = F, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack with p climate
@@ -32,7 +32,8 @@ raster layers, or a \code{GLcenfa} object}
 \item{s.dat}{matrix, SpatialPolygons*, SpatialPoints*, or sf object indicating
 species presence}
 
-\item{...}{Additonal arguments for rasterizing as for \code{\link[raster]{rasterize}}.}
+\item{...}{Additonal arguments for the \code{\link{covmat}} function, such as the
+number of cores \code{n}.}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This
 is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}.}
@@ -43,6 +44,9 @@ with multiple spatial features, similar to the \code{fun} argument in
 
 \item{filename}{character. Optional filename to save the Raster* output to
 file. If this is not provided, a temporary file will be created for large \code{x}.}
+
+\item{parallel}{logical. If \code{TRUE} then multiple cores are utilized for the
+calculation of the covariance matrices.}
 
 \item{scale}{logical. If \code{TRUE} then the values of \code{x} will get
 centered and scaled. Depending on the resolution of the climate data and

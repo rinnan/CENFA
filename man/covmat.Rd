@@ -19,7 +19,8 @@ covmat(x, y, ...)
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of climate raster layers}
 
-\item{y}{NULL (default) or a Raster* object with the same extent and resolution as x}
+\item{y}{NULL (default) or a Raster* object with the same extent and resolution
+as \code{x}}
 
 \item{...}{additional arguments, including any of the following:}
 
@@ -39,13 +40,31 @@ with a denominator of $n-1$}
 \item{n}{numeric. Optional number of CPU cores to utilize for parallel processing}
 }
 \value{
-Returns a matrix with the same row and column names as the layers of the Raster* object.
+Returns a matrix with the same row and column names as the layers of
+  \code{x}. If \code{y} is supplied, then the covariances between the layers
+  of \code{x} and the layers of code{y} are computed.
 }
 \description{
-\code{covmat} efficiently calculates the covariance between different climate and ecological variables, taking advantage of parallel processing and pulling data into memory only as necessary. For large datasets with lots of variables, calculating the covariance matrix rapidly becomes unwieldy, as the number of calculations required grows quadratically with the number of variables.
+\code{covmat} efficiently calculates the covariance between different climate
+and ecological variables, taking advantage of parallel processing and pulling
+data into memory only as necessary. For large datasets with lots of variables,
+calculating the covariance matrix rapidly becomes unwieldy, as the number of
+calculations required grows quadratically with the number of variables.
 }
 \examples{
 mat1 <- covmat(x = climdat.hist)
 mat2 <- covmat(x = climdat.hist, center = TRUE, scale = TRUE)
 
+# covariance between two Raster* objects
+mat3 <- covmat(x = climdat.hist, y = climdat.fut)
+dat.h <- values(climdat.hist)
+dat.f <- values(climdat.fut)
+mat4 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
+
+# same results either way
+all.equal(mat3, mat4)
+
+}
+\seealso{
+\code{\link[stats]{cov}}
 }

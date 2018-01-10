@@ -21,8 +21,11 @@
 #'   scaled beforehand using the \code{\link{GLcenfa}} function.
 #' @param filename character. Optional filename to save the Raster* output to
 #'   file. If this is not provided, a temporary file will be created for large \code{x}.
+#' @param parallel logical. If \code{TRUE} then multiple cores are utilized for the
+#'   calculation of the covariance matrices.
 #' @param prj character. proj4string denoting projection of species observation data.
-#' @param ... Additonal arguments for rasterizing as for \code{\link[raster]{rasterize}}.
+#' @param ... Additonal arguments for the \code{\link{covmat}} function, such as the
+#'   number of cores \code{n}.
 #'
 #' @examples
 #' mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
@@ -67,7 +70,7 @@ setGeneric("cnfa", function(x, s.dat, ...){
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "GLcenfa", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", filename = "", ...){
+          function(x, s.dat, field, fun = "last", filename = "", parallel = F, ...){
 
             call <- sys.calls()[[1]]
 
@@ -80,7 +83,7 @@ setMethod("cnfa",
             if (union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
 
             x.crop <- crop(ras, ext.s)
-            s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun, ...)
+            s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun)
 
             filename <- trim(filename)
             if (!canProcessInMemory(x.crop) && filename == '') {
@@ -103,14 +106,15 @@ setMethod("cnfa",
             pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
             Rg <- x@cov
             p.sum <- cellStats(s.dat.ras, sum)
-            p <- s.dat.ras / p.sum
+            p <- s.dat.ras / (p.sum - 1)
             DpS <- x.mask * p
             mar <- cellStats(DpS, sum)
             Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
             #Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
-            beginCluster()
-            Rs <- clusterR(Sm, fun = layerStats, args = list(stat = 'weighted.cov', w = p, na.rm = T, asSample = F))
-            endCluster()
+            #beginCluster()
+            Rs <- covmat(x = Sm, w = p, parallel = parallel, ...)
+            #Rs <- clusterR(Sm, fun = layerStats, args = list(stat = 'weighted.cov', w = p, na.rm = T, asSample = F))
+            #endCluster()
           }
 
           cZ <- nlayers(ras)
@@ -158,7 +162,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "Raster", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", parallel = F, ...){
 
             call <- sys.calls()[[1]]
 
@@ -200,10 +204,11 @@ setMethod("cnfa",
               DpS <- x.mask * p
               mar <- cellStats(DpS, sum)
               cat("\nCalculating study area covariance matrix...\n")
-              Rg <- covmat(x, sample = F)
+              Rg <- covmat(x, sample = F, parallel = parallel, ...)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
+              #Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
+              Rs <- covmat(x = Sm, w = p, ...)
               #Rs <- covmat(x.mask, center = T)
               #mar <- cellStats(x.mask, sum)/length(pres)
             }
@@ -253,7 +258,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "Raster", s.dat = "sf"),
-          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", parallel = F, ...){
             if (!requireNamespace("sf")) {
               warning('cannot do this because sf is not available')
             }
@@ -300,10 +305,11 @@ setMethod("cnfa",
               DpS <- x.mask * p
               mar <- cellStats(DpS, sum)
               cat("\nCalculating study area covariance matrix...\n")
-              Rg <- covmat(x, sample = F)
+              Rg <- covmat(x, sample = F, ...)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
+              Rs <- covmat(x = Sm, w = p, parallel = parallel, ...)
+              #Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
               #Rs <- covmat(x.mask, center = T)
               #mar <- cellStats(x.mask, sum)/length(pres)
             }
@@ -353,7 +359,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "Raster", s.dat = "matrix"),
-          function(x, s.dat, prj, field, fun = "last", scale = TRUE, filename = "", ...){
+          function(x, s.dat, prj, field, fun = "last", scale = TRUE, filename = "", parallel = F, ...){
 
             call <- match.call()
 
@@ -399,10 +405,11 @@ setMethod("cnfa",
               DpS <- x.mask * p
               mar <- cellStats(DpS, sum)
               cat("\nCalculating study area covariance matrix...\n")
-              Rg <- covmat(x, sample = F)
+              Rg <- covmat(x, sample = F, ...)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
+              Rs <- covmat(x = Sm, w = p, parallel = parallel, ...)
+              #Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
               #Rs <- covmat(x.mask, center = T)
               #mar <- cellStats(x.mask, sum)/length(pres)
             }

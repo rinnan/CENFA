@@ -10,33 +10,28 @@
     if(!is.null(w)){
       w <- values(w)
       sumw <- sum(w, na.rm = T)
-      #w <- w / sumw
-      nn <- sumw
-    r <- na.omit(w * x * y)
+      if(sumw > 1) w <- w / (sumw)
+      r <- na.omit(w * x * y)
+      v <- sum(r)
     } else {
       r <- na.omit(x * y)
       nn <- length(r)
+      v <- sum(r, na.rm = T)/(nn - sample)
     }
- #   ifelse(sample == T,
-           v <- sum(r, na.rm = T)/(nn - sample)
-#           v <- sum(r, na.rm = T)/nn)
   }
   if(!sm){
     x <- scale(x, scale = F)
     y <- scale(y, scale = F)
     if(!is.null(w)){
       sumw <- cellStats(w, sum, na.rm = T)
-      #w <- w / sumw
-      nn <- sumw
-      #w <- w / cellStats(w, sum, na.rm = T)
+      if(sumw > 1) w <- w / (sumw)
       r <- w * x * y
+      v <- cellStats(r, stat = 'sum', na.rm = T)
     } else {
       r <- x * y
       nn <- length(r[!is.na(r)])
+      v <- cellStats(r, stat = 'sum', na.rm = T) / (nn - sample)
     }
-    #ifelse(sample == T,
-           v <- cellStats(r, stat='sum', na.rm = T) / (nn - sample)
-           #v <- cellStats(r, stat='sum', na.rm=T) / nn)
     f <- filename(r)
     file.remove(c(f, extension(f, '.gri')))
   }
