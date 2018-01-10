@@ -22,3 +22,8 @@ mod1 <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
 brStick(s.factor(mod1))
 
 }
+\references{
+Jackson, Donald A. "Stopping rules in principal components analysis:
+  a comparison of heuristical and statistical approaches." Ecology 74.8 (1993):
+  2204-2214.
+}

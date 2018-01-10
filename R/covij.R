@@ -1,5 +1,7 @@
 #' @keywords internal
 
+# This function calculates the covariance between two raster layers.
+
 .covij <- function(x, y, w, sample = sample){
 
   sm <- canProcessInMemory(x)
@@ -12,9 +14,9 @@
     if(!is.null(w)){
       w <- values(w)
       sumw <- sum(w, na.rm = T)
-      if(sumw > 1) w <- w / (sumw)
+      #if(sumw > 1) w <- w / (sumw)
       r <- na.omit(w * x * y)
-      v <- sum(r)
+      v <- sum(r, na.rm = T)/(sumw - sample)
     } else {
       r <- na.omit(x * y)
       nn <- length(r)
@@ -26,9 +28,9 @@
     y <- scale(y, scale = F)
     if(!is.null(w)){
       sumw <- cellStats(w, sum, na.rm = T)
-      if(sumw > 1) w <- w / (sumw)
+      #if(sumw > 1) w <- w / (sumw)
       r <- w * x * y
-      v <- cellStats(r, stat = 'sum', na.rm = T)
+      v <- cellStats(r, stat = 'sum', na.rm = T) / (sumw - sample)
     } else {
       r <- x * y
       nn <- length(r[!is.na(r)])

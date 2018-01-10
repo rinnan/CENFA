@@ -1,9 +1,17 @@
 #' @keywords internal
+#'
 #' @importFrom doSNOW registerDoSNOW
 #' @importFrom foreach %dopar% foreach
 #' @importFrom snow makeCluster clusterExport stopCluster
 #' @importFrom stats cov na.omit
 #' @importFrom utils setTxtProgressBar txtProgressBar
+
+# This function is the exact same as raster::calc, with the addition of a
+# 'names' argument, which allows the user to specify a character vector of
+# layer names for the Raster* object that gets created.
+#
+# Internal functions from the raster package are included here, as
+# necessary for raster::calc to run.
 
 .calc <- function(x, fun, filename='', na.rm, forcefun=FALSE, forceapply=FALSE, names, ...) {
 
@@ -58,8 +66,6 @@
     }
     return(x)
   }
-
-  # else
 
   out <- writeStart(out, filename=filename, ...)
   tr <- blockSize(out)
@@ -246,15 +252,6 @@
 .rowMax <- function (x, na.rm = TRUE) {
   .doRowMax(x, narm = na.rm)
 }
-
-# .doRowMin <- function (x, narm) {
-#   .Call(`_CENFA_doRowMin`, x, narm)
-# }
-#
-# .doRowMax <- function (x, narm) {
-#   .Call(`_CENFA_doRowMax`, x, narm)
-# }
-
 
 .makeTextFun <- function (fun) {
   if (class(fun) != "character") {

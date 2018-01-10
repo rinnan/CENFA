@@ -3,7 +3,7 @@
 \docType{data}
 \name{climdat.hist}
 \alias{climdat.hist}
-\title{Historical climate data for Abies procera}
+\title{Historical climate data for \emph{Abies procera}}
 \format{A RasterBrick with 19 layers.
 \describe{
   \item{MAT}{mean annual temperature (degrees C * 10)}
@@ -33,7 +33,9 @@
 climdat.hist
 }
 \description{
-Historical climate dataset of 19 bioclimate variables (\url{www.worldclim.org}), cropped to the extent of occurrence for Abies procera.
+Historical climate dataset of 19 bioclimate variables (\url{www.worldclim.org}),
+cropped to the extent of the historical occurrence of the noble pine
+(\emph{Abies procera}).
 }
 \seealso{
 \code{\link{climdat.fut}}, \code{\link{tree-data}}

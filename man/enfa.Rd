@@ -8,7 +8,6 @@
 \alias{enfa,GLcenfa,Spatial-method}
 \alias{enfa,Raster,Spatial-method}
 \alias{enfa,Raster,sf-method}
-\alias{enfa,Raster,matrix-method}
 \title{Ecological-Niche Factor Analysis}
 \usage{
 enfa(x, s.dat, ...)
@@ -21,9 +20,6 @@ enfa(x, s.dat, ...)
 
 \S4method{enfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
   filename = "", parallel = F, ...)
-
-\S4method{enfa}{Raster,matrix}(x, s.dat, prj, field, fun = "last",
-  scale = TRUE, filename = "", parallel = F, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers}
@@ -32,45 +28,44 @@ enfa(x, s.dat, ...)
 species presence}
 
 \item{...}{Additonal arguments for the \code{\link{covmat}} function, such as the
-number of cores \code{n}.}
+number of cores \code{n}}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This
 is equivalent to the \code{field} argument in the \code{raster} package.}
 
 \item{fun}{function or character. Determines what values to assign to cells
 with multiple spatial features, similar to the \code{fun} argument in
-\code{\link[raster]{rasterize}}.}
+\code{\link[raster]{rasterize}}.  Options are 'first', 'last' (default),
+and 'count' (see Details)}
 
 \item{filename}{character. Optional filename to save the Raster* output to
 file. If this is not provided, a temporary file will be created for large \code{x}.}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized for the
-calculation of the covariance matrices.}
+calculation of the covariance matrices}
 
 \item{scale}{logical. If \code{TRUE} then the values of the Raster* object will
 be centered and scaled. Depending on the resolution of the climate data and
 the extent of the study area, this can be quite time consuming. If running
 this function for multiple species, it is recommended that the climate data
-be scaled beforehand using the \code{\link{GLcenfa}} function.}
-
-\item{prj}{character. proj4string denoting projection of species observation data.}
+be scaled beforehand using the \code{\link{GLcenfa}} function}
 }
 \value{
 Returns an S4 object of class \code{enfa} with the following components:
 \describe{
-  \item{call}{Original function call.}
+  \item{call}{Original function call}
   \item{mf}{Marginality factor. Vector that describes the location of the
-   species Hutchinsonian niche relative to the global niche.}
-  \item{marginality}{Magnitude of the marginality factor.}
-  \item{sf}{Specialization factor. Vector of eigenvalues of specialization.}
+   species Hutchinsonian niche relative to the global niche}
+  \item{marginality}{Magnitude of the marginality factor}
+  \item{sf}{Specialization factor. Vector of eigenvalues of specialization}
   \item{specialization}{Overall specialization, equal to the square root of
-   the sum of eigenvalues of specialization.}
+   the sum of eigenvalues of specialization}
   \item{s.prop}{Vector representing the amount of specialization found in each
-   ENFA factor.}
+   ENFA factor}
   \item{co}{A matrix describing the amount of marginality and specialization
-   on each ENFA factor. (The marginality column is normalized.)}
-  \item{ras}{RasterBrick of transformed climate values, with p layers.}
-  \item{weights}{Raster layer of weights used for ENFA calculation.}
+   on each ENFA factor. (The marginality column is normalized)}
+  \item{ras}{RasterBrick of transformed climate values, with p layers}
+  \item{weights}{Raster layer of weights used for ENFA calculation}
 }
 }
 \description{
@@ -95,6 +90,14 @@ glc <- GLcenfa(x = climdat.hist)
 mod2 <- enfa(x = glc, s.dat = ABPR, field = "CODE")
 all.equal(m.factor(mod1), m.factor(mod2))
 
+}
+\references{
+Basille, Mathieu, et al. Assessing habitat selection using multivariate
+statistics: Some refinements of the ecological-niche factor analysis. Ecological
+Modelling 211.1 (2008): 233-240.
+
+Hirzel, Alexandre H., et al. Ecological-niche factor analysis: how to compute
+habitat-suitability maps without absence data?. Ecology 83.7 (2002): 2027-2036.
 }
 \seealso{
 \code{\link{GLcenfa}}, \code{\link{cnfa}}

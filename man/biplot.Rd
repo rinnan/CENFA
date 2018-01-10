@@ -15,7 +15,7 @@ biplot(x, global, ...)
 \item{x}{an object of class \code{cnfa} or \code{enfa} describing the
 occupied habitat}
 
-\item{global}{an object of class \code{GLcnfa} describing the global reference
+\item{global}{an object of class \code{GLcenfa} describing the global reference
 habitat}
 
 \item{...}{additional \code{plot} arguments}

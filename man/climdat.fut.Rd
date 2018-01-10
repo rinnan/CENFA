@@ -3,7 +3,7 @@
 \docType{data}
 \name{climdat.fut}
 \alias{climdat.fut}
-\title{Future climate data for Abies procera}
+\title{Future climate data for \emph{Abies procera}}
 \format{A RasterBrick with 19 layers.
 \describe{
   \item{MAT}{mean annual temperature (degrees C * 10)}
@@ -33,7 +33,10 @@
 climdat.fut
 }
 \description{
-Future climate dataset of 19 bioclimate variables (\url{www.worldclim.org}), cropped to the extent of occurrence for Abies procera. Based on the MIROC5 GCM projections under the RCP8.5 scenario for 2050.
+Future climate dataset of 19 bioclimate variables (\url{www.worldclim.org}),
+cropped to the extent of the historical occurrence of the noble pine
+(\emph{Abies procera}). Based on the MIROC5 GCM projections under the RCP8.5
+scenario for 2050.
 }
 \seealso{
 \code{\link{climdat.hist}}, \code{\link{tree-data}}

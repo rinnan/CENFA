@@ -59,6 +59,20 @@ data into memory only as necessary. For large datasets with lots of variables,
 calculating the covariance matrix rapidly becomes unwieldy, as the number of
 calculations required grows quadratically with the number of variables.
 }
+\details{
+This function is designed to work similarly to the
+  \code{\link[stats]{cov}} and the \code{\link[raster]{layerStats}}
+  functions, with two major differences. First, \code{covmat} allows you to
+  calculate the covariance between two different Raster* objects, whereas
+  \code{layerStats} does not. Second, \code{covmat} can (optionally) compute
+  each element of the covariance matrix in parallel, offering a dramatic
+  improvement in computation time for large Raster* objects.
+
+  The raster layer of weights \code{w} should contain raw weights as values,
+  and should \emph{not} be normalized so that \code{sum(w) = 1}. This is
+  necessary for computing the sample covariance, whose formula contains
+  \code{sum(w) - 1} in its denominator.
+}
 \examples{
 mat1 <- covmat(x = climdat.hist)
 mat2 <- covmat(x = climdat.hist, center = TRUE, scale = TRUE)
@@ -74,5 +88,5 @@ all.equal(mat3, mat4)
 
 }
 \seealso{
-\code{\link[stats]{cov}}
+\code{\link[stats]{cov}}, \code{\link[raster]{layerStats}}
 }

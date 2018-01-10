@@ -37,7 +37,20 @@
 #'   \code{x}. If \code{y} is supplied, then the covariances between the layers
 #'   of \code{x} and the layers of code{y} are computed.
 #'
-#' @seealso \code{\link[stats]{cov}}
+#' @details This function is designed to work similarly to the
+#'   \code{\link[stats]{cov}} and the \code{\link[raster]{layerStats}}
+#'   functions, with two major differences. First, \code{covmat} allows you to
+#'   calculate the covariance between two different Raster* objects, whereas
+#'   \code{layerStats} does not. Second, \code{covmat} can (optionally) compute
+#'   each element of the covariance matrix in parallel, offering a dramatic
+#'   improvement in computation time for large Raster* objects.
+#'
+#'   The raster layer of weights \code{w} should contain raw weights as values,
+#'   and should \emph{not} be normalized so that \code{sum(w) = 1}. This is
+#'   necessary for computing the sample covariance, whose formula contains
+#'   \code{sum(w) - 1} in its denominator.
+#'
+#' @seealso \code{\link[stats]{cov}}, \code{\link[raster]{layerStats}}
 #'
 #' @export
 #' @importFrom pbapply pbsapply pboptions
@@ -68,7 +81,6 @@ setMethod("covmat",
             for(i in 2:nl) ii <- c(ii, rep(i, each = (nl - i + 1)))
             jj <- 1:nl
             for(i in 2:nl) jj <- c(jj, i:nl)
-            #combs <- cbind(ii, jj)
             s <- 1:length(ii)
 
             if(center){
@@ -170,75 +182,6 @@ setMethod("covmat",
             return(mat)
           }
 )
-
-
-# covmat <- function(x, cores = 1, center = FALSE, scale = FALSE, progress = TRUE, sample = TRUE) {
-#   stopifnot(is.numeric(cores) & cores >= 0)
-#
-#   small <- raster::canProcessInMemory(x)
-#   if(small){
-#     dat <- stats::na.omit(raster::values(x))
-#     if(center) dat <- dat - colMeans(dat)
-#     if(scale) {
-#       sds <- apply(dat, 2, sd)
-#       dat <- dat/sds}
-#     mat <- cov(dat, method = "pearson")
-#     return(mat)
-#   }
-#   nl <- raster::nlayers(x)
-#   mat <- matrix(NA, nrow=nl, ncol=nl)
-#   colnames(mat) <- rownames(mat) <- names(x)
-#
-#   ii <- rep(1,nl)
-#   for(i in 2:nl) ii <- c(ii, rep(i, each = (nl - i + 1)))
-#   jj <- 1:nl
-#   for(i in 2:nl) jj <- c(jj, i:nl)
-#   s <- 1:length(ii)
-#
-#   if(center){
-#     means <- raster::cellStats(x, stat = 'mean', na.rm = T)
-#     x <- (x - means)
-#   }
-#
-#   if(scale){
-#     sds <- raster::cellStats(x, stat = 'sd', na.rm = T)
-#     x <- x/sds
-#   }
-#
-#   if(cores == 1){
-#     if(progress){
-#       pbapply::pboptions(type = "txt", char = "=", txt.width = NA)
-#       result <- pbapply::pbsapply(s, function(p) do.call(.covij, list(x = x, i = ii[p], j = jj[p])))
-#     } else {result <- sapply(s, function(p) do.call(.covij, list(x = x, i = ii[p], j = jj[p])))}
-#   }
-#
-#   if(cores > 1){
-#     cl <- snow::makeCluster(getOption("cl.cores", cores))
-#     snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "nl", "canProcessInMemory", "values"), envir = environment())
-#     doSNOW::registerDoSNOW(cl)
-#     if(progress){
-#       pb <- utils::txtProgressBar(min = 0, max = length(s), style = 3)
-#       progress <- function(n) utils::setTxtProgressBar(pb, n)
-#       opts <- list(progress = progress)
-#       result <- foreach::foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
-#         do.call(.covij, list(x = x, i = ii[p], j = jj[p]))
-#       }
-#       close(pb)
-#     }   else if(!progress){
-#       result <- foreach::foreach(p = s, .combine = c, .options.snow = opts) %dopar% {
-#         do.call(.covij, list(x = x, i = ii[p], j = jj[p]))
-#       }
-#     }
-#     snow::stopCluster(cl)
-#   }
-#
-#   for(p in s){
-#     mat[ii[p], jj[p]] <- mat[jj[p], ii[p]] <- result[p]
-#   }
-#
-#   closeAllConnections()
-#   return(mat)
-# }
 
 #' @keywords internal
 .expand.grid.unique <- function(x, y){

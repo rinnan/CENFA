@@ -11,6 +11,11 @@
 #' brStick(s.factor(mod1))
 #'
 #' @return Returns the number of significant factors.
+#'
+#' @references Jackson, Donald A. "Stopping rules in principal components analysis:
+#'   a comparison of heuristical and statistical approaches." Ecology 74.8 (1993):
+#'   2204-2214.
+#'
 #' @export
 
 brStick <- function (eigs) {

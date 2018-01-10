@@ -3,24 +3,25 @@
 #' An object of class \code{enfa} is created from performing ecological-niche
 #' factor analysis on species presence data using the \code{enfa} function.
 #'
-#' @slot call Original function call.
+#' @slot call Original function call
 #' @slot mf numeric. Named vector representing the marginality factor, describing
-#'   the location of the species niche relative to the global niche.
-#' @slot marginality numeric. Magnitude of the marginality factor \code{mf}.
+#'   the location of the species niche relative to the global niche
+#' @slot marginality numeric. Magnitude of the marginality factor \code{mf}
 #' @slot sf numeric. Named vector representing the specialization factor,
-#'   equivalent to the eigenvalues of specialization.
+#'   equivalent to the eigenvalues of specialization
 #' @slot specialization numeric. The square of the sum of eigenvalues, divided
-#'   by the length of \code{sf}.
+#'   by the length of \code{sf}
 #' @slot p.spec numeric. Named vector representing the proportion of
-#'   specialization found on each factor.
-#' @slot co p x p matrix of standardized variable loadings.
-#' @slot cov p x p species covariance matrix.
+#'   specialization found on each factor
+#' @slot co p x p matrix of standardized variable loadings
+#' @slot cov p x p species covariance matrix
 #' @slot ras RasterBrick of transformed climate values, with p layers
 #' @slot weights Raster layer of weights used for ENFA calculation
 #' @export
 
-setClass("enfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", sf = "numeric",
-                              specialization = "numeric", p.spec = "numeric", co = "matrix", cov = "matrix", ras = "Raster", weights = "Raster"))
+setClass("enfa", slots = list(call = "call", mf = "numeric", marginality = "numeric",
+                              sf = "numeric", specialization = "numeric", p.spec = "numeric",
+                              co = "matrix", cov = "matrix", ras = "Raster", weights = "Raster"))
 
 setMethod ("show", "enfa", function(object){
   if (!inherits(object, "enfa"))

@@ -15,6 +15,7 @@
 #' @slot cov p x p species covariance matrix
 #' @slot ras RasterBrick of transformed climate values, with p layers
 #' @slot weights Raster layer of weights used for CNFA calculation
+#'
 #' @export
 
 setClass("cnfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", sf = "numeric",

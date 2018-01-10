@@ -1,6 +1,8 @@
-#' Historical climate data for Abies procera
+#' Historical climate data for \emph{Abies procera}
 #'
-#' Historical climate dataset of 19 bioclimate variables (\url{www.worldclim.org}), cropped to the extent of occurrence for Abies procera.
+#' Historical climate dataset of 19 bioclimate variables (\url{www.worldclim.org}),
+#' cropped to the extent of the historical occurrence of the noble pine
+#' (\emph{Abies procera}).
 #'
 #' @format A RasterBrick with 19 layers.
 #' \describe{
