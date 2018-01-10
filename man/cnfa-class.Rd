@@ -11,26 +11,26 @@ analysis on species presence data using the \code{cnfa} function.
 \section{Slots}{
 
 \describe{
-\item{\code{call}}{Original function call.}
+\item{\code{call}}{Original function call}
 
 \item{\code{mf}}{numeric. Named vector representing the marginality factor, describing
-the location of the species niche relative to the global niche.}
+the location of the species niche relative to the global niche}
 
-\item{\code{marginality}}{numeric. Magnitude of the marginality factor \code{mf}.}
+\item{\code{marginality}}{numeric. Magnitude of the marginality factor \code{mf}}
 
-\item{\code{sf}}{numeric. Named vector representing the sensitivity factor.}
+\item{\code{sf}}{numeric. Named vector representing the sensitivity factor}
 
-\item{\code{sensitivity}}{numeric. The magnitude of the sensitivity factor \code{sf}.}
+\item{\code{sensitivity}}{numeric. The magnitude of the sensitivity factor \code{sf}}
 
 \item{\code{p.spec}}{numeric. Named vector representing the proportion of specialization
-found on each factor.}
+found on each factor}
 
-\item{\code{co}}{p x p matrix of standardized variable loadings.}
+\item{\code{co}}{p x p matrix of standardized variable loadings}
 
-\item{\code{cov}}{p x p species covariance matrix.}
+\item{\code{cov}}{p x p species covariance matrix}
 
-\item{\code{present}}{numeric. Number of raster cells in which species is present.}
+\item{\code{ras}}{RasterBrick of transformed climate values, with p layers}
 
-\item{\code{ras}}{RasterBrick of transformed climate values, with p layers.}
+\item{\code{weights}}{Raster layer of weights used for CNFA calculation}
 }}
 

@@ -53,8 +53,8 @@
 #'   found in each CNFA factor.}
 #'   \item{co}{A p x p matrix describing the amount of marginality and specialization
 #'    on each CNFA factor. (The marginality column is normalized.)}
-#'   \item{present}{Number of raster cells in which species is present.}
 #'   \item{ras}{RasterBrick of transformed climate values, with p layers.}
+#'   \item{weights}{Raster layer of weights used for CNFA calculation.}
 #' }
 #'
 #' @seealso \code{\link{GLcenfa}}, \code{\link{enfa}}
@@ -103,7 +103,7 @@ setMethod("cnfa",
               Rs <- crossprod(Sm, DpSm)
             } else {
             x.mask <- mask(x.crop, s.dat.ras)
-            pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
+            #pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
             Rg <- x@cov
             p.sum <- cellStats(s.dat.ras, sum)
             p <- s.dat.ras / (p.sum - 1)
@@ -147,6 +147,7 @@ setMethod("cnfa",
             values(s.ras)[pres, ] <- S %*% co
             #setValues(s.ras, S %*% co, index = pres)
             names(s.ras) <- nm
+
           } else {
             cat("\nCreating factor rasters...")
             s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm)
@@ -154,7 +155,8 @@ setMethod("cnfa",
           colnames(co) <- names(s.p) <- nm
           rownames(co) <- names(ras)
 
-          cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
+          cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
+                               sensitivity = sens, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
           return(cnfa)
           }
 )
@@ -198,7 +200,7 @@ setMethod("cnfa",
             } else {
               center <- cellStats(x, mean)
               x.mask <- mask(x, s.dat.ras)
-              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
+              #pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               p.sum <- cellStats(s.dat.ras, sum)
               p <- s.dat.ras / p.sum
               DpS <- x.mask * p
@@ -250,7 +252,8 @@ setMethod("cnfa",
             colnames(co) <- names(s.p) <- nm
             rownames(co) <- names(x)
 
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
+            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
+                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
             return(cnfa)
           }
 )
@@ -299,7 +302,7 @@ setMethod("cnfa",
             } else {
               center <- cellStats(x, mean)
               x.mask <- mask(x, s.dat.ras)
-              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
+              #pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               p.sum <- cellStats(s.dat.ras, sum)
               p <- s.dat.ras / p.sum
               DpS <- x.mask * p
@@ -351,7 +354,8 @@ setMethod("cnfa",
             colnames(co) <- names(s.p) <- nm
             rownames(co) <- names(x)
 
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
+            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
+                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
             return(cnfa)
           }
 )
@@ -399,7 +403,7 @@ setMethod("cnfa",
             } else {
               center <- cellStats(x, mean)
               x.mask <- mask(x, s.dat.ras)
-              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
+              #pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
               p.sum <- cellStats(s.dat.ras, sum)
               p <- s.dat.ras / p.sum
               DpS <- x.mask * p
@@ -451,7 +455,8 @@ setMethod("cnfa",
             colnames(co) <- names(s.p) <- nm
             rownames(co) <- names(x)
 
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
+            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
+                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
             return(cnfa)
           }
 )

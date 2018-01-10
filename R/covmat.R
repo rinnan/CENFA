@@ -1,6 +1,4 @@
-#' covmat
-
-#' Efficient calculation of covariance matrices of Raster* objects
+#' Efficient calculation of covariance matrices for Raster* objects
 #'
 #' \code{covmat} efficiently calculates the covariance between different climate
 #' and ecological variables, taking advantage of parallel processing and pulling
