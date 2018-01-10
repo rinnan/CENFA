@@ -22,8 +22,8 @@ cnfa(x, s.dat, ...)
 \S4method{cnfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
   filename = "", ...)
 
-\S4method{cnfa}{Raster,matrix}(x, s.dat, prj, scale = TRUE, filename = "",
-  ...)
+\S4method{cnfa}{Raster,matrix}(x, s.dat, prj, field, fun = "last",
+  scale = TRUE, filename = "", ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack with p climate
