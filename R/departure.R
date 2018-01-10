@@ -1,38 +1,45 @@
 #' Climatic departure
 #'
-#' Calculates the climatic departure of a species using historical and future
-#' climate raster data and species presence data.
+#' This function quantifies the amount of change between historical and future
+#' climate conditions inside a species' habitat.
 #'
 #' @param x.hist Raster* object, typically a brick or stack of historical climate
-#'   raster layers
+#'   raster layers, or an object of class
+#'   \code{\link[=difRasterBrick-class]{difRasterBrick}} (see Details)
 #' @param x.fut  Raster* object, future climate values with the same layers as x.hist
 #' @param s.dat SpatialPolygons*, sf, or cnfa object detailing species presence
-#' @param field field of \code{speciesdat} that specifies presence. This is
-#'   equivalent to the \code{field} argument of \code{raster::rasterize}.
+#' @param field field of \code{s.dat} that specifies presence. This is
+#'   equivalent to the \code{field} argument of \code{raster::rasterize}. Options
+#'   are 'first', 'last' (default), and 'count'
 #' @param fun function or character. Determines what values to assign to cells
 #'   with multiple spatial features, similar to the \code{fun} argument in
-#'   \code{\link[raster]{rasterize}}.
+#'   \code{\link[raster]{rasterize}}
 #' @param scale logical. If \code{TRUE} then the values of \code{x.hist} and
 #'   \code{x.fut} will be centered and scaled by the means and sds of the historical
 #'   climate data. Depending on the resolution of the data and the extent of the
 #'   study area, this can be quite time consuming. If running this function for
-#'   multiple species, it is recommended that the climate data be scaled beforehand.
-#' @param parallel logical. If \code{TRUE} then multiple cores are utilized.
-#' @param n numeric. Optional number of CPU cores to utilize for parallel processing.
-#' @param ... Additional arguments for \code{\link[raster]{clusterR}}.
+#'   multiple species, it is recommended that the climate data be scaled beforehand
+#' @param parallel logical. If \code{TRUE} then multiple cores are utilized
+#' @param n numeric. Optional number of CPU cores to utilize for parallel processing
+#' @param ... Additional arguments for \code{\link[raster]{clusterR}}
 #'
 #' @examples
 #' dep <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR, field = "CODE")
 #'
 #' @return Returns an S4 object of class \code{departure} with the following slots:
 #' \describe{
-#'   \item{call}{Original function call.}
+#'   \item{call}{Original function call}
 #'   \item{df}{Departure factor. Vector of length p that describes the amount of
-#'    departure between future and historical conditions for each climate variable.}
-#'   \item{departure}{Magnitude of the departure factor.}
-#'   \item{ras}{RasterBrick of climate departures, with p layers.}
-#'   \item{weights}{Raster layer of weights used for departure calculation.}
+#'    departure between future and historical conditions for each climate variable}
+#'   \item{departure}{Magnitude of the departure factor}
+#'   \item{ras}{RasterBrick of climate departures, with p layers}
+#'   \item{weights}{Raster layer of weights used for departure calculation}
 #' }
+#'
+#' @details
+#' If \code{x.fut} then something.
+#'
+#' @include CENFA.R cnfa-class.R GLcenfa-class.R difRasterBrick-class.R
 #'
 #' @export
 #' @importFrom stats sd
@@ -45,7 +52,7 @@ setGeneric("departure", function(x.hist, x.fut, s.dat, ...) {
 
 #' @rdname departure
 setMethod("departure",
-          signature(x.hist = "Raster", x.fut = "missing", s.dat = "cnfa"),
+          signature(x.hist = "difRasterBrick", x.fut = "missing", s.dat = "cnfa"),
           function(x.hist, s.dat, field, fun = "last", ...){
 
             call <- sys.calls()[[1]]

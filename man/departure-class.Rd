@@ -5,15 +5,16 @@
 \alias{departure-class}
 \title{departure-class}
 \description{
-An object of class \code{departure} is created from performing ecological-niche
-factor analysis on species presence data using the \code{enfa} function.
+An object of class \code{departure} is created by the \code{\link{departure}}
+departure function, which quantifies the amount of change between historical
+and future climate conditions inside a species' habitat.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{call}}{Original function call}
 
-\item{\code{df}}{departure factor}
+\item{\code{df}}{Departure factor}
 
 \item{\code{departure}}{Magnitude of the departure factor}
 
