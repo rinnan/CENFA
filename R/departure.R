@@ -22,7 +22,7 @@
 #' @param ... Additional arguments for \code{\link[raster]{clusterR}}.
 #'
 #' @examples
-#' dep <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR)
+#' dep <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR, field = "CODE")
 #'
 #' @return Returns an S4 object of class \code{departure} with the following slots:
 #' \describe{
@@ -59,8 +59,10 @@ setMethod("departure",
             x.dif <- crop(x.hist, extent(sp.ras))
             x.dif <- mask(x.dif, sp.ras[[1]])
             names(x.dif) <- nm
-            d <- weighted.mean(x.dif, w = s.dat@weights, na.rm = T)
-            #d <- cellStats(x.dif, mean)
+            w <- s.dat@weights / cellStats(s.dat@weights, sum, na.rm = T)
+            x.dif.w <- overlay(x = x.dif, y = w, fun = function(x,y) {return(x*y)})
+            d <- cellStats(x.dif.w, sum)
+            names(d) <- nm
             D <- norm(d, "2")
             #pres <- which(!is.na(values(max(x.dif))))
 
@@ -111,8 +113,10 @@ setMethod("departure",
             x.dif <- abs(x.fut - x.hist)
             x.dif <- mask(x.dif, sp.ras[[1]])
             names(x.dif) <- nm
-            d <- weighted.mean(x.dif, w = s.dat@weights, na.rm = T)
-            #d <- cellStats(x.dif, mean)
+            w <- s.dat@weights / cellStats(s.dat@weights, sum, na.rm = T)
+            x.dif.w <- overlay(x = x.dif, y = w, fun = function(x,y) {return(x*y)})
+            d <- cellStats(x.dif.w, sum)
+            names(d) <- nm
             D <- norm(d, "2")
             #pres <- which(!is.na(values(max(x.dif))))
 
@@ -182,11 +186,13 @@ setMethod("departure",
             }
 
             x.dif <- abs(x.fut - x.hist)
-            s.dat.ras <- rasterize(s.dat, raster(x.dif), field = field, fun = fun, ...)
+            s.dat.ras <- rasterize(s.dat, raster(x.dif), field = field, fun = fun)#, ...)
             x.dif <- mask(x.dif, s.dat.ras)
             names(x.dif) <- nm
-            d <- weighted.mean(x.dif, w = s.dat.ras, na.rm = T)
-            #d <- cellStats(x.dif, mean)
+            w <- s.dat.ras / cellStats(s.dat.ras, sum, na.rm = T)
+            x.dif.w <- overlay(x = x.dif, y = w, fun = function(x,y) {return(x*y)})
+            d <- cellStats(x.dif.w, sum)
+            names(d) <- nm
             D <- norm(d, "2")
             #pres <- which(!is.na(values(max(x.dif))))
 

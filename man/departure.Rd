@@ -62,6 +62,6 @@ Calculates the climatic departure of a species using historical and future
 climate raster data and species presence data.
 }
 \examples{
-dep <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR)
+dep <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR, field = "CODE")
 
 }
