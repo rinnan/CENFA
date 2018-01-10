@@ -30,8 +30,8 @@
 #'   \item{df}{Departure factor. Vector of length p that describes the amount of
 #'    departure between future and historical conditions for each climate variable.}
 #'   \item{departure}{Magnitude of the departure factor.}
-#'   \item{present}{Number of raster cells in which species is present.}
 #'   \item{ras}{RasterBrick of climate departures, with p layers.}
+#'   \item{weights}{Raster layer of weights used for departure calculation.}
 #' }
 #'
 #' @export
@@ -59,11 +59,12 @@ setMethod("departure",
             x.dif <- crop(x.hist, extent(sp.ras))
             x.dif <- mask(x.dif, sp.ras[[1]])
             names(x.dif) <- nm
-            d <- cellStats(x.dif, mean)
+            d <- weighted.mean(x.dif, w = s.dat@weights, na.rm = T)
+            #d <- cellStats(x.dif, mean)
             D <- norm(d, "2")
-            pres <- which(!is.na(values(max(x.dif))))
+            #pres <- which(!is.na(values(max(x.dif))))
 
-            depart <- methods::new("departure", call = call, df = d, departure = D,  present = s.dat@present, ras = x.dif)
+            depart <- methods::new("departure", call = call, df = d, departure = D, ras = x.dif, weights = s.dat@weights)
             return(depart)
           }
 )
@@ -94,15 +95,15 @@ setMethod("departure",
                 means <- cellStats(x.hist, mean)
                 sds <- cellStats(x.hist, sd)
                 beginCluster(n = n)
-                x.hist <- clusterR(x.hist, fun = raster::scale, export = list("means", "sds"), args = list(center = means, scale = sds))
-                x.fut <- clusterR(x.fut, raster::scale, export = list("means", "sds"), args = list(center = means, scale = sds))
+                x.hist <- clusterR(x.hist, fun = scale, export = list("means", "sds"), args = list(center = means, scale = sds))
+                x.fut <- clusterR(x.fut, scale, export = list("means", "sds"), args = list(center = means, scale = sds))
                 endCluster()
               }
             } else {
               if(scale == T) {
                 means <- cellStats(x.hist, mean)
                 sds <- cellStats(x.hist, sd)
-                x.hist <- raster::scale(x.hist)
+                x.hist <- scale(x.hist)
                 x.fut <- scale(x.fut, center = means, scale = sds)
               }
             }
@@ -110,9 +111,10 @@ setMethod("departure",
             x.dif <- abs(x.fut - x.hist)
             x.dif <- mask(x.dif, sp.ras[[1]])
             names(x.dif) <- nm
-            d <- cellStats(x.dif, mean)
+            d <- weighted.mean(x.dif, w = s.dat@weights, na.rm = T)
+            #d <- cellStats(x.dif, mean)
             D <- norm(d, "2")
-            pres <- which(!is.na(values(max(x.dif))))
+            #pres <- which(!is.na(values(max(x.dif))))
 
             # if(canProcessInMemory(x.dif)) {
             #   pres <- which(!is.na(values(sp.ras[[1]])))
@@ -134,7 +136,7 @@ setMethod("departure",
             #   endCluster()
             # }
 
-            depart <- methods::new("departure", call = call, df = d, departure = D, present = s.dat@present, ras = x.dif)
+            depart <- methods::new("departure", call = call, df = d, departure = D, ras = x.dif, weights = s.dat@weights)
             return(depart)
           }
 )
@@ -166,15 +168,15 @@ setMethod("departure",
                 means <- cellStats(x.hist, mean)
                 sds <- cellStats(x.hist, sd)
                 beginCluster(n = n)
-                x.hist <- clusterR(x.hist, fun = raster::scale, export = list("means", "sds"), args = list(center = means, scale = sds))
-                x.fut <- clusterR(x.fut, raster::scale, export = list("means", "sds"), args = list(center = means, scale = sds))
+                x.hist <- clusterR(x.hist, fun = scale, export = list("means", "sds"), args = list(center = means, scale = sds))
+                x.fut <- clusterR(x.fut, scale, export = list("means", "sds"), args = list(center = means, scale = sds))
                 endCluster()
               }
             } else {
               if(scale == T) {
                 means <- cellStats(x.hist, mean)
                 sds <- cellStats(x.hist, sd)
-                x.hist <- raster::scale(x.hist)
+                x.hist <- scale(x.hist)
                 x.fut <- scale(x.fut, center = means, scale = sds)
               }
             }
@@ -183,11 +185,12 @@ setMethod("departure",
             s.dat.ras <- rasterize(s.dat, raster(x.dif), field = field, fun = fun, ...)
             x.dif <- mask(x.dif, s.dat.ras)
             names(x.dif) <- nm
-            d <- cellStats(x.dif, mean)
+            d <- weighted.mean(x.dif, w = s.dat.ras, na.rm = T)
+            #d <- cellStats(x.dif, mean)
             D <- norm(d, "2")
-            pres <- which(!is.na(values(max(x.dif))))
+            #pres <- which(!is.na(values(max(x.dif))))
 
-            depart <- methods::new("departure", call = call, df = d, departure = D, present = length(pres), ras = x.dif)
+            depart <- methods::new("departure", call = call, df = d, departure = D, ras = x.dif, weights = s.dat.ras)
             return(depart)
           }
 )

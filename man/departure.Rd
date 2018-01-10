@@ -53,8 +53,8 @@ Returns an S4 object of class \code{departure} with the following slots:
   \item{df}{Departure factor. Vector of length p that describes the amount of
    departure between future and historical conditions for each climate variable.}
   \item{departure}{Magnitude of the departure factor.}
-  \item{present}{Number of raster cells in which species is present.}
   \item{ras}{RasterBrick of climate departures, with p layers.}
+  \item{weights}{Raster layer of weights used for departure calculation.}
 }
 }
 \description{
