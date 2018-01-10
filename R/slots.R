@@ -2,6 +2,8 @@
 #'
 #' Functions for extracting data from slots of objects of classes \code{cnfa} and \code{enfa}.
 #'
+#' @aliases m.factor, s.factor, marginality, specialization, sensitivity
+#'
 #' @param x cnfa or enfa object
 #'
 #' @examples
@@ -45,3 +47,24 @@ sensitivity <- function(x){
     stop("Object of class 'cnfa' expected")
   return(x@sensitivity)
 }
+
+#' @rdname covmat
+#' @export
+setMethod("covmat",
+          signature(x = "cnfa"),
+          function(x) x@cov
+)
+
+#' @rdname covmat
+#' @export
+setMethod("covmat",
+          signature(x = "enfa"),
+          function(x) x@cov
+)
+
+#' @rdname covmat
+#' @export
+setMethod("covmat",
+          signature(x = "GLcenfa"),
+          function(x) x@cov
+)

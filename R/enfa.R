@@ -20,6 +20,9 @@
 #'   be scaled beforehand using the \code{\link{GLcenfa}} function.
 #' @param filename character. Optional filename to save the Raster* output to
 #'   file. If this is not provided, a temporary file will be created for large \code{x}.
+#' @param parallel logical. If \code{TRUE} then multiple cores are utilized for the
+#'   calculation of the covariance matrices.
+#' @param prj character. proj4string denoting projection of species observation data.
 #' @param ... Additonal arguments for the \code{\link{covmat}} function, such as the
 #'   number of cores \code{n}.
 #'
@@ -428,7 +431,7 @@ setMethod("enfa",
             names(sf) <- nm[-1]
 
             enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = sf,
-                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
+                                 specialization = spec, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
             return(enfa)
           }
 )

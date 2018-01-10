@@ -2,6 +2,11 @@
 % Please edit documentation in R/slots.R
 \name{slot-access}
 \alias{slot-access}
+\alias{m.factor,}
+\alias{s.factor,}
+\alias{marginality,}
+\alias{specialization,}
+\alias{sensitivity}
 \alias{m.factor}
 \alias{s.factor}
 \alias{marginality}

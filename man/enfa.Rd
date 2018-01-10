@@ -44,11 +44,16 @@ with multiple spatial features, similar to the \code{fun} argument in
 \item{filename}{character. Optional filename to save the Raster* output to
 file. If this is not provided, a temporary file will be created for large \code{x}.}
 
+\item{parallel}{logical. If \code{TRUE} then multiple cores are utilized for the
+calculation of the covariance matrices.}
+
 \item{scale}{logical. If \code{TRUE} then the values of the Raster* object will
 be centered and scaled. Depending on the resolution of the climate data and
 the extent of the study area, this can be quite time consuming. If running
 this function for multiple species, it is recommended that the climate data
 be scaled beforehand using the \code{\link{GLcenfa}} function.}
+
+\item{prj}{character. proj4string denoting projection of species observation data.}
 }
 \value{
 Returns an S4 object of class \code{enfa} with the following components:
