@@ -64,8 +64,6 @@
 setGeneric("cnfa", function(x, s.dat, ...){
   standardGeneric("cnfa")})
 
-# text
-
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "GLcenfa", s.dat = "Spatial"),
@@ -91,59 +89,69 @@ setMethod("cnfa",
 
             if (canProcessInMemory(x.crop)){
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.crop))))
-              S <- values(x.crop)[pres,]
+              S <- values(x.crop)[pres, ]
               nS <- nrow(S)
               Rg <- x@cov
-              Rs <- cov(S)
-              mar <- colSums(S)/nS
+              p <- values(s.dat.ras)[pres]
+              p <- p/(sum(p))
+              mar <- apply(S, 2, function(x) sum(x * p))
+              Sm <- sweep(S, 2, mar)
+              DpSm <- apply(Sm, 2, function(x) x * p)
+              Rs <- crossprod(Sm, DpSm)
             } else {
-              x.mask <- mask(x.crop, s.dat.ras)
-              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
-              Rg <- x@cov
-              cat("\nCalculating species covariance matrix...\n")
-              Rs <- covmat(x.mask, center = T)
-              mar <- cellStats(x.mask, sum)/length(pres)
-            }
+            x.mask <- mask(x.crop, s.dat.ras)
+            pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
+            Rg <- x@cov
+            p.sum <- cellStats(s.dat.ras, sum)
+            p <- s.dat.ras / p.sum
+            DpS <- x.mask * p
+            mar <- cellStats(DpS, sum)
+            Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
+            #Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
+            beginCluster()
+            Rs <- clusterR(Sm, fun = layerStats, args = list(stat = 'weighted.cov', w = p, na.rm = T, asSample = F))
+            endCluster()
+          }
 
-            cZ <- nlayers(ras)
-            m <- sqrt(c(t(mar) %*% mar))
-            if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
-            eigRs <- lapply(eigen(Rs), Re)
-            keep <- (eigRs$values > 1e-09)
-            Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
-            W <- Rs12 %*% Rg %*% Rs12
-            z <- Rs12 %*% mar
-            y <- z/sqrt(sum(z^2))
-            H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
-            s <- Re(eigen(H)$values)[-cZ]
-            s.p <- abs(sum(diag(W)) - sum(diag(H)))
-            s <- c(s.p, s)
-            s.p <- abs(s)/sum(abs(s))
-            v <- Re(eigen(H)$vectors)
-            co <- matrix(nrow = cZ, ncol = cZ)
-            co[, 1] <- mar/sqrt(t(mar) %*% mar)
-            u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
-            norw <- sqrt(diag(t(u) %*% u))
-            co[, -1] <- sweep(u, 2, norw, "/")
-            sf <- abs(co) %*% s.p
-            sf <- as.numeric(sf)
-            names(sf) <- names(ras)
-            sens <- norm(sf, "2")
-            nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
-             if (canProcessInMemory(x.crop)){
-               s.ras <- brick(x.crop)
-               values(s.ras)[pres, ] <- S %*% co
-               #setValues(s.ras, S %*% co, index = pres)
-               names(s.ras) <- nm
-             } else {
-               cat("\nCreating factor rasters...")
-               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm)
-             }
-            colnames(co) <- names(s.p) <- nm
-            rownames(co) <- names(x)
+          cZ <- nlayers(ras)
+          m <- sqrt(c(t(mar) %*% mar))
+          if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
+          eigRs <- lapply(eigen(Rs), Re)
+          keep <- (eigRs$values > 1e-09)
+          Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
+          W <- Rs12 %*% Rg %*% Rs12
+          z <- Rs12 %*% mar
+          y <- z/sqrt(sum(z^2))
+          H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
+          s <- Re(eigen(H)$values)[-cZ]
+          s.p <- abs(sum(diag(W)) - sum(diag(H)))
+          s <- c(s.p, s)
+          s.p <- abs(s)/sum(abs(s))
+          v <- Re(eigen(H)$vectors)
+          co <- matrix(nrow = cZ, ncol = cZ)
+          co[, 1] <- mar/sqrt(t(mar) %*% mar)
+          u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
+          norw <- sqrt(diag(t(u) %*% u))
+          co[, -1] <- sweep(u, 2, norw, "/")
+          sf <- abs(co) %*% s.p
+          sf <- as.numeric(sf)
+          names(sf) <- names(ras)
+          sens <- norm(sf, "2")
+          nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
+          if (canProcessInMemory(x.crop)){
+            s.ras <- brick(x.crop)
+            values(s.ras)[pres, ] <- S %*% co
+            #setValues(s.ras, S %*% co, index = pres)
+            names(s.ras) <- nm
+          } else {
+            cat("\nCreating factor rasters...")
+            s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm)
+          }
+          colnames(co) <- names(s.p) <- nm
+          rownames(co) <- names(ras)
 
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
-            return(cnfa)
+          cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
+          return(cnfa)
           }
 )
 
@@ -177,17 +185,27 @@ setMethod("cnfa",
               nZ <- nrow(Z)
               nS <- nrow(S)
               Rg <- crossprod(Z, Z)/nZ
-              Rs <- cov(S)
-              mar <- colSums(S)/nS
+              p <- values(s.dat.ras)[pres]
+              p <- p/(sum(p))
+              mar <- apply(S, 2, function(x) sum(x * p))
+              Sm <- sweep(S, 2, mar)
+              DpSm <- apply(Sm, 2, function(x) x * p)
+              Rs <- crossprod(Sm, DpSm)
             } else {
               center <- cellStats(x, mean)
               x.mask <- mask(x, s.dat.ras)
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
+              p.sum <- cellStats(s.dat.ras, sum)
+              p <- s.dat.ras / p.sum
+              DpS <- x.mask * p
+              mar <- cellStats(DpS, sum)
               cat("\nCalculating study area covariance matrix...\n")
               Rg <- covmat(x, sample = F)
               cat("\nCalculating species covariance matrix...\n")
-              Rs <- covmat(x.mask, center = T)
-              mar <- cellStats(x.mask, sum)/length(pres)
+              Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
+              Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
+              #Rs <- covmat(x.mask, center = T)
+              #mar <- cellStats(x.mask, sum)/length(pres)
             }
 
             cZ <- nlayers(x)
@@ -267,17 +285,27 @@ setMethod("cnfa",
               nZ <- nrow(Z)
               nS <- nrow(S)
               Rg <- crossprod(Z, Z)/nZ
-              Rs <- cov(S)
-              mar <- colSums(S)/nS
+              p <- values(s.dat.ras)[pres]
+              p <- p/(sum(p))
+              mar <- apply(S, 2, function(x) sum(x * p))
+              Sm <- sweep(S, 2, mar)
+              DpSm <- apply(Sm, 2, function(x) x * p)
+              Rs <- crossprod(Sm, DpSm)
             } else {
               center <- cellStats(x, mean)
               x.mask <- mask(x, s.dat.ras)
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
+              p.sum <- cellStats(s.dat.ras, sum)
+              p <- s.dat.ras / p.sum
+              DpS <- x.mask * p
+              mar <- cellStats(DpS, sum)
               cat("\nCalculating study area covariance matrix...\n")
               Rg <- covmat(x, sample = F)
               cat("\nCalculating species covariance matrix...\n")
-              Rs <- covmat(x.mask, center = T)
-              mar <- cellStats(x.mask, sum)/length(pres)
+              Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
+              Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
+              #Rs <- covmat(x.mask, center = T)
+              #mar <- cellStats(x.mask, sum)/length(pres)
             }
 
             cZ <- nlayers(x)
@@ -325,68 +353,98 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "Raster", s.dat = "matrix"),
-          function(x, s.dat, prj, scale = TRUE, filename = "", ...){
+          function(x, s.dat, prj, field, fun = "last", scale = TRUE, filename = "", ...){
 
             call <- match.call()
 
-            if (! inherits(x, 'Raster')) stop('"x" should be a "Raster*" object')
-            s.dat <- SpatialPointsDataFrame(coords = s.dat, data = 1, proj4string = CRS(prj))
+            if(!inherits(x, 'Raster')) stop('"x" should be a "Raster*" object')
+            if(missing(prj)) {
+              prj <- crs(x)
+              warning("prj argument not supplied: inheriting projection from Raster* object.")
+            }
+            s.dat <- SpatialPointsDataFrame(coords = s.dat, data = 1, proj4string = crs(prj))
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
 
             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
 
+            s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun, ...)
+
             if(scale == TRUE) x <- scale(x)
 
-            gpres <- which(!is.na(values(x[[1]])))
-            dat <- values(x)[gpres, ]
+            filename <- trim(filename)
+            if (!canProcessInMemory(x) && filename == '') {
+              filename <- rasterTmpFile()
+            }
 
-            s.dat.ras <- rasterize(s.dat, raster(x))
-            pres <- which(!is.na(values(s.dat.ras)))
-            #prb<-values(speciesdat.ras)[pres]
-            pres.dat <- values(x)[pres, ]
-            #pr <- prb/sum(prb)
-            #row.w<-rep(1,nrow(dat))/nrow(dat)
-            #col.w <- rep(1,ncol(dat))
-            center <- colMeans(dat)
-            Z <- sweep(dat, 2, center)
-            S <- sweep(pres.dat, 2, center)
-            nZ <- nrow(Z)
-            nS <- nrow(S)
-            mar <- colSums(S)/nS
+            if(canProcessInMemory(x)){
+              gpres <- which(!is.na(values(max(x))))
+              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x))))
+              Z <- values(x)[gpres, ]
+              S <- values(x)[pres, ]
+              nZ <- nrow(Z)
+              nS <- nrow(S)
+              Rg <- crossprod(Z, Z)/nZ
+              p <- values(s.dat.ras)[pres]
+              p <- p/(sum(p))
+              mar <- apply(S, 2, function(x) sum(x * p))
+              Sm <- sweep(S, 2, mar)
+              DpSm <- apply(Sm, 2, function(x) x * p)
+              Rs <- crossprod(Sm, DpSm)
+            } else {
+              center <- cellStats(x, mean)
+              x.mask <- mask(x, s.dat.ras)
+              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.mask))))
+              p.sum <- cellStats(s.dat.ras, sum)
+              p <- s.dat.ras / p.sum
+              DpS <- x.mask * p
+              mar <- cellStats(DpS, sum)
+              cat("\nCalculating study area covariance matrix...\n")
+              Rg <- covmat(x, sample = F)
+              cat("\nCalculating species covariance matrix...\n")
+              Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
+              Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
+              #Rs <- covmat(x.mask, center = T)
+              #mar <- cellStats(x.mask, sum)/length(pres)
+            }
+
+            cZ <- nlayers(x)
             m <- sqrt(c(t(mar) %*% mar))
-            Rg <- crossprod(Z, Z/nZ)
-            Rs <- crossprod(S, S/nS)
-            eigRs <- eigen(Rs)
+            if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
+            eigRs <- lapply(eigen(Rs), Re)
             keep <- (eigRs$values > 1e-09)
             Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
             W <- Rs12 %*% Rg %*% Rs12
             z <- Rs12 %*% mar
             y <- z/sqrt(sum(z^2))
-            H <- (diag(ncol(Z)) - y %*% t(y)) %*% W %*% (diag(ncol(Z)) - y %*% t(y))
-            s <- eigen(H)$values
+            H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
+            s <- Re(eigen(H)$values)[-cZ]
+            s.p <- abs(sum(diag(W)) - sum(diag(H)))
+            s <- c(s.p, s)
             s.p <- abs(s)/sum(abs(s))
-            s.p[1] <- sum(diag(W)) - sum(diag(H))
-            spec <- sqrt(sum(s))/ncol(Z)
-            v <- eigen(H)$vectors
-            if (nf == "BS") nf <- brStick(v)
-            if (nf <= 0 | nf > (ncol(Z) - 1)) nf <- 1
-            co <- matrix(nrow = ncol(Z), ncol = nf + 1)
-            u <- (Rs12 %*% v)[, 1:nf]
-            norw <- sqrt(diag(t(as.matrix(u)) %*% as.matrix(u)))
-            co[, 2:(nf + 1)] <- sweep(as.matrix(u), 2, norw, "/")
-            #co[, 2:(nf + 1)] <- as.matrix(u)#sweep(as.matrix(u), 2, norw, "/")
-            co[, 1] <- mar
-            ras <- brick(raster(s.dat.ras), nl = nf + 1)
-            ss <- crop(s.dat.ras, extent(s.dat))
-            pres.c <- which(!is.na(values(ss)))
-            #values(ras)[pres.c, ] <- S %*% co
-            setValues(ras, S %*% co, index = pres.c)
-            co <- as.data.frame(co)
-            names(co) <- c("Marg", paste0("Spec", (1:nf)))
-            row.names(co) <- names(x)
-            co <- as.data.frame(co[order(abs(co$Marg), decreasing = T), ])
+            v <- Re(eigen(H)$vectors)
+            co <- matrix(nrow = cZ, ncol = cZ)
+            co[, 1] <- mar/sqrt(t(mar) %*% mar)
+            u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
+            norw <- sqrt(diag(t(u) %*% u))
+            co[, -1] <- sweep(u, 2, norw, "/")
+            sf <- abs(co) %*% s.p
+            sf <- as.numeric(sf)
+            names(sf) <- names(x)
+            sens <- norm(sf, "2")
+            nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
+            if(canProcessInMemory(x)){
+              s.ras <- brick(x)
+              values(s.ras)[pres, ] <- S %*% co
+              #setValues(s.ras, S %*% co, index = pres)
+              names(s.ras) <- nm
+            } else{
+              cat("\nCreating factor rasters...")
+              s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
+            }
+            colnames(co) <- names(s.p) <- nm
+            rownames(co) <- names(x)
 
-            cnfa <- methods::new("cnfa", call = call, nf = nf, mf = mar, marginality = m, sf = s, specialization = spec, s.prop = s.p, co = co, ras = ras, s.cov = Rs, present = length(pres))
+            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf, sensitivity = sens, p.spec = s.p, co = co, cov = Rs, present = length(pres), ras = s.ras)
             return(cnfa)
           }
 )
