@@ -12,6 +12,7 @@
 #' @param n numeric. Optional number of CPU cores to utilize for parallel processing
 #'
 #' @return A Raster* object of class \code{difRasterBrick}
+#' @export
 
 
 setGeneric("difRaster", function(x.hist, x.fut, scale = TRUE, parallel = FALSE, n){
@@ -22,8 +23,8 @@ setMethod("difRaster",
           signature(x.hist = "Raster", x.fut = "Raster"),
           function(x.hist, x.fut, scale = TRUE, parallel = FALSE, n){
 
-            if(names(x.hist) != names(x.fut)) stop("historical and future raster layers do not match")
-            if(!all.equal(x.hist, x.fut)) stop("historical and future rasters resolutions or extent do not match")
+            if(!all.equal(names(x.hist), names(x.fut))) stop("historical and future raster layers do not match")
+            if(!compareRaster(x.hist, x.fut)) stop("historical and future rasters resolutions or extent do not match")
 
             if(parallel == T) {
               if(scale == T) {

@@ -16,15 +16,22 @@
 #'   \code{\link[raster]{rasterize}}
 #' @param scale logical. If \code{TRUE} then the values of \code{x.hist} and
 #'   \code{x.fut} will be centered and scaled by the means and sds of the historical
-#'   climate data. Depending on the resolution of the data and the extent of the
-#'   study area, this can be quite time consuming. If running this function for
-#'   multiple species, it is recommended that the climate data be scaled beforehand
+#'   climate data
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Optional number of CPU cores to utilize for parallel processing
 #' @param ... Additional arguments for \code{\link[raster]{clusterR}}
 #'
 #' @examples
-#' dep <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR, field = "CODE")
+#' dep1 <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR, field = "CODE")
+#'
+#' # using difRaster as an initial step
+#' # for multi-species comparison
+#'
+#' dif.ras <- difRaster(x.hist = climdat.hist, x.fut = climdat.fut)
+#' dep2 <- departure(x.hist = dif.ras, s.dat = ABPR, field = "CODE")
+#'
+#'# same results either way
+#' all.equal(dep1@df, dep2@df)
 #'
 #' @return Returns an S4 object of class \code{departure} with the following slots:
 #' \describe{
@@ -37,7 +44,12 @@
 #' }
 #'
 #' @details
-#' If \code{x.fut} then something.
+#'  For comparisons of multiple species in the same study area, it is much more
+#'  efficient to first construct a Raster* object of absolute differences between
+#'  the historical and future values, so that the differences do not need to be
+#'  recalculated for each species. This can be acheived with by passing \code{x.hist}
+#'  and \code{x.fut} to the \code{difRaster} function, and then passing the
+#'  results to the \code{departure} function.
 #'
 #' @include CENFA.R cnfa-class.R GLcenfa-class.R difRasterBrick-class.R
 #'
@@ -58,7 +70,6 @@ setMethod("departure",
             call <- sys.calls()[[1]]
             sp.ras <- raster(s.dat)
 
-            warning("were rasters scaled before calculating differences?")
             if(!identicalCRS(x.hist, sp.ras)) {stop("climate and species projections do not match")}
             if(length(intersect(extent(x.hist), extent(sp.ras))) == 0) {stop("climate and species data to not overlap")}
 
@@ -80,19 +91,47 @@ setMethod("departure",
 
 #' @rdname departure
 setMethod("departure",
+          signature(x.hist = "difRasterBrick", x.fut = "missing", s.dat = "Spatial"),
+          function(x.hist, s.dat, field, fun = "last", ...){
+
+            call <- sys.calls()[[1]]
+
+            if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
+            if(!identicalCRS(x.hist, s.dat)) {stop("climate and species projections do not match")}
+            if(length(intersect(extent(x.hist), extent(s.dat))) == 0) {stop("climate and species data to not overlap")}
+
+            s.dat.ras <- rasterize(s.dat, raster(x.hist), field = field, fun = fun)
+
+            nm <- names(x.hist)
+            x.dif <- crop(x.hist, s.dat.ras)
+            x.dif <- mask(x.dif, s.dat.ras)
+            names(x.dif) <- nm
+            w <- s.dat.ras / cellStats(s.dat.ras, sum, na.rm = T)
+            x.dif.w <- overlay(x = x.dif, y = w, fun = function(x,y) {return(x*y)})
+            d <- cellStats(x.dif.w, sum)
+            names(d) <- nm
+            D <- norm(d, "2")
+            #pres <- which(!is.na(values(max(x.dif))))
+
+            depart <- methods::new("departure", call = call, df = d, departure = D, ras = x.dif, weights = s.dat.ras)
+            return(depart)
+          }
+)
+
+#' @rdname departure
+setMethod("departure",
           signature(x.hist = "Raster", x.fut = "Raster", s.dat = "cnfa"),
           function(x.hist, x.fut, s.dat, field, fun = "last", scale = TRUE, parallel = FALSE, n, ...) {
 
             call <- sys.calls()[[1]]
             sp.ras <- raster(s.dat)
 
-            if(names(x.hist) != names(x.fut)) stop("historical and future rasters do not match")
+            if(!all.equal(names(x.hist), names(x.fut))) stop("historical and future raster layers do not match")
+            if(!compareRaster(x.hist, x.fut)) stop("historical and future rasters resolutions or extent do not match")
             if(!identicalCRS(x.hist, sp.ras)) stop("climate and species projections do not match")
             if(length(intersect(extent(x.hist), extent(sp.ras))) == 0) stop("climate and species data to not overlap")
 
             nm <- names(x.hist)
-            x.hist <- crop(x.hist, extent(sp.ras))
-            x.fut <- crop(x.fut, extent(sp.ras))
 
             if(parallel == T) {
               if(scale == T) {
@@ -117,6 +156,8 @@ setMethod("departure",
               }
             }
 
+            x.hist <- crop(x.hist, extent(sp.ras))
+            x.fut <- crop(x.fut, extent(sp.ras))
             x.dif <- abs(x.fut - x.hist)
             x.dif <- mask(x.dif, sp.ras[[1]])
             names(x.dif) <- nm
@@ -154,20 +195,19 @@ setMethod("departure",
 
 #' @rdname departure
 setMethod("departure",
-          signature(x.hist = "Raster", x.fut = "Raster", s.dat = "SpatialPolygons"),
+          signature(x.hist = "Raster", x.fut = "Raster", s.dat = "Spatial"),
           function(x.hist, x.fut, s.dat, field, fun = "last", scale = TRUE, parallel = FALSE, n, ...){
 
             call <- sys.calls()[[1]]
 
-            if (! inherits(s.dat, 'SpatialPolygons')) stop('"s.dat" should be a "SpatialPolygons*" object')
+            if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if(!identicalCRS(x.hist, s.dat)) {stop("historical climate and species projections do not match")}
-            if(!identicalCRS(x.hist, x.fut))     {stop("historical and future climate projections do not match")}
+            if(!all.equal(names(x.hist), names(x.fut))) stop("historical and future raster layers do not match")
+            if(!compareRaster(x.hist, x.fut)) stop("historical and future rasters resolutions or extent do not match")
             if(!identicalCRS(x.fut, s.dat)) {stop("future climate and species projections do not match")}
             if(length(intersect(extent(x.hist), extent(s.dat))) == 0) {stop("climate and species data to not overlap")}
 
             nm <- names(x.hist)
-            x.hist <- crop(x.hist, extent(s.dat))
-            x.fut <- crop(x.fut, extent(s.dat))
 
             if(parallel == T) {
               if(scale == T) {
@@ -192,6 +232,8 @@ setMethod("departure",
               }
             }
 
+            x.hist <- crop(x.hist, extent(s.dat))
+            x.fut <- crop(x.fut, extent(s.dat))
             x.dif <- abs(x.fut - x.hist)
             s.dat.ras <- rasterize(s.dat, raster(x.dif), field = field, fun = fun)#, ...)
             x.dif <- mask(x.dif, s.dat.ras)

@@ -4,8 +4,9 @@
 \name{departure}
 \alias{departure}
 \alias{departure,difRasterBrick,missing,cnfa-method}
+\alias{departure,difRasterBrick,missing,Spatial-method}
 \alias{departure,Raster,Raster,cnfa-method}
-\alias{departure,Raster,Raster,SpatialPolygons-method}
+\alias{departure,Raster,Raster,Spatial-method}
 \title{Climatic departure}
 \usage{
 departure(x.hist, x.fut, s.dat, ...)
@@ -13,10 +14,13 @@ departure(x.hist, x.fut, s.dat, ...)
 \S4method{departure}{difRasterBrick,missing,cnfa}(x.hist, s.dat, field,
   fun = "last", ...)
 
+\S4method{departure}{difRasterBrick,missing,Spatial}(x.hist, s.dat, field,
+  fun = "last", ...)
+
 \S4method{departure}{Raster,Raster,cnfa}(x.hist, x.fut, s.dat, field,
   fun = "last", scale = TRUE, parallel = FALSE, n, ...)
 
-\S4method{departure}{Raster,Raster,SpatialPolygons}(x.hist, x.fut, s.dat, field,
+\S4method{departure}{Raster,Raster,Spatial}(x.hist, x.fut, s.dat, field,
   fun = "last", scale = TRUE, parallel = FALSE, n, ...)
 }
 \arguments{
@@ -40,9 +44,7 @@ with multiple spatial features, similar to the \code{fun} argument in
 
 \item{scale}{logical. If \code{TRUE} then the values of \code{x.hist} and
 \code{x.fut} will be centered and scaled by the means and sds of the historical
-climate data. Depending on the resolution of the data and the extent of the
-study area, this can be quite time consuming. If running this function for
-multiple species, it is recommended that the climate data be scaled beforehand}
+climate data}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
@@ -64,9 +66,23 @@ This function quantifies the amount of change between historical and future
 climate conditions inside a species' habitat.
 }
 \details{
-If \code{x.fut} then something.
+For comparisons of multiple species in the same study area, it is much more
+ efficient to first construct a Raster* object of absolute differences between
+ the historical and future values, so that the differences do not need to be
+ recalculated for each species. This can be acheived with by passing \code{x.hist}
+ and \code{x.fut} to the \code{difRaster} function, and then passing the
+ results to the \code{departure} function.
 }
 \examples{
-dep <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR, field = "CODE")
+dep1 <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR, field = "CODE")
+
+# using difRaster as an initial step
+# for multi-species comparison
+
+dif.ras <- difRaster(x.hist = climdat.hist, x.fut = climdat.fut)
+dep2 <- departure(x.hist = dif.ras, s.dat = ABPR, field = "CODE")
+
+# same results either way
+all.equal(dep1@df, dep2@df)
 
 }
