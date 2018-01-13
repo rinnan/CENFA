@@ -2,13 +2,23 @@
 % Please edit documentation in R/biplot.R
 \name{biplot}
 \alias{biplot}
+\alias{biplot.cnfa}
+\alias{biplot.enfa}
 \title{biplot}
 \usage{
-biplot(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...)
+biplot(x, ...)
+
+\method{biplot}{cnfa}(x, y, xax = 1, yax = 2, p = 0.99, n = 5,
+  plot = TRUE, ...)
+
+\method{biplot}{enfa}(x, y, xax = 1, yax = 2, p = 0.99, n = 5,
+  plot = TRUE, ...)
 }
 \arguments{
 \item{x}{an object of class \code{cnfa} or \code{enfa} describing the
 occupied habitat}
+
+\item{...}{additional \code{plot} arguments}
 
 \item{y}{an object of class \code{GLcenfa} describing the global reference
 habitat}
@@ -23,8 +33,6 @@ the minimum convex polygons}
 \item{n}{the number of projected variables to label}
 
 \item{plot}{if \code{TRUE}, plot will be returned on function call}
-
-\item{...}{additional \code{plot} arguments}
 }
 \description{
 Biplots of \code{cnfa} and \code{enfa} objects.
@@ -34,4 +42,7 @@ mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
 glc <- GLcenfa(x = climdat.hist)
 biplot(x = mod1, y = glc)
 
+}
+\seealso{
+\code{\link[stats]{biplot}}
 }

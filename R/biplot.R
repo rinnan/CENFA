@@ -25,12 +25,16 @@
 #' @importFrom graphics abline arrows legend par points polygon
 #'
 #' @include CENFA.R cnfa-class.R enfa-class.R GLcenfa-class.R
+#'
+#' @seealso \code{\link[stats]{biplot}}
+#'
 #' @export
 
-"biplot" <- function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...) UseMethod("biplot")
+"biplot" <- function(x, ...) UseMethod("biplot")
 
-#' @export
-"biplot.cnfa" <- function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...){
+#' @rdname biplot
+#' @method biplot cnfa
+biplot.cnfa <- function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...){
   if (!inherits(x, "cnfa"))
     stop("Object of class 'cnfa' expected")
   if (!inherits(y, "GLcenfa"))
@@ -108,7 +112,8 @@
          bty = "n")
 }
 
-#' @export
+
+#' @rdname biplot
 "biplot.enfa" <- function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...){
   if (!inherits(x, "enfa"))
     stop("Object of class 'enfa' expected")
