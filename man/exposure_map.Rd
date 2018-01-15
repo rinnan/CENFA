@@ -7,18 +7,18 @@
 exposure_map(dep, parallel = FALSE, n, filename = "", ...)
 }
 \arguments{
-\item{dep}{Object of class \code{departure}.}
+\item{dep}{Object of class \code{departure}}
 
-\item{parallel}{logical. If \code{TRUE} then multiple cores are utilized.}
+\item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
-\item{n}{numeric. Number of cores to use for calculation (optional).}
+\item{n}{numeric. Number of cores to use for calculation (optional)}
 
-\item{filename}{character. Output filename (optional).}
+\item{filename}{character. Output filename (optional)}
 
-\item{...}{Additional arguments for file writing as for \code{\link[raster]{writeRaster}}.}
+\item{...}{Additional arguments for file writing as for \code{\link[raster]{writeRaster}}}
 }
 \value{
-RasterLayer of exposure values.
+A RasterLayer of exposure values
 }
 \description{
 Creates a map of exposure to climate change in a species' habitat from a

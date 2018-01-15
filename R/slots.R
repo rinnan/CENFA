@@ -48,23 +48,43 @@ sensitivity <- function(x){
   return(x@sensitivity)
 }
 
-#' @rdname covmat
-#' @export
-setMethod("covmat",
-          signature(x = "cnfa"),
-          function(x) x@cov
-)
+"cov" <- function(x, ...) UseMethod("cov")
 
-#' @rdname covmat
+#' @rdname slot-access
 #' @export
-setMethod("covmat",
-          signature(x = "enfa"),
-          function(x) x@cov
-)
+cov.cnfa <- function(x){
+  if (!inherits(x, "cnfa"))
+    stop("Object of class 'cnfa' expected")
+      x@cov
+}
 
-#' @rdname covmat
+#' @rdname slot-access
 #' @export
-setMethod("covmat",
-          signature(x = "GLcenfa"),
-          function(x) x@cov
-)
+cov.enfa <- function(x){
+  if (!inherits(x, "enfa"))
+    stop("Object of class 'enfa' expected")
+  x@cov
+}
+
+#' @rdname slot-access
+#' @export
+cov.GLcenfa <- function(x){
+  if (!inherits(x, "GLcenfa"))
+    stop("Object of class 'GLcenfa' expected")
+  x@cov
+}
+
+# comment out
+# #' @rdname covmat
+# #' @export
+# setMethod("covmat",
+#           signature(x = "enfa"),
+#           function(x) x@cov
+# )
+#
+# #' @rdname covmat
+# #' @export
+# setMethod("covmat",
+#           signature(x = "GLcenfa"),
+#           function(x) x@cov
+# )

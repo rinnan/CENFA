@@ -6,7 +6,7 @@
 #' @aliases print.enfa, show.enfa
 #'
 #' @param x Raster* object, typically a brick or stack of ecological raster layers
-#' @param s.dat matrix, SpatialPolygons*, SpatialPoints*, or sf object indicating
+#' @param s.dat SpatialPolygons*, SpatialPoints*, or sf object indicating
 #'   species presence
 #' @param field field of \code{s.dat} that specifies presence or abundance. This
 #'   is equivalent to the \code{field} argument in the \code{raster} package.
@@ -23,15 +23,28 @@
 #'   file. If this is not provided, a temporary file will be created for large \code{x}.
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized for the
 #'   calculation of the covariance matrices
-#' @param ... Additonal arguments for the \code{\link{covmat}} function, such as the
+#' @param ... Additonal arguments for the \code{\link{parCov}} function, such as the
 #'   number of cores \code{n}
 #'
-#' @details Hirzel et al. (2002) defined the overall marginality \eqn{M} as a
-#'   standardized distance between the centroid of the species' niche and the
-#'   global niche. Basille and Calenge (2008), however, defined \eqn{M} as
-#'   \deqn{M = m^Tm.} The default \code{mar.type} reflects Basille and Calenge's
-#'   definition so that results will by default agree with those calculated using
-#'   Basille and Calenge's \code{adehabitatHS} package.
+#' @details
+#' The \code{cnfa} function is not to be confused with the \code{\link{enfa}}
+#' function. \code{enfa} performs ENFA as described by Hirzel et al. (2002) and
+#' Basille et al. (2008), and is offered as an alternative to the \code{enfa}
+#' function in the \code{adehabitatHS} package. \code{CENFA::enfa} will give
+#' different results than \code{adehabitatHS::enfa} for versions of \code{adehabitatHS}
+#' 0.3.13 or earlier, however, for two primary reasons.
+#'
+#' First, \code{CENFA::enfa} corrects a critical mistake in the calculation of
+#' the species covariance matrix. This correction influences the values of the
+#' coefficients of specialization in each ecological variable, which will lead to
+#' a different interpretation of the degree of specialization. Second, we define
+#' the overall marginality \eqn{M} as the norm of the marginality factor \code{mf},
+#' rather than the square of the norm of \code{mf}.
+#'
+#' The default \code{fun = 'last'} gives equal weight to each occupied cell.
+#' If multiple species observations occur in the same cell, the cell will only
+#' be counted once. \code{fun = 'count'} will weight the cells by the number
+#' of observations.
 #'
 #' @examples
 #' mod1 <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
@@ -117,7 +130,7 @@ setMethod("enfa",
               DpS <- x.mask * p
               mar <- cellStats(DpS, sum)
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- covmat(x = Sm, w = s.dat.ras, parallel = parallel, ...)
+              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, ...)
             }
 
             cZ <- nlayers(ras)
@@ -204,10 +217,10 @@ setMethod("enfa",
               DpS <- x.mask * p
               mar <- cellStats(DpS, sum)
               cat("\nCalculating study area covariance matrix...\n")
-              Rg <- covmat(x, sample = F, parallel = parallel, ...)
+              Rg <- parCov(x, sample = F, parallel = parallel, ...)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- covmat(x = Sm, w = s.dat.ras, ...)
+              Rs <- parCov(x = Sm, w = s.dat.ras, ...)
             }
 
             cZ <- nlayers(x)
@@ -299,10 +312,10 @@ setMethod("enfa",
               DpS <- x.mask * p
               mar <- cellStats(DpS, sum)
               cat("\nCalculating study area covariance matrix...\n")
-              Rg <- covmat(x, sample = F, ...)
+              Rg <- parCov(x, sample = F, ...)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- covmat(x = Sm, w = s.dat.ras, parallel = parallel, ...)
+              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, ...)
             }
 
             cZ <- nlayers(x)
@@ -396,12 +409,12 @@ setMethod("enfa",
 #               DpS <- x.mask * p
 #               mar <- cellStats(DpS, sum)
 #               cat("\nCalculating study area covariance matrix...\n")
-#               Rg <- covmat(x, sample = F, ...)
+#               Rg <- parCov(x, sample = F, ...)
 #               cat("\nCalculating species covariance matrix...\n")
 #               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-#               Rs <- covmat(x = Sm, w = p, parallel = parallel, ...)
+#               Rs <- parCov(x = Sm, w = p, parallel = parallel, ...)
 #               #Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
-#               #Rs <- covmat(x.mask, center = T)
+#               #Rs <- parCov(x.mask, center = T)
 #               #mar <- cellStats(x.mask, sum)/length(pres)
 #             }
 #

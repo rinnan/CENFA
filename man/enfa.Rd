@@ -24,10 +24,10 @@ enfa(x, s.dat, ...)
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers}
 
-\item{s.dat}{matrix, SpatialPolygons*, SpatialPoints*, or sf object indicating
+\item{s.dat}{SpatialPolygons*, SpatialPoints*, or sf object indicating
 species presence}
 
-\item{...}{Additonal arguments for the \code{\link{covmat}} function, such as the
+\item{...}{Additonal arguments for the \code{\link{parCov}} function, such as the
 number of cores \code{n}}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This
@@ -73,12 +73,24 @@ Performs ecological-niche factor analysis using environmental raster data and
 species presence data.
 }
 \details{
-Hirzel et al. (2002) defined the overall marginality \eqn{M} as a
-  standardized distance between the centroid of the species' niche and the
-  global niche. Basille and Calenge (2008), however, defined \eqn{M} as
-  \deqn{M = m^Tm.} The default \code{mar.type} reflects Basille and Calenge's
-  definition so that results will by default agree with those calculated using
-  Basille and Calenge's \code{adehabitatHS} package.
+The \code{cnfa} function is not to be confused with the \code{\link{enfa}}
+function. \code{enfa} performs ENFA as described by Hirzel et al. (2002) and
+Basille et al. (2008), and is offered as an alternative to the \code{enfa}
+function in the \code{adehabitatHS} package. \code{CENFA::enfa} will give
+different results than \code{adehabitatHS::enfa} for versions of \code{adehabitatHS}
+0.3.13 or earlier, however, for two primary reasons.
+
+First, \code{CENFA::enfa} corrects a critical mistake in the calculation of
+the species covariance matrix. This correction influences the values of the
+coefficients of specialization in each ecological variable, which will lead to
+a different interpretation of the degree of specialization. Second, we define
+the overall marginality \eqn{M} as the norm of the marginality factor \code{mf},
+rather than the square of the norm of \code{mf}.
+
+The default \code{fun = 'last'} gives equal weight to each occupied cell.
+If multiple species observations occur in the same cell, the cell will only
+be counted once. \code{fun = 'count'} will weight the cells by the number
+of observations.
 }
 \examples{
 mod1 <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")

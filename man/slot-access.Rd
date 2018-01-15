@@ -12,6 +12,9 @@
 \alias{marginality}
 \alias{specialization}
 \alias{sensitivity}
+\alias{cov.cnfa}
+\alias{cov.enfa}
+\alias{cov.GLcenfa}
 \title{Accessing CENFA slots}
 \usage{
 m.factor(x)
@@ -23,6 +26,12 @@ marginality(x)
 specialization(x)
 
 sensitivity(x)
+
+\method{cov}{cnfa}(x)
+
+\method{cov}{enfa}(x)
+
+\method{cov}{GLcenfa}(x)
 }
 \arguments{
 \item{x}{cnfa or enfa object}

@@ -32,8 +32,8 @@
 
 "biplot" <- function(x, ...) UseMethod("biplot")
 
+#' @export
 #' @rdname biplot
-#' @method biplot cnfa
 biplot.cnfa <- function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...){
   if (!inherits(x, "cnfa"))
     stop("Object of class 'cnfa' expected")
@@ -114,6 +114,7 @@ biplot.cnfa <- function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ..
 
 
 #' @rdname biplot
+#' @export
 "biplot.enfa" <- function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...){
   if (!inherits(x, "enfa"))
     stop("Object of class 'enfa' expected")

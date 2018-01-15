@@ -31,3 +31,7 @@ A Raster* object of class \code{difRasterBrick}
 An object of class \code{enfa} is created from performing ecological-niche
 factor analysis on species presence data using the \code{enfa} function.
 }
+\examples{
+difRaster(x.hist = climdat.hist, x.fut = climdat.fut)
+
+}

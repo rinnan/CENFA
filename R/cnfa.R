@@ -24,7 +24,7 @@
 #'   file. If this is not provided, a temporary file will be created for large \code{x}
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized for the
 #'   calculation of the covariance matrices
-#' @param ... Additonal arguments for the \code{\link{covmat}} function, such as the
+#' @param ... Additonal arguments for the \code{\link{parCov}} function, such as the
 #'   number of cores \code{n}
 #'
 #' @examples
@@ -142,7 +142,7 @@ setMethod("cnfa",
             DpS <- x.mask * p
             mar <- cellStats(DpS, sum)
             Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-            Rs <- covmat(x = Sm, w = s.dat.ras, parallel = parallel, ...)
+            Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, ...)
           }
 
           cZ <- nlayers(ras)
@@ -231,10 +231,10 @@ setMethod("cnfa",
               DpS <- x.mask * p
               mar <- cellStats(DpS, sum)
               cat("\nCalculating study area covariance matrix...\n")
-              Rg <- covmat(x, sample = F, parallel = parallel, ...)
+              Rg <- parCov(x, sample = F, parallel = parallel, ...)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- covmat(x = Sm, w = s.dat.ras, ...)
+              Rs <- parCov(x = Sm, w = s.dat.ras, ...)
             }
 
             cZ <- nlayers(x)
@@ -328,10 +328,10 @@ setMethod("cnfa",
               DpS <- x.mask * p
               mar <- cellStats(DpS, sum)
               cat("\nCalculating study area covariance matrix...\n")
-              Rg <- covmat(x, sample = F, ...)
+              Rg <- parCov(x, sample = F, ...)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- covmat(x = Sm, w = s.dat.ras, parallel = parallel, ...)
+              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, ...)
             }
 
             cZ <- nlayers(x)
@@ -428,12 +428,12 @@ setMethod("cnfa",
 #               DpS <- x.mask * p
 #               mar <- cellStats(DpS, sum)
 #               cat("\nCalculating study area covariance matrix...\n")
-#               Rg <- covmat(x, sample = F, ...)
+#               Rg <- parCov(x, sample = F, ...)
 #               cat("\nCalculating species covariance matrix...\n")
 #               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-#               Rs <- covmat(x = Sm, w = s.dat.ras, parallel = parallel, ...)
+#               Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, ...)
 #               #Rs <- layerStats(Sm, 'weighted.cov', w = p, na.rm = T, asSample = F)[[1]]
-#               #Rs <- covmat(x.mask, center = T)
+#               #Rs <- parCov(x.mask, center = T)
 #               #mar <- cellStats(x.mask, sum)/length(pres)
 #             }
 #

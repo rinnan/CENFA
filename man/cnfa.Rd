@@ -28,7 +28,7 @@ raster layers, or a \code{GLcenfa} object}
 \item{s.dat}{SpatialPolygons*, SpatialPoints*, or sf object indicating
 species presence}
 
-\item{...}{Additonal arguments for the \code{\link{covmat}} function, such as the
+\item{...}{Additonal arguments for the \code{\link{parCov}} function, such as the
 number of cores \code{n}}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This

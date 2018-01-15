@@ -11,6 +11,9 @@
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Optional number of CPU cores to utilize for parallel processing
 #'
+#' @examples
+#' difRaster(x.hist = climdat.hist, x.fut = climdat.fut)
+#'
 #' @return A Raster* object of class \code{difRasterBrick}
 #' @export
 
