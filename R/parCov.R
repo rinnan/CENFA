@@ -1,12 +1,12 @@
 #' Efficient calculation of covariance matrices for Raster* objects
 #'
-#' \code{covmat} efficiently calculates the covariance between different climate
-#' and ecological variables, taking advantage of parallel processing and pulling
-#' data into memory only as necessary. For large datasets with lots of variables,
-#' calculating the covariance matrix rapidly becomes unwieldy, as the number of
-#' calculations required grows quadratically with the number of variables.
+#' \code{parCov} efficiently calculates the covariance of Raster* objects,
+#' taking advantage of parallel processing and pulling data into memory only as
+#' necessary. For large datasets with lots of variables, calculating the covariance
+#' matrix rapidly becomes unwieldy, as the number of calculations required grows
+#' quadratically with the number of variables.
 #'
-#' @param x Raster* object, typically a brick or stack of climate raster layers
+#' @param x Raster* object, typically a brick or stack
 #' @param y NULL (default) or a Raster* object with the same extent and resolution
 #'   as \code{x}
 #' @param ... additional arguments, including any of the following:
@@ -21,11 +21,11 @@
 #' @param n numeric. Optional number of CPU cores to utilize for parallel processing
 #'
 #' @examples
-#' mat1 <- covmat(x = climdat.hist)
-#' mat2 <- covmat(x = climdat.hist, center = TRUE, scale = TRUE)
+#' mat1 <- parCov(x = climdat.hist)
+#' mat2 <- parCov(x = climdat.hist, center = TRUE, scale = TRUE)
 #'
 #' # covariance between two Raster* objects
-#' mat3 <- covmat(x = climdat.hist, y = climdat.fut)
+#' mat3 <- parCov(x = climdat.hist, y = climdat.fut)
 #' dat.h <- values(climdat.hist)
 #' dat.f <- values(climdat.fut)
 #' mat4 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
@@ -39,9 +39,9 @@
 #'
 #' @details This function is designed to work similarly to the
 #'   \code{\link[stats]{cov}} and the \code{\link[raster]{layerStats}}
-#'   functions, with two major differences. First, \code{covmat} allows you to
+#'   functions, with two major differences. First, \code{parCov} allows you to
 #'   calculate the covariance between two different Raster* objects, whereas
-#'   \code{layerStats} does not. Second, \code{covmat} can (optionally) compute
+#'   \code{layerStats} does not. Second, \code{parCov} can (optionally) compute
 #'   each element of the covariance matrix in parallel, offering a dramatic
 #'   improvement in computation time for large Raster* objects.
 #'
@@ -55,11 +55,11 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 
-setGeneric("covmat", function(x, y, ...){
-  standardGeneric("covmat")})
+setGeneric("parCov", function(x, y, ...){
+  standardGeneric("parCov")})
 
-#' @rdname covmat
-setMethod("covmat",
+#' @rdname parCov
+setMethod("parCov",
           signature(x = "Raster", y = "missing"),
           function(x, center = FALSE, scale = FALSE, w = NULL, sample = TRUE, parallel = FALSE, n){
 
@@ -70,7 +70,7 @@ setMethod("covmat",
               if(scale) {
                 sds <- apply(dat, 2, sd)
                 dat <- dat/sds}
-              mat <- cov(dat, method = "pearson")
+              mat <- stats::cov(dat, method = "pearson")
               return(mat)
             }
             nl <- nlayers(x)
@@ -127,8 +127,8 @@ setMethod("covmat",
           }
 )
 
-#' @rdname covmat
-setMethod("covmat",
+#' @rdname parCov
+setMethod("parCov",
           signature(x = "Raster", y = "Raster"),
           function(x, y, w = NULL, sample = TRUE, parallel = FALSE, n){
 
@@ -136,7 +136,7 @@ setMethod("covmat",
             if(small){
               x.dat <- values(x)
               y.dat <- values(y)
-              mat <- cov(x.dat, y.dat, method = "pearson", use = "na.or.complete")
+              mat <- stats::cov(x.dat, y.dat, method = "pearson", use = "na.or.complete")
               return(mat)
             }
 
