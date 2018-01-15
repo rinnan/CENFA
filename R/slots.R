@@ -2,7 +2,7 @@
 #'
 #' Functions for extracting data from slots of objects of classes \code{cnfa} and \code{enfa}.
 #'
-#' @aliases m.factor, s.factor, marginality, specialization, sensitivity
+#' @aliases m.factor, s.factor, marginality, specialization, sensitivity, cov, raster
 #'
 #' @param x cnfa or enfa object
 #'
@@ -48,7 +48,7 @@ sensitivity <- function(x){
   return(x@sensitivity)
 }
 
-"cov" <- function(x, ...) UseMethod("cov")
+# "cov" <- function(x, ...) UseMethod("cov")
 
 #' @rdname slot-access
 #' @export
@@ -73,6 +73,34 @@ cov.GLcenfa <- function(x){
     stop("Object of class 'GLcenfa' expected")
   x@cov
 }
+
+#' @rdname slot-access
+setMethod("raster",
+          signature(x = "enfa"),
+          function(x){
+            temp <- x@ras
+            return(temp)
+          }
+)
+
+#' @rdname slot-access
+setMethod("raster",
+          signature(x = "cnfa"),
+          function(x){
+            temp <- x@ras
+            return(temp)
+          }
+)
+
+#' @rdname raster
+setMethod("raster",
+          signature(x = "GLcenfa"),
+          function(x){
+            temp <- x@global_ras
+            return(temp)
+          }
+)
+
 
 # comment out
 # #' @rdname covmat
