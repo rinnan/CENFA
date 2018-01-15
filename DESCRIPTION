@@ -51,7 +51,6 @@ Collate:
     'exposure_map.R'
     'parCov.R'
     'parScale.R'
-    'raster.R'
     'sensitivity_map.R'
     'slots.R'
     'tree-data.R'

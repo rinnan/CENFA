@@ -32,35 +32,16 @@ value. Scaling is done after centering}
 \item{n}{numeric. Optional number of CPU cores to utilize for parallel processing}
 }
 \value{
-Returns a matrix with the same row and column names as the layers of
-  \code{x}. If \code{y} is supplied, then the covariances between the layers
-  of \code{x} and the layers of code{y} are computed.
+Raster* object
 }
 \description{
-\code{scale} efficiently calculates the covariance between different climate
-and ecological variables, taking advantage of parallel processing and pulling
-data into memory only as necessary. For large datasets with lots of variables,
-calculating the covariance matrix rapidly becomes unwieldy, as the number of
-calculations required grows quadratically with the number of variables.
-}
-\details{
-This function is designed to work similarly to the
-  \code{\link[stats]{cov}} and the \code{\link[raster]{layerStats}}
-  functions, with two major differences. First, \code{covmat} allows you to
-  calculate the covariance between two different Raster* objects, whereas
-  \code{layerStats} does not. Second, \code{covmat} can (optionally) compute
-  each element of the covariance matrix in parallel, offering a dramatic
-  improvement in computation time for large Raster* objects.
-
-  The raster layer of weights \code{w} should contain raw weights as values,
-  and should \emph{not} be normalized so that \code{sum(w) = 1}. This is
-  necessary for computing the sample covariance, whose formula contains
-  \code{sum(w) - 1} in its denominator.
+\code{parScale} expands the \code{raster::scale} function to allow for
+faster parallel processing, scaling each layer of \code{x} in parallel.
 }
 \examples{
 mat <- parScale(x = climdat.hist)
 
 }
 \seealso{
-\code{\link[stats]{cov}}, \code{\link[raster]{layerStats}}
+\code{\link[base]{scale}}, \code{\link[raster]{scale}}
 }

@@ -15,8 +15,8 @@ Historical range map for the garry oak (\emph{Quercus garryana}).}
 \alias{SESE
 Historical range map for the coast redwood (\emph{Sequoia sempervirens}).}
 \alias{SESE}
-\title{Range map for Abies procera}
-\format{A SpatialPolygonDataFrame.}
+\title{Tree distribution data}
+\format{SpatialPolygonDataFrame}
 \source{
 \url{www.usgs.gov}
 }

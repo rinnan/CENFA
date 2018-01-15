@@ -25,12 +25,15 @@ Creates a map of exposure to climate change in a species' habitat from a
 \code{departure} object.
 }
 \details{
-The values of the exposure raster are calculated by projecting onto
-  the departure factor \strong{d}, given by formula \eqn{\epsilon} = \bold{Fd}.
+The values of the exposure raster are calculated by projecting onto the
+departure factor \strong{d}, given by the formula
+
+  \eqn{\epsilon} = \bold{Fd}.
 }
 \examples{
 dep <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR)
 exp.map <- exposure_map(dep)
+plot(exp.map)
 
 }
 \seealso{

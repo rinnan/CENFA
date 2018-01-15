@@ -1,10 +1,10 @@
-#' Range map for Abies procera
+#' Tree distribution data
 #'
 #' Some example datasets of historical tree distributions, from "Atlas of United
 #' States Trees" by Elbert L. Little, Jr.
 #'
 #' @aliases ABPR, QUGA, SESE
-#' @format A SpatialPolygonDataFrame.
+#' @format SpatialPolygonDataFrame
 #' @name tree-data
 #' @source \url{www.usgs.gov}
 #' @seealso \code{\link{climdat.hist}}, \code{\link{climdat.fut}}
