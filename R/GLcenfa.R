@@ -37,9 +37,10 @@
 #' \describe{
 #'   \item{global_ras}{Raster* \code{x} of p layers, possibly centered and scaled}
 #'   \item{cov}{Global p x p covariance matrix}
-#'   \item{center}{Vector of layer means of \code{x}}
-#'   \item{sd}{Vector of layer standard deviations of \code{x}}
-#' }
+#'   }
+#   \item{center}{Vector of layer means of \code{x}}
+#   \item{sd}{Vector of layer standard deviations of \code{x}}
+# }
 #'
 #' @seealso \code{\link{cnfa}}, \code{\link{enfa}}
 #' @export
@@ -58,10 +59,10 @@ setMethod("GLcenfa",
               filename <- rasterTmpFile()
             }
 
-            if(progress) cat("\nCalculating layer means...")
-            cent <- cellStats(x, 'mean')
-            if(progress) cat("\nCalculating layer sds...")
-            sds <- cellStats(x, 'sd')
+            # if(progress) cat("\nCalculating layer means...")
+            # if(center) cent <- cellStats(x, 'mean')
+            # if(progress) cat("\nCalculating layer sds...")
+            # sds <- cellStats(x, 'sd')
 
             x <- parScale(x, center = center, scale = scale, parallel = parallel, n = n)
 
@@ -71,7 +72,7 @@ setMethod("GLcenfa",
             }
             cov.mat <- parCov(x, center = FALSE, scale = FALSE, parallel = parallel, n = n)
 
-            GLcenfa <- methods::new("GLcenfa", global_ras = x, cov = cov.mat, center = cent, sd = sds)
+            GLcenfa <- methods::new("GLcenfa", global_ras = x, cov = cov.mat)
             return(GLcenfa)
           }
 )

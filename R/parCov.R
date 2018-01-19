@@ -64,7 +64,7 @@ setMethod("parCov",
           function(x, center = FALSE, scale = FALSE, w = NULL, sample = TRUE, parallel = FALSE, n){
 
             small <- canProcessInMemory(x)
-            if(small){
+            if(small & !parallel){
               dat <- na.omit(values(x))
               if(center) dat <- dat - colMeans(dat)
               if(scale) {

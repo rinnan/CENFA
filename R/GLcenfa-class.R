@@ -10,11 +10,11 @@
 #'
 #' @slot global_ras Raster* object \code{x} with p layers
 #' @slot cov matrix. Global p x p covariance matrix
-#' @slot center numeric. Layer means of \code{x} before scaling
-#' @slot sd numeric. Layer standard deviations of \code{x} before scaling
+# @slot center numeric. Layer means of \code{x} before scaling
+# @slot sd numeric. Layer standard deviations of \code{x} before scaling
 #' @export
 
-setClass("GLcenfa", slots = list(global_ras = "Raster", cov = "matrix", center = "numeric", sd = "numeric"))
+setClass("GLcenfa", slots = list(global_ras = "Raster", cov = "matrix"))#, center = "numeric", sd = "numeric"))
 
 setMethod ("show", "GLcenfa", function(object){
   if (!inherits(object, "GLcenfa"))

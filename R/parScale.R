@@ -36,7 +36,7 @@ setMethod("parScale",
           signature(x = "Raster"),
           function(x, center = FALSE, scale = FALSE, parallel = FALSE, n){
 
-            if(canProcessInMemory(x)){
+            if(canProcessInMemory(x) & !parallel){
               v <- values(x)
               x <- setValues(x, scale(v, center=center, scale=scale))
               return(x)
