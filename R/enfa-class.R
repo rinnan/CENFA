@@ -33,7 +33,7 @@ setMethod ("show", "enfa", function(object){
   j <- order(abs(object@mf), decreasing = T)
   print(round(object@mf[j], 2))
   cat("\nEigenvalues of specialization: \n")
-  print(sort(round(object@sf, 2), decreasing = T))
+  print(round(object@sf, 2))
   cat("\nPercentage of specialization contained in factors: \n")
   print(round(100*object@p.spec, 2))
   cat("\nOverall marginality: ", round(object@marginality, 3), "\n")

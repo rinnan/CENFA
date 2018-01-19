@@ -4,8 +4,7 @@
 #' climate conditions inside a species' habitat.
 #'
 #' @param x.hist Raster* object, typically a brick or stack of historical climate
-#'   raster layers, or an object of class
-#'   \code{\link[=difRasterBrick-class]{difRasterBrick}} (see Details)
+#'   raster layers or a brick of absolute differences (see Details)
 #' @param x.fut  Raster* object, future climate values with the same layers as x.hist
 #' @param s.dat SpatialPolygons*, sf, or cnfa object detailing species presence
 #' @param field field of \code{s.dat} that specifies presence. This is
@@ -27,7 +26,7 @@
 #' # using difRaster as an initial step
 #' # for multi-species comparison
 #'
-#' dif.ras <- difRaster(x.hist = climdat.hist, x.fut = climdat.fut)
+#' dif.ras <- difRaster(x = climdat.hist, y = climdat.fut)
 #' dep2 <- departure(x.hist = dif.ras, s.dat = ABPR, field = "CODE")
 #'
 #'# same results either way
@@ -51,7 +50,11 @@
 #'  and \code{x.fut} to the \code{difRaster} function, and then passing the
 #'  results to the \code{departure} function.
 #'
-#' @include CENFA.R cnfa-class.R GLcenfa-class.R difRasterBrick-class.R
+#'  When only one Raster* object is supplied, it is assumed that \code{x.hist} is
+#'  a Raster* object containing the absolute differences of a historical and
+#'  future dataset.
+#'
+#' @include CENFA.R cnfa-class.R GLcenfa-class.R
 #'
 #' @export
 #' @importFrom stats sd
@@ -64,7 +67,7 @@ setGeneric("departure", function(x.hist, x.fut, s.dat, ...) {
 
 #' @rdname departure
 setMethod("departure",
-          signature(x.hist = "difRasterBrick", x.fut = "missing", s.dat = "cnfa"),
+          signature(x.hist = "RasterBrick", x.fut = "missing", s.dat = "cnfa"),
           function(x.hist, s.dat, field, fun = "last", ...){
 
             call <- sys.calls()[[1]]
@@ -91,7 +94,7 @@ setMethod("departure",
 
 #' @rdname departure
 setMethod("departure",
-          signature(x.hist = "difRasterBrick", x.fut = "missing", s.dat = "Spatial"),
+          signature(x.hist = "RasterBrick", x.fut = "missing", s.dat = "Spatial"),
           function(x.hist, s.dat, field, fun = "last", ...){
 
             call <- sys.calls()[[1]]

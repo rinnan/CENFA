@@ -22,7 +22,8 @@ enfa(x, s.dat, ...)
   filename = "", parallel = F, ...)
 }
 \arguments{
-\item{x}{Raster* object, typically a brick or stack of ecological raster layers}
+\item{x}{Raster* object, typically a brick or stack of ecological raster layers,
+or a \code{GLcenfa} object}
 
 \item{s.dat}{SpatialPolygons*, SpatialPoints*, or sf object indicating
 species presence}

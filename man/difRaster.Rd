@@ -6,18 +6,17 @@
 \alias{difRaster,Raster,Raster-method}
 \title{difRaster}
 \usage{
-difRaster(x.hist, x.fut, scale = TRUE, parallel = FALSE, n)
+difRaster(x, y, scale = TRUE, parallel = FALSE, n)
 
-\S4method{difRaster}{Raster,Raster}(x.hist, x.fut, scale = TRUE,
-  parallel = FALSE, n)
+\S4method{difRaster}{Raster,Raster}(x, y, scale = TRUE, parallel = FALSE, n)
 }
 \arguments{
-\item{x.hist}{Raster* object of historical climate values}
+\item{x}{Raster* object of historical climate values}
 
-\item{x.fut}{Raster* object of future climate values}
+\item{y}{Raster* object of future climate values}
 
-\item{scale}{logical. If \code{TRUE} then the values of \code{x.hist} and
-\code{x.fut} will be centered and scaled by the means and sds of the historical
+\item{scale}{logical. If \code{TRUE} then the values of \code{x} and
+\code{y} will be centered and scaled by the means and sds of the historical
 climate data}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
@@ -25,13 +24,12 @@ climate data}
 \item{n}{numeric. Optional number of CPU cores to utilize for parallel processing}
 }
 \value{
-A Raster* object of class \code{difRasterBrick}
+Raster* object
 }
 \description{
-An object of class \code{enfa} is created from performing ecological-niche
-factor analysis on species presence data using the \code{enfa} function.
+Calculates the absolute differences between two Raster* objects.
 }
 \examples{
-difRaster(x.hist = climdat.hist, x.fut = climdat.fut)
+difRaster(x = climdat.hist, y = climdat.fut)
 
 }

@@ -3,18 +3,18 @@
 \docType{methods}
 \name{departure}
 \alias{departure}
-\alias{departure,difRasterBrick,missing,cnfa-method}
-\alias{departure,difRasterBrick,missing,Spatial-method}
+\alias{departure,RasterBrick,missing,cnfa-method}
+\alias{departure,RasterBrick,missing,Spatial-method}
 \alias{departure,Raster,Raster,cnfa-method}
 \alias{departure,Raster,Raster,Spatial-method}
 \title{Climatic departure}
 \usage{
 departure(x.hist, x.fut, s.dat, ...)
 
-\S4method{departure}{difRasterBrick,missing,cnfa}(x.hist, s.dat, field,
+\S4method{departure}{RasterBrick,missing,cnfa}(x.hist, s.dat, field,
   fun = "last", ...)
 
-\S4method{departure}{difRasterBrick,missing,Spatial}(x.hist, s.dat, field,
+\S4method{departure}{RasterBrick,missing,Spatial}(x.hist, s.dat, field,
   fun = "last", ...)
 
 \S4method{departure}{Raster,Raster,cnfa}(x.hist, x.fut, s.dat, field,
@@ -25,8 +25,7 @@ departure(x.hist, x.fut, s.dat, ...)
 }
 \arguments{
 \item{x.hist}{Raster* object, typically a brick or stack of historical climate
-raster layers, or an object of class
-\code{\link[=difRasterBrick-class]{difRasterBrick}} (see Details)}
+raster layers or a brick of absolute differences (see Details)}
 
 \item{x.fut}{Raster* object, future climate values with the same layers as x.hist}
 
@@ -72,6 +71,10 @@ For comparisons of multiple species in the same study area, it is much more
  recalculated for each species. This can be acheived with by passing \code{x.hist}
  and \code{x.fut} to the \code{difRaster} function, and then passing the
  results to the \code{departure} function.
+
+ When only one Raster* object is supplied, it is assumed that \code{x.hist} is
+ a Raster* object containing the absolute differences of a historical and
+ future dataset.
 }
 \examples{
 dep1 <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR, field = "CODE")
@@ -79,7 +82,7 @@ dep1 <- departure(x.hist = climdat.hist, x.fut = climdat.fut, s.dat = ABPR, fiel
 # using difRaster as an initial step
 # for multi-species comparison
 
-dif.ras <- difRaster(x.hist = climdat.hist, x.fut = climdat.fut)
+dif.ras <- difRaster(x = climdat.hist, y = climdat.fut)
 dep2 <- departure(x.hist = dif.ras, s.dat = ABPR, field = "CODE")
 
 # same results either way

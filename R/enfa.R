@@ -5,7 +5,8 @@
 #'
 #' @aliases print.enfa, show.enfa
 #'
-#' @param x Raster* object, typically a brick or stack of ecological raster layers
+#' @param x Raster* object, typically a brick or stack of ecological raster layers,
+#'  or a \code{GLcenfa} object
 #' @param s.dat SpatialPolygons*, SpatialPoints*, or sf object indicating
 #'   species presence
 #' @param field field of \code{s.dat} that specifies presence or abundance. This
@@ -137,8 +138,9 @@ setMethod("enfa",
             m <- sqrt(c(t(mar) %*% mar))
             if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
-            keep <- (eigRs$values > 1e-09)
-            Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
+            #keep <- (eigRs$values > 1e-09)
+            #Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
+            Rs12 <- eigRs$vectors %*% diag(eigRs$values^(-0.5)) %*% t(eigRs$vectors)
             W <- Rs12 %*% Rg %*% Rs12
             z <- Rs12 %*% mar
             y <- z/sqrt(sum(z^2))
@@ -204,11 +206,11 @@ setMethod("enfa",
               nS <- nrow(S)
               Rg <- crossprod(Z, Z)/nZ
               p <- values(s.dat.ras)[pres]
-              p <- p/(sum(p))
-              mar <- apply(S, 2, function(x) sum(x * p))
+              #p <- p/(sum(p))
+              mar <- apply(S, 2, function(x) sum(x * p))/sum(p)
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
-              Rs <- crossprod(Sm, DpSm)
+              Rs <- crossprod(Sm, DpSm) * 1/(sum(p) - 1)
             } else {
               center <- cellStats(x, mean)
               x.mask <- mask(x, s.dat.ras)
@@ -229,21 +231,25 @@ setMethod("enfa",
             eigRs <- lapply(eigen(Rs), Re)
             keep <- (eigRs$values > 1e-09)
             Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
+            Rs12 <- eigRs$vectors %*% diag(eigRs$values^(-0.5)) %*% t(eigRs$vectors)
             W <- Rs12 %*% Rg %*% Rs12
             z <- Rs12 %*% mar
             y <- z/sqrt(sum(z^2))
             H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
-            sf <- eigen(H)$values[-cZ]
-            spec <- sqrt(sum(sf))/length(sf)
-            s.p <- abs(sum(diag(W)) - sum(diag(H)))
+            if(max(Im(eigen(H)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
+            sf <- Re(eigen(H)$values[-cZ])
+            #s.p <- abs(sum(diag(W)) - sum(diag(H)))
+            s.p <- (t(mar) %*% Rg %*% mar) / (t(mar) %*% Rs %*% mar)
             s <- c(s.p, sf)
+            spec <- sqrt(sum(s))/length(s)
             s.p <- abs(s)/sum(abs(s))
-            v <- eigen(H)$vectors
+            v <- Re(eigen(H)$vectors)
             co <- matrix(nrow = cZ, ncol = cZ)
             co[, 1] <- mar/sqrt(t(mar) %*% mar)
             u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
-            norw <- sqrt(diag(t(as.matrix(u)) %*% as.matrix(u)))
-            co[, -1] <- sweep(as.matrix(u), 2, norw, "/")
+            norw <- sqrt(diag(t(u) %*% u))
+            co[, -1] <- sweep(u, 2, norw, "/")
+            #co[ , -1] <- u
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if(canProcessInMemory(x)){
               s.ras <- brick(x)
@@ -253,11 +259,11 @@ setMethod("enfa",
               cat("\nCreating factor rasters...")
               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
             }
-            colnames(co) <- names(s.p) <- nm
+            colnames(co) <- names(s.p) <- names(s) <- nm
             rownames(co) <- names(x)
             names(sf) <- nm[-1]
 
-            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = sf,
+            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = s,
                                  specialization = spec, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
             return(enfa)
           }
@@ -322,8 +328,9 @@ setMethod("enfa",
             m <- sqrt(c(t(mar) %*% mar))
             if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
-            keep <- (eigRs$values > 1e-09)
-            Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
+            #keep <- (eigRs$values > 1e-09)
+            #Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
+            Rs12 <- eigRs$vectors %*% diag(eigRs$values^(-0.5)) %*% t(eigRs$vectors)
             W <- Rs12 %*% Rg %*% Rs12
             z <- Rs12 %*% mar
             y <- z/sqrt(sum(z^2))
