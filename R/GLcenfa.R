@@ -64,12 +64,14 @@ setMethod("GLcenfa",
             # if(progress) cat("\nCalculating layer sds...")
             # sds <- cellStats(x, 'sd')
 
+            if(progress) print("Scaling data...")
             x <- parScale(x, center = center, scale = scale, parallel = parallel, n = n)
 
             if(!(filename == "")){
               cat("Writing data to file...")
               writeRaster(x, filename = filename, ...)
             }
+            if(progress) print("Calculating global covariance matrix...")
             cov.mat <- parCov(x, center = FALSE, scale = FALSE, parallel = parallel, n = n)
 
             GLcenfa <- methods::new("GLcenfa", global_ras = x, cov = cov.mat)

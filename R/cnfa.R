@@ -123,7 +123,7 @@ setMethod("cnfa",
               filename <- rasterTmpFile()
             }
 
-            if (canProcessInMemory(x.crop)){
+            if(canProcessInMemory(x.crop) & !parallel){
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.crop))))
               S <- values(x.crop)[pres, ]
               nS <- nrow(S)
@@ -210,7 +210,7 @@ setMethod("cnfa",
               filename <- rasterTmpFile()
             }
 
-            if(canProcessInMemory(x)){
+            if(canProcessInMemory(x) & !parallel){
               gpres <- which(!is.na(values(max(x))))
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x))))
               Z <- values(x)[gpres, ]
@@ -309,7 +309,7 @@ setMethod("cnfa",
               filename <- rasterTmpFile()
             }
 
-            if(canProcessInMemory(x)){
+            if(canProcessInMemory(x) & !parallel){
               gpres <- which(!is.na(values(max(x))))
               pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x))))
               Z <- values(x)[gpres, ]
