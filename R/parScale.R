@@ -28,13 +28,13 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 
-setGeneric("parScale", function(x, center = FALSE, scale = FALSE, parallel = FALSE, n){
+setGeneric("parScale", function(x, center = TRUE, scale = TRUE, parallel = FALSE, n){
   standardGeneric("parScale")})
 
 #' @rdname parScale
 setMethod("parScale",
           signature(x = "Raster"),
-          function(x, center = FALSE, scale = FALSE, parallel = FALSE, n){
+          function(x, center = TRUE, scale = TRUE, parallel = FALSE, n){
 
             if(canProcessInMemory(x) & !parallel){
               v <- values(x)
@@ -79,14 +79,14 @@ setMethod("parScale",
               n <- n-1
             }
             cl <- snow::makeCluster(getOption("cl.cores", n))
-            snow::clusterExport(cl, c("x", "s", "scale", "center"),
+            snow::clusterExport(cl, c("x", "s", "scale", "center", "subset"),
                                 envir = environment())
             doSNOW::registerDoSNOW(cl)
             pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
             progress <- function(n) setTxtProgressBar(pb, n)
             opts <- list(progress = progress)
             result <- foreach::foreach(i = s, .options.snow = opts) %dopar% {
-              do.call(raster::scale, list(x = x[[ i ]], center = center[i], scale = scale[i]))
+              do.call(raster::scale, list(x = subset(x, i), center = center[i], scale = scale[i]))
             }
             close(pb)
             snow::stopCluster(cl)
@@ -94,7 +94,7 @@ setMethod("parScale",
             # resolves error message for global binding of i
             for(i in s){}
 
-            x <- brick(result)
+            x <- brick(result, nl = nl)
 
             closeAllConnections()
             return(x)

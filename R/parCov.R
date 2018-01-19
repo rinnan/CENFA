@@ -95,7 +95,7 @@ setMethod("parCov",
 
             if(!parallel){
               pboptions(char = "-", txt.width = NA, type = "txt")
-              result <- pbsapply(s, function(p) do.call(.covij, list(x = x[[ ii[p] ]], y = x[[ jj[p] ]], w = w, sample = sample)))
+              result <- pbsapply(s, function(p) do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample)))
             }
 
             if(parallel){
@@ -105,14 +105,14 @@ setMethod("parCov",
                 n <- n-1
               }
               cl <- snow::makeCluster(getOption("cl.cores", n))
-              snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "w", "canProcessInMemory", "values", "sample"),
+              snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
                                   envir = environment())
               doSNOW::registerDoSNOW(cl)
               pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
               progress <- function(n) setTxtProgressBar(pb, n)
               opts <- list(progress = progress)
               result <- foreach::foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
-                do.call(.covij, list(x = x[[ ii[p] ]], y = x[[ jj[p] ]], w = w, sample = sample))
+                do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample))
               }
               close(pb)
               snow::stopCluster(cl)
@@ -150,7 +150,7 @@ setMethod("parCov",
 
             if(!parallel){
               pboptions(char = "-", txt.width = NA, type = "txt")
-              result <- pbsapply(s, function(p) do.call(.covij, list(x = x[[ z[p, 1] ]], y = y[[ z[p, 2] ]], w = w, sample = sample)))
+              result <- pbsapply(s, function(p) do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample)))
             }
 
             if(parallel){
@@ -160,14 +160,14 @@ setMethod("parCov",
                 n <- n-1
               }
               cl <- snow::makeCluster(getOption("cl.cores", n))
-              snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "y", "z", "s", "w", "canProcessInMemory", "values", "sample"),
+              snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "y", "z", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
                                   envir = environment())
               doSNOW::registerDoSNOW(cl)
               pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
               progress <- function(n) setTxtProgressBar(pb, n)
               opts <- list(progress = progress)
               result <- foreach::foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
-                do.call(.covij, list(x = x[[ z[p, 1] ]], y = y[[ z[p, 2] ]], w = w, sample = sample))
+                do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample))
               }
               close(pb)
               snow::stopCluster(cl)
