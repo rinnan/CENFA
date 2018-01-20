@@ -9,8 +9,8 @@
 \usage{
 parCov(x, y, ...)
 
-\S4method{parCov}{Raster,missing}(x, center = FALSE, scale = FALSE,
-  w = NULL, sample = TRUE, parallel = FALSE, n)
+\S4method{parCov}{Raster,missing}(x, w = NULL, sample = TRUE,
+  parallel = FALSE, n)
 
 \S4method{parCov}{Raster,Raster}(x, y, w = NULL, sample = TRUE,
   parallel = FALSE, n)
@@ -22,12 +22,6 @@ parCov(x, y, ...)
 as \code{x}}
 
 \item{...}{additional arguments, including any of the following:}
-
-\item{center}{logical. If \code{TRUE}, the Raster* object will get centered
-before calculating the covariance}
-
-\item{scale}{logical. If \code{TRUE}, the Raster* object will get scaled
-before calculating the covariance}
 
 \item{w}{optional Raster* object of weights for a weighted covariance matrix}
 
@@ -65,14 +59,16 @@ This function is designed to work similarly to the
   \code{sum(w) - 1} in its denominator.
 }
 \examples{
-mat1 <- parCov(x = climdat.hist)
-mat2 <- parCov(x = climdat.hist, center = TRUE, scale = TRUE)
+mat1 <- parCov(climdat.hist, parallel = T)
+
+Z <- parScale(climdat.hist)
+mat2 <- parCov(Z)
 
 # covariance between two Raster* objects
-mat3 <- parCov(x = climdat.hist, y = climdat.fut)
+mat2 <- parCov(x = climdat.hist, y = climdat.fut)
 dat.h <- values(climdat.hist)
 dat.f <- values(climdat.fut)
-mat4 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
+mat3 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
 
 # same results either way
 all.equal(mat3, mat4)

@@ -41,16 +41,14 @@ to file. If this is not provided, a temporary file will be created for large
 
 \item{n}{numeric. Optional number of CPU cores to utilize for parallel processing}
 
-\item{...}{Additonal arguments for \code{\link[raster]{writeRaster}}}
+\item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 }
 \value{
 Returns an S4 object of class \code{GLcenfa} with the following components:
 \describe{
   \item{global_ras}{Raster* \code{x} of p layers, possibly centered and scaled}
   \item{cov}{Global p x p covariance matrix}
-  \item{center}{Vector of layer means of \code{x}}
-  \item{sd}{Vector of layer standard deviations of \code{x}}
-}
+  }
 }
 \description{
 This function is used to facilitate comparisons between species in the same

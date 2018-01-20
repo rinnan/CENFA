@@ -15,8 +15,11 @@
 #'   no scaling is done. If scale is a numeric vector with length equal to
 #'   \code{nlayers(x)}, each layer of \code{x} is divided by the corresponding
 #'   value. Scaling is done after centering
+#' @param filename character. Optional filename to save the Raster* output to
+#'   file. If this is not provided, a temporary file will be created for large \code{x}
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Optional number of CPU cores to utilize for parallel processing
+#' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
 #'
 #' @examples
 #' mat <- parScale(x = climdat.hist)
@@ -28,19 +31,25 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 
-setGeneric("parScale", function(x, center = TRUE, scale = TRUE, parallel = FALSE, n){
+setGeneric("parScale", function(x, center = TRUE, scale = TRUE, filename = '', parallel = FALSE, n, ...){
   standardGeneric("parScale")})
 
 #' @rdname parScale
 setMethod("parScale",
           signature(x = "Raster"),
-          function(x, center = TRUE, scale = TRUE, parallel = FALSE, n){
+          function(x, center = TRUE, scale = TRUE, filename = '', parallel = FALSE, n, ...){
+
+            if(!center & !scale) return(x)
 
             if(canProcessInMemory(x) & !parallel){
               v <- values(x)
-              x <- setValues(x, scale(v, center=center, scale=scale))
+              x <- setValues(x, scale(v, center = center, scale = scale))
               return(x)
             }
+
+            filename <- trim(filename)
+            if (filename == '') filename <- rasterTmpFile()
+
 
             if(!parallel){
               if (!is.logical(center)) {
@@ -49,7 +58,7 @@ setMethod("parScale",
                 x <- x - center
 
               } else if (center) {
-                m <- cellStats(x, 'mean', na.rm=TRUE)
+                m <- cellStats(x, 'mean', na.rm = TRUE)
                 x <- x - m
               }
 
@@ -59,9 +68,9 @@ setMethod("parScale",
 
               } else if (scale) {
                 if (center[1] & is.logical(center[1])) {
-                  st <- cellStats(x, 'sd', na.rm=TRUE)
+                  st <- cellStats(x, 'sd', na.rm = TRUE)
                 } else {
-                  st <- cellStats(x, 'rms', na.rm=TRUE)
+                  st <- cellStats(x, 'rms', na.rm = TRUE)
                 }
                 x <- x / st
               }
@@ -74,9 +83,14 @@ setMethod("parScale",
             if(is.logical(scale)) scale <- rep(scale, nl)
 
             if (missing(n)) {
-              n <- parallel::detectCores()
-              message(n, ' cores detected, using ', n-1)
-              n <- n-1
+              n <- parallel::detectCores() - 1
+              message(n + 1, ' cores detected, using ', n)
+            } else if(n < 1 | !is.numeric(n)) {
+              n <- parallel::detectCores() - 1
+              message('incorrect number of cores specified, using ', n)
+            } else if(n > parallel::detectCores()) {
+              n <- parallel::detectCores() - 1
+              message('too many cores specified, using ', n)
             }
             cl <- snow::makeCluster(getOption("cl.cores", n))
             snow::clusterExport(cl, c("x", "s", "scale", "center", "subset"),
@@ -94,7 +108,8 @@ setMethod("parScale",
             # resolves error message for global binding of i
             for(i in s){}
 
-            x <- brick(result, nl = nl)
+            x <- brick(result)
+            writeRaster(x, filename = filename, ...)
 
             closeAllConnections()
             return(x)

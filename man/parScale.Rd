@@ -6,10 +6,11 @@
 \alias{parScale,Raster-method}
 \title{Efficient scaling of Raster* objects}
 \usage{
-parScale(x, center = FALSE, scale = FALSE, parallel = FALSE, n)
+parScale(x, center = TRUE, scale = TRUE, filename = "",
+  parallel = FALSE, n, ...)
 
-\S4method{parScale}{Raster}(x, center = FALSE, scale = FALSE,
-  parallel = FALSE, n)
+\S4method{parScale}{Raster}(x, center = TRUE, scale = TRUE, filename = "",
+  parallel = FALSE, n, ...)
 }
 \arguments{
 \item{x}{Raster* object}
@@ -27,9 +28,14 @@ no scaling is done. If scale is a numeric vector with length equal to
 \code{nlayers(x)}, each layer of \code{x} is divided by the corresponding
 value. Scaling is done after centering}
 
+\item{filename}{character. Optional filename to save the Raster* output to
+file. If this is not provided, a temporary file will be created for large \code{x}}
+
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
 \item{n}{numeric. Optional number of CPU cores to utilize for parallel processing}
+
+\item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 }
 \value{
 Raster* object

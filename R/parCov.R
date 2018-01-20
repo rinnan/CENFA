@@ -10,10 +10,10 @@
 #' @param y NULL (default) or a Raster* object with the same extent and resolution
 #'   as \code{x}
 #' @param ... additional arguments, including any of the following:
-#' @param center logical. If \code{TRUE}, the Raster* object will get centered
-#'   before calculating the covariance
-#' @param scale logical. If \code{TRUE}, the Raster* object will get scaled
-#'   before calculating the covariance
+# @param center logical. If \code{TRUE}, the Raster* object will get centered
+#   before calculating the covariance
+# @param scale logical. If \code{TRUE}, the Raster* object will get scaled
+#   before calculating the covariance
 #' @param w optional Raster* object of weights for a weighted covariance matrix
 #' @param sample logical. If \code{TRUE}, the sample covariance is calculated
 #'   with a denominator of $n-1$
@@ -21,14 +21,16 @@
 #' @param n numeric. Optional number of CPU cores to utilize for parallel processing
 #'
 #' @examples
-#' mat1 <- parCov(x = climdat.hist)
-#' mat2 <- parCov(x = climdat.hist, center = TRUE, scale = TRUE)
+#' mat1 <- parCov(climdat.hist, parallel = T)
+#'
+#' Z <- parScale(climdat.hist)
+#' mat2 <- parCov(Z)
 #'
 #' # covariance between two Raster* objects
-#' mat3 <- parCov(x = climdat.hist, y = climdat.fut)
+#' mat2 <- parCov(x = climdat.hist, y = climdat.fut)
 #' dat.h <- values(climdat.hist)
 #' dat.f <- values(climdat.fut)
-#' mat4 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
+#' mat3 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
 #'
 #' # same results either way
 #' all.equal(mat3, mat4)
@@ -61,15 +63,11 @@ setGeneric("parCov", function(x, y, ...){
 #' @rdname parCov
 setMethod("parCov",
           signature(x = "Raster", y = "missing"),
-          function(x, center = FALSE, scale = FALSE, w = NULL, sample = TRUE, parallel = FALSE, n){
+          function(x, w = NULL, sample = TRUE, parallel = FALSE, n){
 
             small <- canProcessInMemory(x)
             if(small & !parallel){
               dat <- na.omit(values(x))
-              if(center) dat <- dat - colMeans(dat)
-              if(scale) {
-                sds <- apply(dat, 2, sd)
-                dat <- dat/sds}
               mat <- stats::cov(dat, method = "pearson")
               return(mat)
             }
@@ -83,16 +81,6 @@ setMethod("parCov",
             for(i in 2:nl) jj <- c(jj, i:nl)
             s <- 1:length(ii)
 
-            if(center){
-              means <- cellStats(x, stat = 'mean', na.rm = T)
-              x <- (x - means)
-            }
-
-            if(scale){
-              sds <- cellStats(x, stat = 'sd', na.rm = T)
-              x <- x/sds
-            }
-
             if(!parallel){
               pboptions(char = "-", txt.width = NA, type = "txt")
               result <- pbsapply(s, function(p) do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample)))
@@ -100,10 +88,16 @@ setMethod("parCov",
 
             if(parallel){
               if (missing(n)) {
-                n <- parallel::detectCores()
-                message(n, ' cores detected, using ', n-1)
-                n <- n-1
+                n <- parallel::detectCores() - 1
+                message(n + 1, ' cores detected, using ', n)
+              } else if(n < 1 | !is.numeric(n)) {
+                n <- parallel::detectCores() - 1
+                message('incorrect number of cores specified, using ', n)
+              } else if(n > parallel::detectCores()) {
+                n <- parallel::detectCores() - 1
+                message('too many cores specified, using ', n)
               }
+              w <- w
               cl <- snow::makeCluster(getOption("cl.cores", n))
               snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
                                   envir = environment())
@@ -155,10 +149,16 @@ setMethod("parCov",
 
             if(parallel){
               if (missing(n)) {
-                n <- parallel::detectCores()
-                message(n, ' cores detected, using ', n-1)
-                n <- n-1
+                n <- parallel::detectCores() - 1
+                message(n + 1, ' cores detected, using ', n)
+              } else if(n < 1 | !is.numeric(n)) {
+                n <- parallel::detectCores() - 1
+                message('incorrect number of cores specified, using ', n)
+              } else if(n > parallel::detectCores()) {
+                n <- parallel::detectCores() - 1
+                message('too many cores specified, using ', n)
               }
+              w <- w
               cl <- snow::makeCluster(getOption("cl.cores", n))
               snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "y", "z", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
                                   envir = environment())

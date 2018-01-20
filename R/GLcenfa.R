@@ -28,7 +28,7 @@
 #' @param filename character. Optional filename to save the RasterBrick output
 #'   to file. If this is not provided, a temporary file will be created for large
 #'   \code{x}
-#' @param ... Additonal arguments for \code{\link[raster]{writeRaster}}
+#' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
 #'
 #' @examples
 #' glc <- GLcenfa(x = climdat.hist)
@@ -38,9 +38,6 @@
 #'   \item{global_ras}{Raster* \code{x} of p layers, possibly centered and scaled}
 #'   \item{cov}{Global p x p covariance matrix}
 #'   }
-#   \item{center}{Vector of layer means of \code{x}}
-#   \item{sd}{Vector of layer standard deviations of \code{x}}
-# }
 #'
 #' @seealso \code{\link{cnfa}}, \code{\link{enfa}}
 #' @export
@@ -54,25 +51,30 @@ setMethod("GLcenfa",
           signature(x = "Raster"),
           function(x, center = TRUE, scale = TRUE, filename = '', progress = TRUE, parallel = FALSE, n, ...){
 
-            filename <- trim(filename)
-            if (!canProcessInMemory(x) && filename == '') {
-              filename <- rasterTmpFile()
+            if (parallel) {
+              if (missing(n)) {
+                n <- parallel::detectCores() - 1
+                message(n + 1, ' cores detected, using ', n)
+              } else if(n < 1 | !is.numeric(n)) {
+                n <- parallel::detectCores() - 1
+                message('incorrect number of cores specified, using ', n)
+              } else if(n > parallel::detectCores()) {
+                n <- parallel::detectCores() - 1
+                message('too many cores specified, using ', n)
+              }
             }
 
-            # if(progress) cat("\nCalculating layer means...")
-            # if(center) cent <- cellStats(x, 'mean')
-            # if(progress) cat("\nCalculating layer sds...")
-            # sds <- cellStats(x, 'sd')
-
-            if(progress) print("Scaling data...")
-            x <- parScale(x, center = center, scale = scale, parallel = parallel, n = n)
-
-            if(!(filename == "")){
-              cat("Writing data to file...")
-              writeRaster(x, filename = filename, ...)
+            if(center | scale){
+              if(progress) cat("\nScaling data...")
+              x <- parScale(x, center = center, scale = scale, filename = filename, parallel = parallel, n = n, ...)
             }
-            if(progress) print("Calculating global covariance matrix...")
-            cov.mat <- parCov(x, center = FALSE, scale = FALSE, parallel = parallel, n = n)
+
+            if(!center & !scale) message("Warning: no scaling specified, raster will not be written to file")
+
+            if(progress) cat("\nCalculating global covariance matrix...")
+            cov.mat <- parCov(x = x, parallel = parallel, n = n)
+            tryCatch(solve(cov.mat),
+                     error = function(e) message("Warning: covariance matrix is not invertible. Consider removing correlated variables and trying again."))
 
             GLcenfa <- methods::new("GLcenfa", global_ras = x, cov = cov.mat)
             return(GLcenfa)

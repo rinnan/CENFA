@@ -13,7 +13,7 @@
 cnfa(x, s.dat, ...)
 
 \S4method{cnfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", parallel = F, ...)
+  filename = "", parallel = F, n, ...)
 
 \S4method{cnfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
   filename = "", parallel = F, ...)
@@ -28,8 +28,7 @@ raster layers, or a \code{GLcenfa} object}
 \item{s.dat}{SpatialPolygons*, SpatialPoints*, or sf object indicating
 species presence}
 
-\item{...}{Additonal arguments for the \code{\link{parCov}} function, such as the
-number of cores \code{n}}
+\item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This
 is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}}
@@ -44,6 +43,8 @@ file. If this is not provided, a temporary file will be created for large \code{
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized for the
 calculation of the covariance matrices}
+
+\item{n}{numeric. Optional number of CPU cores to utilize for parallel processing}
 
 \item{scale}{logical. If \code{TRUE} then the values of \code{x} will get
 centered and scaled. Depending on the resolution of the climate data and

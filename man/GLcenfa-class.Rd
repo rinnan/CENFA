@@ -19,9 +19,5 @@ global covariance matrix for each species, which can take quite a bit of time.
 \item{\code{global_ras}}{Raster* object \code{x} with p layers}
 
 \item{\code{cov}}{matrix. Global p x p covariance matrix}
-
-\item{\code{center}}{numeric. Layer means of \code{x} before scaling}
-
-\item{\code{sd}}{numeric. Layer standard deviations of \code{x} before scaling}
 }}
 
