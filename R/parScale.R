@@ -22,7 +22,7 @@
 #' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
 #'
 #' @examples
-#' mat <- parScale(x = climdat.hist)
+#' ch.scale <- parScale(x = climdat.hist)
 #'
 #' @return Raster* object
 #'
@@ -39,9 +39,9 @@ setMethod("parScale",
           signature(x = "Raster"),
           function(x, center = TRUE, scale = TRUE, filename = '', parallel = FALSE, n = 1, ...){
 
-            if(!center & !scale) return(x)
+            if (!center & !scale) return(x)
 
-            if(canProcessInMemory(x) & !parallel){
+            if (canProcessInMemory(x) & !parallel) {
               v <- values(x)
               x <- setValues(x, scale(v, center = center, scale = scale))
               return(x)
@@ -50,42 +50,43 @@ setMethod("parScale",
             filename <- trim(filename)
             if (filename == '') filename <- rasterTmpFile()
 
-
-            if(!parallel){
-              if (!is.logical(center)) {
-
-                stopifnot(length(center) == nlayers(x))
-                x <- x - center
-
-              } else if (center) {
-                m <- cellStats(x, 'mean', na.rm = TRUE)
-                x <- x - m
-              }
-
-              if (!is.logical(scale)) {
-                stopifnot(length(scale) == nlayers(x))
-                x <- x / scale
-
-              } else if (scale) {
-                if (center[1] & is.logical(center[1])) {
-                  st <- cellStats(x, 'sd', na.rm = TRUE)
-                } else {
-                  st <- cellStats(x, 'rms', na.rm = TRUE)
-                }
-                x <- x / st
-              }
+            if (!parallel) {
+              # if (!is.logical(center)) {
+              #
+              #   stopifnot(length(center) == nlayers(x))
+              #   x <- x - center
+              #
+              # } else if (center) {
+              #   m <- cellStats(x, 'mean', na.rm = TRUE)
+              #   x <- x - m
+              # }
+              #
+              # if (!is.logical(scale)) {
+              #   stopifnot(length(scale) == nlayers(x))
+              #   x <- x / scale
+              #
+              # } else if (scale) {
+              #   if (center[1] & is.logical(center[1])) {
+              #     st <- cellStats(x, 'sd', na.rm = TRUE)
+              #   } else {
+              #     st <- cellStats(x, 'rms', na.rm = TRUE)
+              #   }
+              #   x <- x / st
+              # }
+              x <- scale(x, center = center, scale = scale)
+              writeRaster(x, filename = filename, ...)
               return(x)
             }
 
             nl <- nlayers(x)
             s <- 1:nl
-            if(is.logical(center)) center <- rep(center, nl)
-            if(is.logical(scale)) scale <- rep(scale, nl)
+            if (is.logical(center)) center <- rep(center, nl)
+            if (is.logical(scale)) scale <- rep(scale, nl)
 
-            if(n < 1 | !is.numeric(n)) {
+            if (n < 1 | !is.numeric(n)) {
               n <- parallel::detectCores() - 1
               message('incorrect number of cores specified, using ', n)
-            } else if(n > parallel::detectCores()) {
+            } else if (n > parallel::detectCores()) {
               n <- parallel::detectCores() - 1
               message('too many cores specified, using ', n)
             }

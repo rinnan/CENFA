@@ -45,7 +45,7 @@ Raster* object
 faster parallel processing, scaling each layer of \code{x} in parallel.
 }
 \examples{
-mat <- parScale(x = climdat.hist)
+ch.scale <- parScale(x = climdat.hist)
 
 }
 \seealso{

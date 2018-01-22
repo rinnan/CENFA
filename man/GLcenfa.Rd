@@ -58,6 +58,13 @@ the global covariance matrix as a first step, which can then be fed into the
 This saves the user from having to calculate the global covariance matrix for
 each species, which can take quite a bit of time.
 }
+\details{
+If there is too much correlation between the layers of \code{x}, the covariance
+matrix will be singular, which will lead to later problems in computing the overall
+marginalities, sensitivities, or specializations of species. In this case, a
+warning will be issued, suggesting the removal of correlated variables or a
+transformation of the data.
+}
 \examples{
 glc <- GLcenfa(x = climdat.hist)
 

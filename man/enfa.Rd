@@ -58,10 +58,11 @@ Returns an S4 object of class \code{enfa} with the following components:
   \item{call}{Original function call}
   \item{mf}{Marginality factor. Vector that describes the location of the
    species Hutchinsonian niche relative to the global niche}
-  \item{marginality}{Magnitude of the marginality factor}
+  \item{marginality}{Magnitude of the marginality factor, scaled by the
+  global covariance matrix}
   \item{sf}{Specialization factor. Vector of eigenvalues of specialization}
-  \item{specialization}{Overall specialization, equal to the square root of
-   the sum of eigenvalues of specialization}
+  \item{specialization}{Overall specialization, equal to the square root of the sum
+  of eigenvalues, divided by the length of \code{sf}}
   \item{s.prop}{Vector representing the amount of specialization found in each
    ENFA factor}
   \item{co}{A matrix describing the amount of marginality and specialization
@@ -93,6 +94,11 @@ The default \code{fun = 'last'} gives equal weight to each occupied cell.
 If multiple species observations occur in the same cell, the cell will only
 be counted once. \code{fun = 'count'} will weight the cells by the number
 of observations.
+
+If there is too much correlation between the layers of \code{x}, the global
+covariance matrix will be singular, and the overall marginality will not be
+meaningful. In this case, a warning is issued and \code{marginality} is
+returned as \code{NA}.
 }
 \examples{
 mod1 <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")

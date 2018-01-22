@@ -45,10 +45,12 @@
 #'   \item{call}{Original function call}
 #'   \item{mf}{Marginality factor. Vector of length p that describes the location
 #'   of the species Hutchinsonian niche relative to the global niche}
-#'   \item{marginality}{Magnitude of the marginality factor}
+#'   \item{marginality}{Magnitude of the marginality factor, scaled by the
+#'   global covariance matrix}
 #'   \item{sf}{Sensitivity factor. Vector of length p that describes the amount of
 #'    sensitivity for each climate variable}
-#'   \item{sensitivity}{Magnitude of the sensitivity factor}
+#'   \item{sensitivity}{Magnitude of the sensitivity factor, scaled by the
+#'   global covariance matrix}
 #'   \item{s.prop}{Vector of length p representing the amount of specialization
 #'   found in each CNFA factor}
 #'   \item{co}{A p x p matrix describing the amount of marginality and specialization
@@ -57,30 +59,36 @@
 #'   \item{weights}{Raster layer of weights used for CNFA calculation}
 #' }
 #'
-#' @details The \code{cnfa} function is not to be confused with the
-#'   \code{\link{enfa}} function. \code{enfa} performs ENFA as described by Hirzel
-#'   et al. (2002) and Basille et al. (2008), and is offered as an alternative to
-#'   the \code{enfa} function in the \code{adehabitatHS} package. There are
-#'   several key differences between ENFA and CNFA.
+#' @details
+#' The \code{cnfa} function is not to be confused with the
+#' \code{\link{enfa}} function. \code{enfa} performs ENFA as described by Hirzel
+#' et al. (2002) and Basille et al. (2008), and is offered as an alternative to
+#' the \code{enfa} function in the \code{adehabitatHS} package. There are
+#' several key differences between ENFA and CNFA.
 #'
-#'   Whereas ENFA returns a \strong{specialization factor} that describes
-#'   the specialization in each \strong{ENFA factor}, CNFA returns a
-#'   \strong{sensitivity factor} \code{sf} that describes the sensitivity in each
-#'   \strong{environmental variable}. This makes the sensitivity factor more
-#'   directly comparable to the marginality factor \code{mf}, because their
-#'   dimensions are identical. Sensitivity is calculated by a weighted sum
-#'   of the amount of specialization found in each CNFA factor, \emph{including}
-#'   the marginality factor. As such, the sensitivity factor offers a more complete
-#'   measure of specialization than ENFA's specialization factor, which does
-#'   not calculate the amount of specialization found in the marginality factor.
-#'   As such, CNFA's overall sensitivity (found in the slot \code{sensitivity})
-#'   is likely more meaningful than ENFA's overall specialization (found in the
-#'   slot \code{specialization}).
+#' Whereas ENFA returns a \strong{specialization factor} that describes
+#' the specialization in each \strong{ENFA factor}, CNFA returns a
+#' \strong{sensitivity factor} \code{sf} that describes the sensitivity in each
+#' \strong{environmental variable}. This makes the sensitivity factor more
+#' directly comparable to the marginality factor \code{mf}, because their
+#' dimensions are identical. Sensitivity is calculated by a weighted sum
+#' of the amount of specialization found in each CNFA factor, \emph{including}
+#' the marginality factor. As such, the sensitivity factor offers a more complete
+#' measure of specialization than ENFA's specialization factor, which does
+#' not calculate the amount of specialization found in the marginality factor.
+#' As such, CNFA's overall sensitivity (found in the slot \code{sensitivity})
+#' is likely more meaningful than ENFA's overall specialization (found in the
+#' slot \code{specialization}).
 #'
-#'   The default \code{fun = 'last'} gives equal weight to each occupied cell.
-#'   If multiple species observations occur in the same cell, the cell will only
-#'   be counted once. \code{fun = 'count'} will weight the cells by the number
-#'   of observations.
+#' The default \code{fun = 'last'} gives equal weight to each occupied cell.
+#' If multiple species observations occur in the same cell, the cell will only
+#' be counted once. \code{fun = 'count'} will weight the cells by the number
+#' of observations.
+#'
+#' If there is too much correlation between the layers of \code{x}, the global
+#' covariance matrix will be singular, and the overall marginality and overall
+#' sensitivity will not be meaningful. In this case, a warning is issued,
+#' and \code{marginality} and \code{sensitivity} are both returned as \code{NA}.
 #'
 #' @references
 #' Basille, Mathieu, et al. Assessing habitat selection using multivariate

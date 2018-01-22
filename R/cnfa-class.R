@@ -6,9 +6,11 @@
 #' @slot call Original function call
 #' @slot mf numeric. Named vector representing the marginality factor, describing
 #'   the location of the species niche relative to the global niche
-#' @slot marginality numeric. Magnitude of the marginality factor \code{mf}
+#' @slot marginality numeric. Magnitude of the marginality factor \code{mf}, scaled
+#'   by the global covariance matrix}
 #' @slot sf numeric. Named vector representing the sensitivity factor
-#' @slot sensitivity numeric. The magnitude of the sensitivity factor \code{sf}
+#' @slot sensitivity numeric. The magnitude of the sensitivity factor \code{sf},
+#'   scaled by the global covariance matrix}
 #' @slot p.spec numeric. Named vector representing the proportion of specialization
 #'   found on each factor
 #' @slot co p x p matrix of standardized variable loadings

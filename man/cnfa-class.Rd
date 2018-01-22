@@ -16,11 +16,7 @@ analysis on species presence data using the \code{cnfa} function.
 \item{\code{mf}}{numeric. Named vector representing the marginality factor, describing
 the location of the species niche relative to the global niche}
 
-\item{\code{marginality}}{numeric. Magnitude of the marginality factor \code{mf}}
-
 \item{\code{sf}}{numeric. Named vector representing the sensitivity factor}
-
-\item{\code{sensitivity}}{numeric. The magnitude of the sensitivity factor \code{sf}}
 
 \item{\code{p.spec}}{numeric. Named vector representing the proportion of specialization
 found on each factor}

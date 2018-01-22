@@ -39,6 +39,13 @@
 #'   \item{cov}{Global p x p covariance matrix}
 #'   }
 #'
+#' @details
+#' If there is too much correlation between the layers of \code{x}, the covariance
+#' matrix will be singular, which will lead to later problems in computing the overall
+#' marginalities, sensitivities, or specializations of species. In this case, a
+#' warning will be issued, suggesting the removal of correlated variables or a
+#' transformation of the data.
+#'
 #' @seealso \code{\link{cnfa}}, \code{\link{enfa}}
 #' @export
 
@@ -51,27 +58,27 @@ setMethod("GLcenfa",
           signature(x = "Raster"),
           function(x, center = TRUE, scale = TRUE, filename = '', progress = TRUE, parallel = FALSE, n = 1, ...){
 
-            if(parallel){
-              if(n < 1 | !is.numeric(n)) {
+            if (parallel) {
+              if (n < 1 | !is.numeric(n)) {
                 n <- parallel::detectCores() - 1
                 message('incorrect number of cores specified, using ', n)
-              } else if(n > parallel::detectCores()) {
+              } else if (n > parallel::detectCores()) {
                 n <- parallel::detectCores() - 1
                 message('too many cores specified, using ', n)
               }
             }
 
-            if(center | scale){
-              if(progress) cat("\nScaling data...")
+            if (center | scale) {
+              if (progress) cat("\nScaling data...")
               x <- parScale(x, center = center, scale = scale, filename = filename, parallel = parallel, n = n, ...)
             }
 
-            if(!center & !scale) message("Warning: no scaling specified, raster will not be written to file")
+            if (!center & !scale) message("Warning: no scaling specified, raster will not be written to file")
 
-            if(progress) cat("\nCalculating global covariance matrix...")
+            if (progress) cat("\nCalculating global covariance matrix...")
             cov.mat <- parCov(x = x, parallel = parallel, n = n)
             tryCatch(solve(cov.mat),
-                     error = function(e) message("Warning: covariance matrix is not invertible. Consider removing correlated variables and trying again."))
+                     error = function(e) message("Warning: covariance matrix is not invertible. Consider removing correlated variables or transforming data and trying again."))
 
             GLcenfa <- methods::new("GLcenfa", global_ras = x, cov = cov.mat)
             return(GLcenfa)
