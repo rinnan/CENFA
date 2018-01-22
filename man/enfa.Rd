@@ -13,13 +13,13 @@
 enfa(x, s.dat, ...)
 
 \S4method{enfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", parallel = F, ...)
+  filename = "", parallel = FALSE, n = 1, ...)
 
 \S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", parallel = F, ...)
+  filename = "", parallel = FALSE, n = 1, ...)
 
 \S4method{enfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", parallel = F, ...)
+  filename = "", parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers,
@@ -28,8 +28,7 @@ or a \code{GLcenfa} object}
 \item{s.dat}{SpatialPolygons*, SpatialPoints*, or sf object indicating
 species presence}
 
-\item{...}{Additonal arguments for the \code{\link{parCov}} function, such as the
-number of cores \code{n}}
+\item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This
 is equivalent to the \code{field} argument in the \code{raster} package.}
@@ -44,6 +43,8 @@ file. If this is not provided, a temporary file will be created for large \code{
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized for the
 calculation of the covariance matrices}
+
+\item{n}{numeric. Number of CPU cores to utilize for parallel processing}
 
 \item{scale}{logical. If \code{TRUE} then the values of the Raster* object will
 be centered and scaled. Depending on the resolution of the climate data and

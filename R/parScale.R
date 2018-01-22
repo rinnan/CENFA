@@ -18,7 +18,7 @@
 #' @param filename character. Optional filename to save the Raster* output to
 #'   file. If this is not provided, a temporary file will be created for large \code{x}
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
-#' @param n numeric. Optional number of CPU cores to utilize for parallel processing
+#' @param n numeric. Number of CPU cores to utilize for parallel processing
 #' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
 #'
 #' @examples
@@ -31,13 +31,13 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 
-setGeneric("parScale", function(x, center = TRUE, scale = TRUE, filename = '', parallel = FALSE, n, ...){
+setGeneric("parScale", function(x, center = TRUE, scale = TRUE, filename = '', parallel = FALSE, n = 1, ...){
   standardGeneric("parScale")})
 
 #' @rdname parScale
 setMethod("parScale",
           signature(x = "Raster"),
-          function(x, center = TRUE, scale = TRUE, filename = '', parallel = FALSE, n, ...){
+          function(x, center = TRUE, scale = TRUE, filename = '', parallel = FALSE, n = 1, ...){
 
             if(!center & !scale) return(x)
 
@@ -82,10 +82,7 @@ setMethod("parScale",
             if(is.logical(center)) center <- rep(center, nl)
             if(is.logical(scale)) scale <- rep(scale, nl)
 
-            if (missing(n)) {
-              n <- parallel::detectCores() - 1
-              message(n + 1, ' cores detected, using ', n)
-            } else if(n < 1 | !is.numeric(n)) {
+            if(n < 1 | !is.numeric(n)) {
               n <- parallel::detectCores() - 1
               message('incorrect number of cores specified, using ', n)
             } else if(n > parallel::detectCores()) {

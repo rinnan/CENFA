@@ -13,13 +13,13 @@
 cnfa(x, s.dat, ...)
 
 \S4method{cnfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", parallel = F, n, ...)
+  filename = "", parallel = FALSE, n = 1, ...)
 
 \S4method{cnfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", parallel = F, ...)
+  filename = "", parallel = FALSE, n = 1, ...)
 
 \S4method{cnfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", parallel = F, ...)
+  filename = "", parallel = F, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack with p climate
@@ -44,7 +44,7 @@ file. If this is not provided, a temporary file will be created for large \code{
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized for the
 calculation of the covariance matrices}
 
-\item{n}{numeric. Optional number of CPU cores to utilize for parallel processing}
+\item{n}{numeric. Number of CPU cores to utilize for parallel processing}
 
 \item{scale}{logical. If \code{TRUE} then the values of \code{x} will get
 centered and scaled. Depending on the resolution of the climate data and

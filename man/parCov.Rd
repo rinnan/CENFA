@@ -10,10 +10,10 @@
 parCov(x, y, ...)
 
 \S4method{parCov}{Raster,missing}(x, w = NULL, sample = TRUE,
-  parallel = FALSE, n)
+  parallel = FALSE, n = 1)
 
 \S4method{parCov}{Raster,Raster}(x, y, w = NULL, sample = TRUE,
-  parallel = FALSE, n)
+  parallel = FALSE, n = 1)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack}
@@ -30,7 +30,7 @@ with a denominator of $n-1$}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
-\item{n}{numeric. Optional number of CPU cores to utilize for parallel processing}
+\item{n}{numeric. Number of CPU cores to utilize for parallel processing}
 }
 \value{
 Returns a matrix with the same row and column names as the layers of

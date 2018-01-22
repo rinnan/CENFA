@@ -7,10 +7,10 @@
 \title{Efficient scaling of Raster* objects}
 \usage{
 parScale(x, center = TRUE, scale = TRUE, filename = "",
-  parallel = FALSE, n, ...)
+  parallel = FALSE, n = 1, ...)
 
 \S4method{parScale}{Raster}(x, center = TRUE, scale = TRUE, filename = "",
-  parallel = FALSE, n, ...)
+  parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object}
@@ -33,7 +33,7 @@ file. If this is not provided, a temporary file will be created for large \code{
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
-\item{n}{numeric. Optional number of CPU cores to utilize for parallel processing}
+\item{n}{numeric. Number of CPU cores to utilize for parallel processing}
 
 \item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 }

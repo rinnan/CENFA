@@ -9,10 +9,10 @@
 \title{GLcenfa}
 \usage{
 GLcenfa(x, center = TRUE, scale = TRUE, filename = "", progress = TRUE,
-  parallel = FALSE, n, ...)
+  parallel = FALSE, n = 1, ...)
 
 \S4method{GLcenfa}{Raster}(x, center = TRUE, scale = TRUE, filename = "",
-  progress = TRUE, parallel = FALSE, n, ...)
+  progress = TRUE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of p environmental raster
@@ -39,7 +39,7 @@ to file. If this is not provided, a temporary file will be created for large
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
-\item{n}{numeric. Optional number of CPU cores to utilize for parallel processing}
+\item{n}{numeric. Number of CPU cores to utilize for parallel processing}
 
 \item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 }

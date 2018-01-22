@@ -24,7 +24,7 @@
 #'   file. If this is not provided, a temporary file will be created for large \code{x}
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized for the
 #'   calculation of the covariance matrices
-#' @param n numeric. Optional number of CPU cores to utilize for parallel processing
+#' @param n numeric. Number of CPU cores to utilize for parallel processing
 #' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
 #'
 #' @examples
@@ -103,7 +103,7 @@ setGeneric("cnfa", function(x, s.dat, ...){
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "GLcenfa", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", filename = "", parallel = F, n, ...){
+          function(x, s.dat, field, fun = "last", filename = "", parallel = FALSE, n = 1, ...){
 
             call <- sys.calls()[[1]]
 
@@ -114,6 +114,15 @@ setMethod("cnfa",
             ext.s <- extent(s.dat)
             if (is.null(intersect(ext, ext.s))) stop("climate and species data do not overlap")
             if (union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
+            if(parallel){
+              if(n < 1 | !is.numeric(n)) {
+                n <- parallel::detectCores() - 1
+                message('incorrect number of cores specified, using ', n)
+              } else if(n > parallel::detectCores()) {
+                n <- parallel::detectCores() - 1
+                message('too many cores specified, using ', n)
+              }
+            }
 
             x.crop <- crop(ras, ext.s)
             s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun)
@@ -141,16 +150,6 @@ setMethod("cnfa",
               DpS <- x.mask * s.dat.ras
               mar <- cellStats(DpS, sum) / p.sum
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              if (missing(n)) {
-                n <- parallel::detectCores() - 1
-                message(n + 1, ' cores detected, using ', n)
-              } else if(n < 1 | !is.numeric(n)) {
-                n <- parallel::detectCores() - 1
-                message('incorrect number of cores specified, using ', n)
-              } else if(n > parallel::detectCores()) {
-                n <- parallel::detectCores() - 1
-                message('too many cores specified, using ', n)
-              }
               Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n)
             }
 
@@ -176,8 +175,6 @@ setMethod("cnfa",
             u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
             norw <- sqrt(diag(t(u) %*% u))
             co[, -1] <- sweep(u, 2, norw, "/")
-            #sf <- abs(co) %*% s.p
-            #sf <- as.numeric(sf)
             if(is.na(m)) {
               co[, 1] <- mar / norm(mar, "2")
               sf <- as.numeric(abs(co) %*% s.p)
@@ -194,7 +191,7 @@ setMethod("cnfa",
               names(s.ras) <- nm
             } else {
               cat("\nCreating factor rasters...")
-              s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm)
+              s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
             }
             colnames(co) <- names(s.p) <- nm
             rownames(co) <- names(sf) <- names(ras)
@@ -208,7 +205,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "Raster", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", parallel = F, ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", parallel = FALSE, n = 1, ...){
 
             call <- sys.calls()[[1]]
 
@@ -218,9 +215,19 @@ setMethod("cnfa",
             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
             if(union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
 
-            s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun, ...)
+            if(parallel){
+              if(n < 1 | !is.numeric(n)) {
+                n <- parallel::detectCores() - 1
+                message('incorrect number of cores specified, using ', n)
+              } else if(n > parallel::detectCores()) {
+                n <- parallel::detectCores() - 1
+                message('too many cores specified, using ', n)
+              }
+            }
 
-            if(scale == TRUE) x <- scale(x)
+            s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
+
+            if(scale == TRUE) x <- parScale(x, center = T, scale = T, parallel = parallel, n = n)
 
             filename <- trim(filename)
             if (!canProcessInMemory(x) && filename == '') {
@@ -251,7 +258,7 @@ setMethod("cnfa",
               Rg <- parCov(x, sample = F, parallel = parallel, ...)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- parCov(x = Sm, w = s.dat.ras, ...)
+              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n)
             }
 
             cZ <- nlayers(x)
@@ -276,12 +283,13 @@ setMethod("cnfa",
             u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
             norw <- sqrt(diag(t(u) %*% u))
             co[, -1] <- sweep(u, 2, norw, "/")
-            sf <- as.numeric( abs(co) %*% s.p )
             if(is.na(m)) {
               co[, 1] <- mar / norm(mar, "2")
+              sf <- as.numeric(abs(co) %*% s.p)
               sens <- as.numeric(NA)
             } else {
               co[, 1] <- mar / m
+              sf <- as.numeric(abs(co) %*% s.p)
               sens <- sf %*% solve(Rg) %*% sf
             }
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
@@ -305,7 +313,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "Raster", s.dat = "sf"),
-          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", parallel = F, ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", parallel = F, n = 1, ...){
             if (!requireNamespace("sf")) {
               warning('cannot do this because sf is not available')
             }
@@ -319,8 +327,17 @@ setMethod("cnfa",
 
             s.dat <- as(s.dat, "Spatial")
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('geometry of "s.dat" should be of class "sfc_POLYGON", "sfc_MULTIPOLYGON", "sfc_POINT", or "sfc_MULTIPOINT"')
+            if(parallel){
+              if(n < 1 | !is.numeric(n)) {
+                n <- parallel::detectCores() - 1
+                message('incorrect number of cores specified, using ', n)
+              } else if(n > parallel::detectCores()) {
+                n <- parallel::detectCores() - 1
+                message('too many cores specified, using ', n)
+              }
+            }
 
-            s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun, ...)
+            s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
 
             if(scale == TRUE) x <- scale(x)
 
@@ -353,7 +370,7 @@ setMethod("cnfa",
               Rg <- parCov(x, sample = F, ...)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, ...)
+              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n)
             }
 
             cZ <- nlayers(x)

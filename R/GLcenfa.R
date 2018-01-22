@@ -24,7 +24,7 @@
 #'   value. Scaling is done after centering
 #' @param progress logical. If \code{TRUE} then progress updates are printed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
-#' @param n numeric. Optional number of CPU cores to utilize for parallel processing
+#' @param n numeric. Number of CPU cores to utilize for parallel processing
 #' @param filename character. Optional filename to save the RasterBrick output
 #'   to file. If this is not provided, a temporary file will be created for large
 #'   \code{x}
@@ -42,20 +42,17 @@
 #' @seealso \code{\link{cnfa}}, \code{\link{enfa}}
 #' @export
 
-setGeneric("GLcenfa", function(x, center = TRUE, scale = TRUE, filename = '', progress = TRUE, parallel = FALSE, n, ...) {
+setGeneric("GLcenfa", function(x, center = TRUE, scale = TRUE, filename = '', progress = TRUE, parallel = FALSE, n = 1, ...) {
   standardGeneric("GLcenfa")
 })
 
 #' @rdname GLcenfa
 setMethod("GLcenfa",
           signature(x = "Raster"),
-          function(x, center = TRUE, scale = TRUE, filename = '', progress = TRUE, parallel = FALSE, n, ...){
+          function(x, center = TRUE, scale = TRUE, filename = '', progress = TRUE, parallel = FALSE, n = 1, ...){
 
-            if (parallel) {
-              if (missing(n)) {
-                n <- parallel::detectCores() - 1
-                message(n + 1, ' cores detected, using ', n)
-              } else if(n < 1 | !is.numeric(n)) {
+            if(parallel){
+              if(n < 1 | !is.numeric(n)) {
                 n <- parallel::detectCores() - 1
                 message('incorrect number of cores specified, using ', n)
               } else if(n > parallel::detectCores()) {

@@ -18,7 +18,7 @@
 #' @param sample logical. If \code{TRUE}, the sample covariance is calculated
 #'   with a denominator of $n-1$
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
-#' @param n numeric. Optional number of CPU cores to utilize for parallel processing
+#' @param n numeric. Number of CPU cores to utilize for parallel processing
 #'
 #' @examples
 #' mat1 <- parCov(climdat.hist, parallel = T)
@@ -63,7 +63,7 @@ setGeneric("parCov", function(x, y, ...){
 #' @rdname parCov
 setMethod("parCov",
           signature(x = "Raster", y = "missing"),
-          function(x, w = NULL, sample = TRUE, parallel = FALSE, n){
+          function(x, w = NULL, sample = TRUE, parallel = FALSE, n = 1){
 
             small <- canProcessInMemory(x)
             if(small & !parallel){
@@ -87,10 +87,7 @@ setMethod("parCov",
             }
 
             if(parallel){
-              if (missing(n)) {
-                n <- parallel::detectCores() - 1
-                message(n + 1, ' cores detected, using ', n)
-              } else if(n < 1 | !is.numeric(n)) {
+              if(n < 1 | !is.numeric(n)) {
                 n <- parallel::detectCores() - 1
                 message('incorrect number of cores specified, using ', n)
               } else if(n > parallel::detectCores()) {
@@ -124,7 +121,7 @@ setMethod("parCov",
 #' @rdname parCov
 setMethod("parCov",
           signature(x = "Raster", y = "Raster"),
-          function(x, y, w = NULL, sample = TRUE, parallel = FALSE, n){
+          function(x, y, w = NULL, sample = TRUE, parallel = FALSE, n = 1){
 
             small <- canProcessInMemory(x)
             if(small){
@@ -148,10 +145,7 @@ setMethod("parCov",
             }
 
             if(parallel){
-              if (missing(n)) {
-                n <- parallel::detectCores() - 1
-                message(n + 1, ' cores detected, using ', n)
-              } else if(n < 1 | !is.numeric(n)) {
+              if(n < 1 | !is.numeric(n)) {
                 n <- parallel::detectCores() - 1
                 message('incorrect number of cores specified, using ', n)
               } else if(n > parallel::detectCores()) {
