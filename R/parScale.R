@@ -17,6 +17,8 @@
 #'   value. Scaling is done after centering
 #' @param filename character. Optional filename to save the Raster* output to
 #'   file. If this is not provided, a temporary file will be created for large \code{x}
+#' @param quiet logical. If \code{TRUE}, messages and progress bar will be
+#'   suppressed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
 #' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
@@ -31,15 +33,16 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 
-setGeneric("parScale", function(x, center = TRUE, scale = TRUE, filename = '', parallel = FALSE, n = 1, ...){
+setGeneric("parScale", function(x, center = TRUE, scale = TRUE, filename = '', quiet = FALSE, parallel = FALSE, n = 1, ...){
   standardGeneric("parScale")})
 
 #' @rdname parScale
 setMethod("parScale",
           signature(x = "Raster"),
-          function(x, center = TRUE, scale = TRUE, filename = '', parallel = FALSE, n = 1, ...){
+          function(x, center = TRUE, scale = TRUE, filename = '', quiet = FALSE, parallel = FALSE, n = 1, ...){
 
-            if (!center & !scale) return(x)
+            if (is.logical(center) & is.logical(scale)) {
+              if (!center & !scale) return(x) }
 
             if (canProcessInMemory(x) & !parallel) {
               v <- values(x)
@@ -51,28 +54,6 @@ setMethod("parScale",
             if (filename == '') filename <- rasterTmpFile()
 
             if (!parallel) {
-              # if (!is.logical(center)) {
-              #
-              #   stopifnot(length(center) == nlayers(x))
-              #   x <- x - center
-              #
-              # } else if (center) {
-              #   m <- cellStats(x, 'mean', na.rm = TRUE)
-              #   x <- x - m
-              # }
-              #
-              # if (!is.logical(scale)) {
-              #   stopifnot(length(scale) == nlayers(x))
-              #   x <- x / scale
-              #
-              # } else if (scale) {
-              #   if (center[1] & is.logical(center[1])) {
-              #     st <- cellStats(x, 'sd', na.rm = TRUE)
-              #   } else {
-              #     st <- cellStats(x, 'rms', na.rm = TRUE)
-              #   }
-              #   x <- x / st
-              # }
               x <- scale(x, center = center, scale = scale)
               writeRaster(x, filename = filename, ...)
               return(x)
@@ -85,22 +66,28 @@ setMethod("parScale",
 
             if (n < 1 | !is.numeric(n)) {
               n <- parallel::detectCores() - 1
-              message('incorrect number of cores specified, using ', n)
+              if (!quiet) message('incorrect number of cores specified, using ', n)
             } else if (n > parallel::detectCores()) {
               n <- parallel::detectCores() - 1
-              message('too many cores specified, using ', n)
+              if (!quiet) message('too many cores specified, using ', n)
             }
             cl <- snow::makeCluster(getOption("cl.cores", n))
             snow::clusterExport(cl, c("x", "s", "scale", "center", "subset"),
                                 envir = environment())
             doSNOW::registerDoSNOW(cl)
-            pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
+            if (!quiet) {
+              pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
             progress <- function(n) setTxtProgressBar(pb, n)
             opts <- list(progress = progress)
             result <- foreach::foreach(i = s, .options.snow = opts) %dopar% {
               do.call(raster::scale, list(x = subset(x, i), center = center[i], scale = scale[i]))
             }
             close(pb)
+            } else if (quiet) {
+              result <- foreach::foreach(i = s) %dopar% {
+                do.call(raster::scale, list(x = subset(x, i), center = center[i], scale = scale[i]))
+              }
+            }
             snow::stopCluster(cl)
 
             # resolves error message for global binding of i

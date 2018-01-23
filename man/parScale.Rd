@@ -6,11 +6,11 @@
 \alias{parScale,Raster-method}
 \title{Efficient scaling of Raster* objects}
 \usage{
-parScale(x, center = TRUE, scale = TRUE, filename = "",
+parScale(x, center = TRUE, scale = TRUE, filename = "", quiet = FALSE,
   parallel = FALSE, n = 1, ...)
 
 \S4method{parScale}{Raster}(x, center = TRUE, scale = TRUE, filename = "",
-  parallel = FALSE, n = 1, ...)
+  quiet = FALSE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object}
@@ -30,6 +30,9 @@ value. Scaling is done after centering}
 
 \item{filename}{character. Optional filename to save the Raster* output to
 file. If this is not provided, a temporary file will be created for large \code{x}}
+
+\item{quiet}{logical. If \code{TRUE}, messages and progress bar will be
+suppressed}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 

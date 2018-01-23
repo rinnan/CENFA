@@ -13,13 +13,13 @@
 cnfa(x, s.dat, ...)
 
 \S4method{cnfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", parallel = FALSE, n = 1, ...)
+  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
 
 \S4method{cnfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", parallel = FALSE, n = 1, ...)
+  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
 
 \S4method{cnfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", parallel = F, n = 1, ...)
+  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack with p climate
@@ -40,6 +40,9 @@ and 'count' (see Details)}
 
 \item{filename}{character. Optional filename to save the Raster* output to
 file. If this is not provided, a temporary file will be created for large \code{x}}
+
+\item{quiet}{logical. If \code{TRUE}, messages and progress bar will be
+suppressed}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized for the
 calculation of the covariance matrices}

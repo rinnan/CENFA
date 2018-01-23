@@ -22,7 +22,8 @@
 #'   no scaling is done. If scale is a numeric vector with length equal to
 #'   \code{nlayers(x)}, each layer of \code{x} is divided by the corresponding
 #'   value. Scaling is done after centering
-#' @param progress logical. If \code{TRUE} then progress updates are printed
+#' @param quiet logical. If \code{TRUE}, messages and progress bar will be
+#'   suppressed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
 #' @param filename character. Optional filename to save the RasterBrick output
@@ -49,34 +50,24 @@
 #' @seealso \code{\link{cnfa}}, \code{\link{enfa}}
 #' @export
 
-setGeneric("GLcenfa", function(x, center = TRUE, scale = TRUE, filename = '', progress = TRUE, parallel = FALSE, n = 1, ...) {
+setGeneric("GLcenfa", function(x, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...) {
   standardGeneric("GLcenfa")
 })
 
 #' @rdname GLcenfa
 setMethod("GLcenfa",
           signature(x = "Raster"),
-          function(x, center = TRUE, scale = TRUE, filename = '', progress = TRUE, parallel = FALSE, n = 1, ...){
-
-            if (parallel) {
-              if (n < 1 | !is.numeric(n)) {
-                n <- parallel::detectCores() - 1
-                message('incorrect number of cores specified, using ', n)
-              } else if (n > parallel::detectCores()) {
-                n <- parallel::detectCores() - 1
-                message('too many cores specified, using ', n)
-              }
-            }
+          function(x, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...){
 
             if (center | scale) {
-              if (progress) cat("\nScaling data...\n")
-              x <- parScale(x, center = center, scale = scale, filename = filename, parallel = parallel, n = n, ...)
+              if (!quiet) cat("Scaling raster data...\n")
+              x <- parScale(x, center = center, scale = scale, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
             }
 
             if (!center & !scale) message("Warning: no scaling specified, raster will not be written to file")
 
-            if (progress) cat("\nCalculating global covariance matrix...\n")
-            cov.mat <- parCov(x = x, parallel = parallel, n = n)
+            if (!quiet) cat("Calculating global covariance matrix...\n")
+            cov.mat <- parCov(x = x, parallel = parallel, n = n, quiet = quiet)
             tryCatch(solve(cov.mat, tol = 1e-10),
                      error = function(e) message("Warning: covariance matrix is not invertible. Consider removing correlated variables or transforming data and trying again."))
 

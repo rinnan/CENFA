@@ -8,11 +8,11 @@
 \alias{GLcenfa,Raster-method}
 \title{GLcenfa}
 \usage{
-GLcenfa(x, center = TRUE, scale = TRUE, filename = "", progress = TRUE,
+GLcenfa(x, center = TRUE, scale = TRUE, filename = "", quiet = TRUE,
   parallel = FALSE, n = 1, ...)
 
 \S4method{GLcenfa}{Raster}(x, center = TRUE, scale = TRUE, filename = "",
-  progress = TRUE, parallel = FALSE, n = 1, ...)
+  quiet = TRUE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of p environmental raster
@@ -35,7 +35,8 @@ value. Scaling is done after centering}
 to file. If this is not provided, a temporary file will be created for large
 \code{x}}
 
-\item{progress}{logical. If \code{TRUE} then progress updates are printed}
+\item{quiet}{logical. If \code{TRUE}, messages and progress bar will be
+suppressed}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
