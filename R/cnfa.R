@@ -162,10 +162,9 @@ setMethod("cnfa",
             }
 
             cZ <- nlayers(ras)
-            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg, tol = 1e-10) %*% mar)),
                           error = function(e){
-                            warning("Global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.",
-                                    immediate. = T)
+                            message("Warning: global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.")
                             return(as.numeric(NA))})
             if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
@@ -190,7 +189,7 @@ setMethod("cnfa",
             } else {
               co[, 1] <- mar / m
               sf <- as.numeric(abs(co) %*% s.p)
-              sens <- as.numeric(sf %*% solve(Rg) %*% sf)
+              sens <- sqrt(as.numeric(sf %*% solve(Rg) %*% sf))
             }
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x.crop) & !parallel){
@@ -221,7 +220,7 @@ setMethod("cnfa",
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
-            if(union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
+            if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
 
             if(parallel){
               if(n < 1 | !is.numeric(n)) {
@@ -249,7 +248,7 @@ setMethod("cnfa",
               S <- values(x)[pres, ]
               nZ <- nrow(Z)
               nS <- nrow(S)
-              Rg <- crossprod(Z, Z)/nZ
+              Rg <- crossprod(Z, Z)/(nZ - 1)
               p <- values(s.dat.ras)[pres]
               p.sum <- sum(p)
               mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
@@ -263,17 +262,16 @@ setMethod("cnfa",
               DpS <- x.mask * s.dat.ras
               mar <- cellStats(DpS, sum) / p.sum
               cat("\nCalculating study area covariance matrix...\n")
-              Rg <- parCov(x, sample = F, parallel = parallel, ...)
+              Rg <- parCov(x, sample = F, parallel = parallel, n = n)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
               Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n)
             }
 
             cZ <- nlayers(x)
-            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg, tol = 1e-10) %*% mar)),
                           error = function(e){
-                            warning("Global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.",
-                                    immediate. = T)
+                            message("Warning: global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.")
                             return(as.numeric(NA))})
             if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
@@ -298,7 +296,7 @@ setMethod("cnfa",
             } else {
               co[, 1] <- mar / m
               sf <- as.numeric(abs(co) %*% s.p)
-              sens <- as.numeric(sf %*% solve(Rg) %*% sf)
+              sens <- sqrt(as.numeric(sf %*% solve(Rg) %*% sf))
             }
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x) & !parallel){
@@ -361,7 +359,7 @@ setMethod("cnfa",
               S <- values(x)[pres, ]
               nZ <- nrow(Z)
               nS <- nrow(S)
-              Rg <- crossprod(Z, Z)/nZ
+              Rg <- crossprod(Z, Z)/(nZ - 1)
               p <- values(s.dat.ras)[pres]
               p.sum <- sum(p)
               mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
@@ -375,17 +373,16 @@ setMethod("cnfa",
               DpS <- x.mask * s.dat.ras
               mar <- cellStats(DpS, sum) / p.sum
               cat("\nCalculating study area covariance matrix...\n")
-              Rg <- parCov(x, sample = F, ...)
+              Rg <- parCov(x, sample = F, parallel = parallel, n = n)
               cat("\nCalculating species covariance matrix...\n")
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
               Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n)
             }
 
             cZ <- nlayers(x)
-            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg, tol = 1e-10) %*% mar)),
                           error = function(e){
-                            warning("Global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.",
-                                    immediate. = T)
+                            message("Warning: global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.")
                             return(as.numeric(NA))})
             if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
@@ -409,7 +406,7 @@ setMethod("cnfa",
               sens <- as.numeric(NA)
             } else {
               co[, 1] <- mar / m
-              sens <- as.numeric(sf %*% solve(Rg) %*% sf)
+              sens <- sqrt(as.numeric(sf %*% solve(Rg) %*% sf))
             }
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x) & !parallel){

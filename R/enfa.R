@@ -124,27 +124,25 @@ setMethod("enfa",
               nS <- nrow(S)
               Rg <- x@cov
               p <- values(s.dat.ras)[pres]
-              p <- p/(sum(p))
-              mar <- apply(S, 2, function(x) sum(x * p))
+              p.sum <- sum(p)
+              mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
-              Rs <- crossprod(Sm, DpSm)
+              Rs <- crossprod(Sm, DpSm)/ (p.sum - 1)
             } else {
               x.mask <- mask(x.crop, s.dat.ras)
               Rg <- x@cov
               p.sum <- cellStats(s.dat.ras, sum)
-              p <- s.dat.ras / (p.sum - 1)
-              DpS <- x.mask * p
-              mar <- cellStats(DpS, sum)
+              DpS <- x.mask * s.dat.ras
+              mar <- cellStats(DpS, sum) / p.sum
               Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
               Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n)
             }
 
             cZ <- nlayers(ras)
-            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg, tol = 1e-10) %*% mar)),
                           error = function(e){
-                            warning("Global covariance matrix not invertible. Overall marginality will not be computed.",
-                                    immediate. = T)
+                            message("Warning: global covariance matrix not invertible. Overall marginality will not be computed.")
                             return(as.numeric(NA))})
             if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
@@ -225,18 +223,17 @@ setMethod("enfa",
               nS <- nrow(S)
               Rg <- crossprod(Z, Z)/nZ
               p <- values(s.dat.ras)[pres]
-              #p <- p/(sum(p))
-              mar <- apply(S, 2, function(x) sum(x * p))/sum(p)
+              p.sum <- sum(p)
+              mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
-              Rs <- crossprod(Sm, DpSm) * 1/(sum(p) - 1)
+              Rs <- crossprod(Sm, DpSm) / (p.sum - 1)
             } else {
               center <- cellStats(x, mean)
               x.mask <- mask(x, s.dat.ras)
               p.sum <- cellStats(s.dat.ras, sum)
-              p <- s.dat.ras / p.sum
-              DpS <- x.mask * p
-              mar <- cellStats(DpS, sum)
+              DpS <- x.mask * s.dat.ras
+              mar <- cellStats(DpS, sum) / p.sum
               cat("\nCalculating study area covariance matrix...\n")
               Rg <- parCov(x, sample = F, parallel = parallel, ...)
               cat("\nCalculating species covariance matrix...\n")
@@ -245,10 +242,9 @@ setMethod("enfa",
             }
 
             cZ <- nlayers(x)
-            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg, tol = 1e-10) %*% mar)),
                           error = function(e){
-                            warning("Global covariance matrix not invertible. Overall marginality will not be computed.",
-                                    immediate. = T)
+                            message("Warning: global covariance matrix not invertible. Overall marginality will not be computed.")
                             return(as.numeric(NA))})
             if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
@@ -336,18 +332,17 @@ setMethod("enfa",
               nS <- nrow(S)
               Rg <- crossprod(Z, Z)/nZ
               p <- values(s.dat.ras)[pres]
-              p <- p/(sum(p))
-              mar <- apply(S, 2, function(x) sum(x * p))
+              p.sum <- sum(p)
+              mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
-              Rs <- crossprod(Sm, DpSm)
+              Rs <- crossprod(Sm, DpSm) / (p.sum - 1)
             } else {
               center <- cellStats(x, mean)
               x.mask <- mask(x, s.dat.ras)
               p.sum <- cellStats(s.dat.ras, sum)
-              p <- s.dat.ras / p.sum
-              DpS <- x.mask * p
-              mar <- cellStats(DpS, sum)
+              DpS <- x.mask * s.dat.ras
+              mar <- cellStats(DpS, sum) / p.sum
               cat("\nCalculating study area covariance matrix...\n")
               Rg <- parCov(x, sample = F, ...)
               cat("\nCalculating species covariance matrix...\n")
@@ -356,10 +351,9 @@ setMethod("enfa",
             }
 
             cZ <- nlayers(x)
-            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg, tol = 1e-10) %*% mar)),
                           error = function(e){
-                            warning("Global covariance matrix not invertible. Overall marginality will not be computed.",
-                                    immediate. = T)
+                            message("Warning: global covariance matrix not invertible. Overall marginality will not be computed.")
                             return(as.numeric(NA))})
             if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)

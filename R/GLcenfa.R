@@ -69,15 +69,15 @@ setMethod("GLcenfa",
             }
 
             if (center | scale) {
-              if (progress) cat("\nScaling data...")
+              if (progress) cat("\nScaling data...\n")
               x <- parScale(x, center = center, scale = scale, filename = filename, parallel = parallel, n = n, ...)
             }
 
             if (!center & !scale) message("Warning: no scaling specified, raster will not be written to file")
 
-            if (progress) cat("\nCalculating global covariance matrix...")
+            if (progress) cat("\nCalculating global covariance matrix...\n")
             cov.mat <- parCov(x = x, parallel = parallel, n = n)
-            tryCatch(solve(cov.mat),
+            tryCatch(solve(cov.mat, tol = 1e-10),
                      error = function(e) message("Warning: covariance matrix is not invertible. Consider removing correlated variables or transforming data and trying again."))
 
             GLcenfa <- methods::new("GLcenfa", global_ras = x, cov = cov.mat)
