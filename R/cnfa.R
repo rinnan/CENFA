@@ -150,9 +150,9 @@ setMethod("cnfa",
               p <- values(s.dat.ras)[pres]
               p.sum <- sum(p)
               mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
+              if (!quiet) cat("Calculating species covariance matrix...\n")
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
-              if (!quiet) cat("Calculating species covariance matrix...\n")
               Rs <- crossprod(Sm, DpSm) * 1 / (p.sum - 1)
             } else {
               x.mask <- mask(x.crop, s.dat.ras)
@@ -261,9 +261,9 @@ setMethod("cnfa",
               p <- values(s.dat.ras)[pres]
               p.sum <- sum(p)
               mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
+              if (!quiet) cat("Calculating species covariance matrix...\n")
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
-              if (!quiet) cat("Calculating species covariance matrix...\n")
               Rs <- crossprod(Sm, DpSm) * 1 / (p.sum - 1)
             } else {
               center <- cellStats(x, mean)
@@ -378,9 +378,9 @@ setMethod("cnfa",
               p <- values(s.dat.ras)[pres]
               p.sum <- sum(p)
               mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
+              if (!quiet) cat("Calculating species covariance matrix...\n")
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
-              if (!quiet) cat("Calculating species covariance matrix...\n")
               Rs <- crossprod(Sm, DpSm) / (p.sum - 1)
             } else {
               center <- cellStats(x, mean)

@@ -13,13 +13,13 @@
 enfa(x, s.dat, ...)
 
 \S4method{enfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", parallel = FALSE, n = 1, ...)
+  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
 
 \S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", parallel = FALSE, n = 1, ...)
+  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
 
 \S4method{enfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", parallel = FALSE, n = 1, ...)
+  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers,
@@ -31,7 +31,7 @@ species presence}
 \item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This
-is equivalent to the \code{field} argument in the \code{raster} package.}
+is equivalent to the \code{field} argument in the \code{raster} package}
 
 \item{fun}{function or character. Determines what values to assign to cells
 with multiple spatial features, similar to the \code{fun} argument in
@@ -39,7 +39,10 @@ with multiple spatial features, similar to the \code{fun} argument in
 and 'count' (see Details)}
 
 \item{filename}{character. Optional filename to save the Raster* output to
-file. If this is not provided, a temporary file will be created for large \code{x}.}
+file. If this is not provided, a temporary file will be created for large \code{x}}
+
+\item{quiet}{logical. If \code{TRUE}, messages and progress bar will be
+suppressed}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized for the
 calculation of the covariance matrices}

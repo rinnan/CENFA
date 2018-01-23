@@ -10,7 +10,7 @@
 #' @param s.dat SpatialPolygons*, SpatialPoints*, or sf object indicating
 #'   species presence
 #' @param field field of \code{s.dat} that specifies presence or abundance. This
-#'   is equivalent to the \code{field} argument in the \code{raster} package.
+#'   is equivalent to the \code{field} argument in the \code{raster} package
 #' @param fun function or character. Determines what values to assign to cells
 #'   with multiple spatial features, similar to the \code{fun} argument in
 #'   \code{\link[raster]{rasterize}}.  Options are 'first', 'last' (default),
@@ -21,7 +21,9 @@
 #'   this function for multiple species, it is recommended that the climate data
 #'   be scaled beforehand using the \code{\link{GLcenfa}} function
 #' @param filename character. Optional filename to save the Raster* output to
-#'   file. If this is not provided, a temporary file will be created for large \code{x}.
+#'   file. If this is not provided, a temporary file will be created for large \code{x}
+#' @param quiet logical. If \code{TRUE}, messages and progress bar will be
+#'   suppressed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized for the
 #'   calculation of the covariance matrices
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
@@ -98,7 +100,7 @@ setGeneric("enfa", function(x, s.dat, ...){
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "GLcenfa", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", filename = "", parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
 
             call <- sys.calls()[[1]]
 
@@ -108,7 +110,7 @@ setMethod("enfa",
             ext <- extent(ras)
             ext.s <- extent(s.dat)
             if (is.null(intersect(ext, ext.s))) stop("climate and species data do not overlap")
-            if (union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
+            if (raster::union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
 
             x.crop <- crop(ras, ext.s)
             s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun)
@@ -126,6 +128,7 @@ setMethod("enfa",
               p <- values(s.dat.ras)[pres]
               p.sum <- sum(p)
               mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
+              if (!quiet) cat("Calculating species covariance matrix...\n")
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
               Rs <- crossprod(Sm, DpSm)/ (p.sum - 1)
@@ -135,8 +138,9 @@ setMethod("enfa",
               p.sum <- cellStats(s.dat.ras, sum)
               DpS <- x.mask * s.dat.ras
               mar <- cellStats(DpS, sum) / p.sum
-              Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n)
+              if (!quiet) cat("Calculating species covariance matrix...\n")
+              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, quiet = T)
+              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n, quiet = quiet)
             }
 
             cZ <- nlayers(ras)
@@ -168,10 +172,11 @@ setMethod("enfa",
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if(canProcessInMemory(x.crop)){
               s.ras <- brick(x.crop)
+              if (!quiet) cat("Creating factor rasters...")
               values(s.ras)[pres, ] <- S %*% co
               names(s.ras) <- nm
-            } else{
-              cat("\nCreating factor rasters...")
+            } else {
+              if (!quiet) cat("Creating factor rasters...")
               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
             }
             colnames(co) <- names(s.p) <- names(s) <- nm
@@ -186,7 +191,7 @@ setMethod("enfa",
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "Raster", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
 
             call <- sys.calls()[[1]]
 
@@ -207,7 +212,10 @@ setMethod("enfa",
 
             s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
 
-            if (scale == TRUE) x <- parScale(x, center = T, scale = T, parallel = parallel, n = n)
+            if(scale) {
+              if (!quiet) cat("Scaling raster data...\n")
+              x <- parScale(x, center = T, scale = T, parallel = parallel, n = n, quiet = quiet)
+            }
 
             filename <- trim(filename)
             if (!canProcessInMemory(x) && filename == '') {
@@ -221,10 +229,12 @@ setMethod("enfa",
               S <- values(x)[pres, ]
               nZ <- nrow(Z)
               nS <- nrow(S)
+              if (!quiet) cat("Calculating global covariance matrix...\n")
               Rg <- crossprod(Z, Z)/nZ
               p <- values(s.dat.ras)[pres]
               p.sum <- sum(p)
               mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
+              if (!quiet) cat("Calculating species covariance matrix...\n")
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
               Rs <- crossprod(Sm, DpSm) / (p.sum - 1)
@@ -234,11 +244,11 @@ setMethod("enfa",
               p.sum <- cellStats(s.dat.ras, sum)
               DpS <- x.mask * s.dat.ras
               mar <- cellStats(DpS, sum) / p.sum
-              cat("\nCalculating study area covariance matrix...\n")
-              Rg <- parCov(x, sample = F, parallel = parallel, ...)
-              cat("\nCalculating species covariance matrix...\n")
-              Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n)
+              if (!quiet) cat("Calculating global covariance matrix...\n")
+              Rg <- parCov(x, sample = F, parallel = parallel, n = n, quiet = quiet)
+              if (!quiet) cat("Calculating species covariance matrix...\n")
+              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, quiet = T)
+              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n, quiet = quiet)
             }
 
             cZ <- nlayers(x)
@@ -272,10 +282,11 @@ setMethod("enfa",
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x)) {
               s.ras <- brick(x)
+              if (!quiet) cat("Creating factor rasters...")
               values(s.ras)[pres, ] <- S %*% co
               names(s.ras) <- nm
             } else {
-              cat("\nCreating factor rasters...")
+              if (!quiet) cat("Creating factor rasters...")
               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
             }
             colnames(co) <- names(s.p) <- names(s) <- nm
@@ -290,7 +301,7 @@ setMethod("enfa",
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "Raster", s.dat = "sf"),
-          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
             if (!requireNamespace("sf")) {
               warning('cannot do this because sf is not available')
             }
@@ -316,8 +327,10 @@ setMethod("enfa",
 
             s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
 
-            if (scale == TRUE) x <- parScale(x, center = T, scale = T, parallel = parallel, n = n)
-
+            if(scale) {
+              if (!quiet) cat("Scaling raster data...\n")
+              x <- parScale(x, center = T, scale = T, parallel = parallel, n = n, quiet = quiet)
+            }
             filename <- trim(filename)
             if (!canProcessInMemory(x) && filename == '') {
               filename <- rasterTmpFile()
@@ -330,10 +343,12 @@ setMethod("enfa",
               S <- values(x)[pres, ]
               nZ <- nrow(Z)
               nS <- nrow(S)
+              if (!quiet) cat("Calculating global covariance matrix...\n")
               Rg <- crossprod(Z, Z)/nZ
               p <- values(s.dat.ras)[pres]
               p.sum <- sum(p)
               mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
+              if (!quiet) cat("Calculating species covariance matrix...\n")
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
               Rs <- crossprod(Sm, DpSm) / (p.sum - 1)
@@ -343,11 +358,11 @@ setMethod("enfa",
               p.sum <- cellStats(s.dat.ras, sum)
               DpS <- x.mask * s.dat.ras
               mar <- cellStats(DpS, sum) / p.sum
-              cat("\nCalculating study area covariance matrix...\n")
-              Rg <- parCov(x, sample = F, ...)
-              cat("\nCalculating species covariance matrix...\n")
-              Sm <- calc(x.mask, fun = function(x) x - mar, forceapply = T)
-              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n)
+              if (!quiet) cat("Calculating global covariance matrix...\n")
+              Rg <- parCov(x, sample = F, parallel = parallel, n = n, quiet = quiet)
+              if (!quiet) cat("Calculating species covariance matrix...\n")
+              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, quiet = T)
+              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n, quiet = quiet)
             }
 
             cZ <- nlayers(x)
@@ -378,10 +393,11 @@ setMethod("enfa",
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x)) {
               s.ras <- brick(x)
+              if (!quiet) cat("Creating factor rasters...")
               values(s.ras)[pres, ] <- S %*% co
               names(s.ras) <- nm
             } else {
-              cat("\nCreating factor rasters...")
+              if (!quiet) cat("Creating factor rasters...")
               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
             }
             colnames(co) <- names(s.p) <- names(s) <- nm
