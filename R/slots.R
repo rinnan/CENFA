@@ -92,7 +92,7 @@ setMethod("raster",
           }
 )
 
-#' @rdname raster
+#' @rdname slot-access
 setMethod("raster",
           signature(x = "GLcenfa"),
           function(x){
