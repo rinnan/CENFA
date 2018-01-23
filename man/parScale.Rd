@@ -6,14 +6,15 @@
 \alias{parScale,Raster-method}
 \title{Efficient scaling of Raster* objects}
 \usage{
-parScale(x, center = TRUE, scale = TRUE, filename = "", quiet = FALSE,
-  parallel = FALSE, n = 1, ...)
+parScale(x, ...)
 
 \S4method{parScale}{Raster}(x, center = TRUE, scale = TRUE, filename = "",
-  quiet = FALSE, parallel = FALSE, n = 1, ...)
+  quiet = TRUE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object}
+
+\item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 
 \item{center}{logical or numeric. If \code{TRUE}, centering is done by
 subtracting the layer means (omitting NAs), and if \code{FALSE}, no centering
@@ -37,8 +38,6 @@ suppressed}
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
 \item{n}{numeric. Number of CPU cores to utilize for parallel processing}
-
-\item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 }
 \value{
 Raster* object

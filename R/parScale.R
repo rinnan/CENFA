@@ -33,13 +33,13 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 
-setGeneric("parScale", function(x, center = TRUE, scale = TRUE, filename = '', quiet = FALSE, parallel = FALSE, n = 1, ...){
+setGeneric("parScale", function(x, ...){
   standardGeneric("parScale")})
 
 #' @rdname parScale
 setMethod("parScale",
           signature(x = "Raster"),
-          function(x, center = TRUE, scale = TRUE, filename = '', quiet = FALSE, parallel = FALSE, n = 1, ...){
+          function(x, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...){
 
             if (is.logical(center) & is.logical(scale)) {
               if (!center & !scale) return(x) }

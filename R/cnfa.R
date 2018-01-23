@@ -272,7 +272,7 @@ setMethod("cnfa",
               DpS <- x.mask * s.dat.ras
               mar <- cellStats(DpS, sum) / p.sum
               if (!quiet) cat("Calculating global covariance matrix...\n")
-              Rg <- parCov(x, sample = F, parallel = parallel, n = n, quiet = quiet)
+              Rg <- parCov(x, parallel = parallel, n = n, quiet = quiet)
               if (!quiet) cat("Calculating species covariance matrix...\n")
               Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, quiet = T)
               Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n, quiet = quiet)
@@ -389,7 +389,7 @@ setMethod("cnfa",
               DpS <- x.mask * s.dat.ras
               mar <- cellStats(DpS, sum) / p.sum
               if (!quiet) cat("Calculating global covariance matrix...\n")
-              Rg <- parCov(x, sample = F, parallel = parallel, n = n, quiet = quiet)
+              Rg <- parCov(x, parallel = parallel, n = n, quiet = quiet)
               if (!quiet) cat("Calculating species covariance matrix...\n")
               Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, quiet = T)
               Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n, quiet = quiet)
