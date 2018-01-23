@@ -7,7 +7,7 @@
 #' @slot mf numeric. Named vector representing the marginality factor, describing
 #'   the location of the species niche relative to the global niche
 #' @slot marginality numeric. Magnitude of the marginality factor \code{mf},
-#' scaled by the global covariance matrix}
+#' scaled by the global covariance matrix
 #' @slot sf numeric. Named vector representing the specialization factor,
 #'   equivalent to the eigenvalues of specialization
 #' @slot specialization numeric. The square root of the sum of eigenvalues, divided

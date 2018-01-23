@@ -141,7 +141,7 @@ setMethod("enfa",
             }
 
             cZ <- nlayers(ras)
-            m <- tryCatch(t(mar) %*% solve(Rg) %*% mar,
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
                           error = function(e){
                             warning("Global covariance matrix not invertible. Overall marginality will not be computed.",
                                     immediate. = T)
@@ -154,9 +154,9 @@ setMethod("enfa",
             y <- z/sqrt(sum(z^2))
             H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
             sf <- eigen(H)$values[-cZ]
-            spec <- sqrt(sum(sf))/length(sf)
-            s.p <- abs(sum(diag(W)) - sum(diag(H)))
+            s.p <- (t(mar) %*% Rg %*% mar) / (t(mar) %*% Rs %*% mar)
             s <- c(s.p, sf)
+            spec <- sqrt(sum(s))/length(s)
             s.p <- abs(s)/sum(abs(s))
             v <- eigen(H)$vectors
             co <- matrix(nrow = cZ, ncol = cZ)
@@ -176,10 +176,10 @@ setMethod("enfa",
               cat("\nCreating factor rasters...")
               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
             }
-            colnames(co) <- names(s.p) <- names(sf) <- nm
+            colnames(co) <- names(s.p) <- names(s) <- nm
             rownames(co) <- names(x)
 
-            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = sf,
+            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = s,
                                  specialization = spec, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
             return(enfa)
           }
@@ -245,7 +245,7 @@ setMethod("enfa",
             }
 
             cZ <- nlayers(x)
-            m <- tryCatch(t(mar) %*% solve(Rg) %*% mar,
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
                           error = function(e){
                             warning("Global covariance matrix not invertible. Overall marginality will not be computed.",
                                     immediate. = T)
@@ -356,7 +356,7 @@ setMethod("enfa",
             }
 
             cZ <- nlayers(x)
-            m <- tryCatch(t(mar) %*% solve(Rg) %*% mar,
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
                           error = function(e){
                             warning("Global covariance matrix not invertible. Overall marginality will not be computed.",
                                     immediate. = T)
@@ -369,9 +369,9 @@ setMethod("enfa",
             y <- z/sqrt(sum(z^2))
             H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
             sf <- eigen(H)$values[-cZ]
-            spec <- sqrt(sum(sf))/length(sf)
-            s.p <- abs(sum(diag(W)) - sum(diag(H)))
+            s.p <- (t(mar) %*% Rg %*% mar) / (t(mar) %*% Rs %*% mar)
             s <- c(s.p, sf)
+            spec <- sqrt(sum(s))/length(s)
             s.p <- abs(s)/sum(abs(s))
             v <- eigen(H)$vectors
             co <- matrix(nrow = cZ, ncol = cZ)
@@ -390,10 +390,10 @@ setMethod("enfa",
               cat("\nCreating factor rasters...")
               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
             }
-            colnames(co) <- names(s.p) <- names(sf) <- nm
+            colnames(co) <- names(s.p) <- names(s) <- nm
             rownames(co) <- names(x)
 
-            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = sf,
+            enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = s,
                                  specialization = spec, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
             return(enfa)
           }

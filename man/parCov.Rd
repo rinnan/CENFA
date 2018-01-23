@@ -59,16 +59,17 @@ This function is designed to work similarly to the
   \code{sum(w) - 1} in its denominator.
 }
 \examples{
-mat1 <- parCov(climdat.hist, parallel = T)
+mat1 <- parCov(climdat.hist)
 
+# correlation matrix
 Z <- parScale(climdat.hist)
 mat2 <- parCov(Z)
 
 # covariance between two Raster* objects
-mat2 <- parCov(x = climdat.hist, y = climdat.fut)
+mat3 <- parCov(x = climdat.hist, y = climdat.fut)
 dat.h <- values(climdat.hist)
 dat.f <- values(climdat.fut)
-mat3 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
+mat4 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
 
 # same results either way
 all.equal(mat3, mat4)

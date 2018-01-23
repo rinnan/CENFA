@@ -10,10 +10,6 @@
 #' @param y NULL (default) or a Raster* object with the same extent and resolution
 #'   as \code{x}
 #' @param ... additional arguments, including any of the following:
-# @param center logical. If \code{TRUE}, the Raster* object will get centered
-#   before calculating the covariance
-# @param scale logical. If \code{TRUE}, the Raster* object will get scaled
-#   before calculating the covariance
 #' @param w optional Raster* object of weights for a weighted covariance matrix
 #' @param sample logical. If \code{TRUE}, the sample covariance is calculated
 #'   with a denominator of $n-1$
@@ -21,16 +17,17 @@
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
 #'
 #' @examples
-#' mat1 <- parCov(climdat.hist, parallel = T)
+#' mat1 <- parCov(climdat.hist)
 #'
+#' # correlation matrix
 #' Z <- parScale(climdat.hist)
 #' mat2 <- parCov(Z)
 #'
 #' # covariance between two Raster* objects
-#' mat2 <- parCov(x = climdat.hist, y = climdat.fut)
+#' mat3 <- parCov(x = climdat.hist, y = climdat.fut)
 #' dat.h <- values(climdat.hist)
 #' dat.f <- values(climdat.fut)
-#' mat3 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
+#' mat4 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
 #'
 #' # same results either way
 #' all.equal(mat3, mat4)

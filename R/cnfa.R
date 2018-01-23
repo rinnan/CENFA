@@ -162,7 +162,7 @@ setMethod("cnfa",
             }
 
             cZ <- nlayers(ras)
-            m <- tryCatch(t(mar) %*% solve(Rg) %*% mar,
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
                           error = function(e){
                             warning("Global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.",
                                     immediate. = T)
@@ -190,7 +190,7 @@ setMethod("cnfa",
             } else {
               co[, 1] <- mar / m
               sf <- as.numeric(abs(co) %*% s.p)
-              sens <- sf %*% solve(Rg) %*% sf
+              sens <- as.numeric(sf %*% solve(Rg) %*% sf)
             }
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x.crop) & !parallel){
@@ -270,7 +270,7 @@ setMethod("cnfa",
             }
 
             cZ <- nlayers(x)
-            m <- tryCatch(t(mar) %*% solve(Rg) %*% mar,
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
                           error = function(e){
                             warning("Global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.",
                                     immediate. = T)
@@ -298,7 +298,7 @@ setMethod("cnfa",
             } else {
               co[, 1] <- mar / m
               sf <- as.numeric(abs(co) %*% s.p)
-              sens <- sf %*% solve(Rg) %*% sf
+              sens <- as.numeric(sf %*% solve(Rg) %*% sf)
             }
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x) & !parallel){
@@ -382,7 +382,7 @@ setMethod("cnfa",
             }
 
             cZ <- nlayers(x)
-            m <- tryCatch(t(mar) %*% solve(Rg) %*% mar,
+            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg) %*% mar)),
                           error = function(e){
                             warning("Global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.",
                                     immediate. = T)
@@ -409,7 +409,7 @@ setMethod("cnfa",
               sens <- as.numeric(NA)
             } else {
               co[, 1] <- mar / m
-              sens <- sf %*% solve(Rg) %*% sf
+              sens <- as.numeric(sf %*% solve(Rg) %*% sf)
             }
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x) & !parallel){

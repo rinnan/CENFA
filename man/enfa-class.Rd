@@ -16,6 +16,9 @@ factor analysis on species presence data using the \code{enfa} function.
 \item{\code{mf}}{numeric. Named vector representing the marginality factor, describing
 the location of the species niche relative to the global niche}
 
+\item{\code{marginality}}{numeric. Magnitude of the marginality factor \code{mf},
+scaled by the global covariance matrix}
+
 \item{\code{sf}}{numeric. Named vector representing the specialization factor,
 equivalent to the eigenvalues of specialization}
 
