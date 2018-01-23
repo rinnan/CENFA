@@ -101,6 +101,51 @@ setMethod("raster",
           }
 )
 
+#' @rdname slot-access
+setMethod("names",
+          signature(x = "GLcenfa"),
+          function(x){
+            temp <- names(x@global_ras)
+            return(temp)
+          }
+)
+
+#' @rdname slot-access
+setMethod("names",
+          signature(x = "GLdeparture"),
+          function(x){
+            temp <- names(x@global_difras)
+            return(temp)
+          }
+)
+
+#' @rdname slot-access
+setMethod("names",
+          signature(x = "cnfa"),
+          function(x){
+            temp <- names(x@ras)
+            return(temp)
+          }
+)
+
+#' @rdname slot-access
+setMethod("names",
+          signature(x = "enfa"),
+          function(x){
+            temp <- names(x@ras)
+            return(temp)
+          }
+)
+
+#' @rdname slot-access
+setMethod("names",
+          signature(x = "departure"),
+          function(x){
+            temp <- names(x@ras)
+            return(temp)
+          }
+)
+
 
 # comment out
 # #' @rdname covmat

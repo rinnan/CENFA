@@ -21,6 +21,11 @@
 \alias{raster,enfa-method}
 \alias{raster,cnfa-method}
 \alias{raster,GLcenfa-method}
+\alias{names,GLcenfa-method}
+\alias{names,GLdeparture-method}
+\alias{names,cnfa-method}
+\alias{names,enfa-method}
+\alias{names,departure-method}
 \title{Accessing CENFA slots}
 \usage{
 m.factor(x)
@@ -44,6 +49,16 @@ cov.GLcenfa(x)
 \S4method{raster}{cnfa}(x)
 
 \S4method{raster}{GLcenfa}(x)
+
+\S4method{names}{GLcenfa}(x)
+
+\S4method{names}{GLdeparture}(x)
+
+\S4method{names}{cnfa}(x)
+
+\S4method{names}{enfa}(x)
+
+\S4method{names}{departure}(x)
 }
 \arguments{
 \item{x}{cnfa or enfa object}
