@@ -20,6 +20,7 @@
 \alias{cov.GLcenfa}
 \alias{raster,enfa-method}
 \alias{raster,cnfa-method}
+\alias{raster,GLcenfa-method}
 \title{Accessing CENFA slots}
 \usage{
 m.factor(x)
@@ -41,6 +42,8 @@ cov.GLcenfa(x)
 \S4method{raster}{enfa}(x)
 
 \S4method{raster}{cnfa}(x)
+
+\S4method{raster}{GLcenfa}(x)
 }
 \arguments{
 \item{x}{cnfa or enfa object}

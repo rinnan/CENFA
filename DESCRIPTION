@@ -46,7 +46,6 @@ Collate:
     'departure-class.R'
     'departure.R'
     'difRaster.R'
-    'difRasterBrick-class.R'
     'enfa.R'
     'exposure_map.R'
     'parCov.R'

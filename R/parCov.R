@@ -77,13 +77,13 @@ setMethod("parCov",
             for(i in 2:nl) jj <- c(jj, i:nl)
             s <- 1:length(ii)
 
-            if (!parallel) {
+            if (!parallel | n == 1) {
               pboptions(char = "-", txt.width = NA, type = "txt")
               result <- pbsapply(s, function(p) do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample)))
             }
 
-            if (parallel) {
-              if(n < 1 | !is.numeric(n)) {
+            if (parallel & n > 1) {
+              if(!is.numeric(n)) {
                 n <- parallel::detectCores() - 1
                 message('incorrect number of cores specified, using ', n)
               } else if(n > parallel::detectCores()) {
@@ -134,13 +134,13 @@ setMethod("parCov",
             z <- .expand.grid.unique(1:nlx, 1:nly)
             s <- 1:nrow(z)
 
-            if (!parallel) {
+            if (!parallel | n == 1) {
               pboptions(char = "-", txt.width = NA, type = "txt")
               result <- pbsapply(s, function(p) do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample)))
             }
 
-            if (parallel) {
-              if (n < 1 | !is.numeric(n)) {
+            if (parallel & n > 1) {
+              if (!is.numeric(n)) {
                 n <- parallel::detectCores() - 1
                 message('incorrect number of cores specified, using ', n)
               } else if (n > parallel::detectCores()) {
