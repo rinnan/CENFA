@@ -1,0 +1,113 @@
+#' GLdeparture
+#'
+#' This function is used to facilitate comparisons between species in the same
+#' study area. It speeds up the computation of multiple departures by calculating
+#' the global covariance matrix as a first step, which
+#' can then be fed into the \code{\link{departure}} function as a first argument.
+#' This saves the user from having to calculate the global covariance matrix for
+#' each species, which can take quite a bit of time.
+#'
+#' @aliases print.GLdeparture, show.GLdeparture
+#'
+#' @param x Raster* object of p historical climate layers
+#' @param y Raster* object of p future climate layers, with the same names as
+#'   \code{x}
+#' @param center logical or numeric. If \code{TRUE}, centering is done by
+#'   subtracting the layer means (omitting NAs), and if \code{FALSE}, no centering
+#'   is done. If \code{center} is a numeric vector with length equal to the
+#'   \code{nlayers(x)}, then each layer of \code{x} has the corresponding value
+#'   from center subtracted from it
+#' @param scale logical or numeric. If \code{TRUE}, scaling is done by dividing
+#'   the (centered) layers of \code{x} by their standard deviations if center is
+#'   \code{TRUE}, and the root mean square otherwise. If scale is \code{FALSE},
+#'   no scaling is done. If scale is a numeric vector with length equal to
+#'   \code{nlayers(x)}, each layer of \code{x} is divided by the corresponding
+#'   value. Scaling is done after centering
+#' @param quiet logical. If \code{TRUE}, messages and progress bar will be
+#'   suppressed
+#' @param parallel logical. If \code{TRUE} then multiple cores are utilized
+#' @param n numeric. Number of CPU cores to utilize for parallel processing
+#' @param filename character. Optional filename to save the RasterBrick output
+#'   to file. If this is not provided, a temporary file will be created for large
+#'   \code{x}
+#' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
+#'
+#' @examples
+#' gld <- GLdeparture(x = climdat.hist, y = climdat.fut)
+#'
+#' @return Returns an S4 object of class \code{GLcenfa} with the following components:
+#' \describe{
+#'   \item{global_difras}{Raster* \code{x} of p layers, possibly centered and scaled}
+#'   \item{cov}{Global p x p covariance matrix}
+#'   }
+#'
+#' @details
+#' If there is too much correlation between the layers of \code{x}, the covariance
+#' matrix will be singular, which will lead to later problems in computing the overall
+#' departures of species. In this case, a warning will be issued, suggesting the
+#' removal of correlated variables or a transformation of the data.
+#'
+#' @seealso \code{\link{departure}}
+#' @export
+
+setGeneric("GLdeparture", function(x, y, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...) {
+  standardGeneric("GLdeparture")
+})
+
+#' @rdname GLdeparture
+setMethod("GLdeparture",
+          signature(x = "Raster", y = "Raster"),
+          function(x, y, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...){
+
+            if(!all.equal(names(x), names(y))) stop("historical and future raster layers do not match")
+            if(!compareRaster(x, y)) stop("historical and future rasters resolutions or extent do not match")
+
+            if (center | scale) {
+              if (!quiet) cat("Scaling historical raster data...\n")
+              means <- cellStats(x, mean)
+              sds <- cellStats(x, sd)
+              x <- parScale(x, center = center, scale = scale, filename = '', quiet = quiet, parallel = parallel, n = n)
+              if (!quiet) cat("Scaling future raster data...\n")
+              y <- parScale(y, center = means, scale = sds, filename = '', quiet = quiet, parallel = parallel, n = n)
+            }
+
+            # if(parallel == T) {
+            #   if(scale == T) {
+            #     if (missing(n)) {
+            #       n <- parallel::detectCores()
+            #       message(n, ' cores detected, using ', n-1)
+            #       n <- n-1
+            #     }
+            #     means <- cellStats(x, mean)
+            #     sds <- cellStats(x, sd)
+            #     beginCluster(n = n)
+            #     x <- clusterR(x, fun = scale, export = list("means", "sds"), args = list(center = means, scale = sds))
+            #     y <- clusterR(y, scale, export = list("means", "sds"), args = list(center = means, scale = sds))
+            #     endCluster()
+            #   }
+            # } else {
+            #   if(scale == T) {
+            #     means <- cellStats(x, mean)
+            #     sds <- cellStats(x, sd)
+            #     x <- scale(x)
+            #     y <- scale(y, center = means, scale = sds)
+            #   }
+            # }
+            x.dif <- abs(y - x)
+            names(x.dif) <- names(x)
+
+            filename <- trim(filename)
+            if (parallel | !canProcessInMemory(x)) {
+              if (filename == '') filename <- rasterTmpFile()
+              writeRaster(x.dif, filename = filename, ...)
+            }
+
+            if (!quiet) cat("Calculating global covariance matrix...\n")
+            cov.mat <- parCov(x = x, parallel = parallel, n = n, quiet = quiet)
+            tryCatch(solve(cov.mat, tol = 1e-10),
+                     error = function(e) message("Warning: covariance matrix is not invertible. Consider removing correlated variables or transforming data and trying again."))
+
+            GLdif <- methods::new("GLdeparture", global_difras = x.dif, cov = cov.mat)
+            return(GLdif)
+          }
+)
