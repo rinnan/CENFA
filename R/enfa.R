@@ -102,7 +102,7 @@ setMethod("enfa",
           signature(x = "GLcenfa", s.dat = "Spatial"),
           function(x, s.dat, field, fun = "last", filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
 
-            call <- sys.calls()[[1]]
+            call <- sys.call(sys.parent())
 
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
@@ -193,13 +193,13 @@ setMethod("enfa",
           signature(x = "Raster", s.dat = "Spatial"),
           function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
 
-            call <- sys.calls()[[1]]
+            call <- sys.call(sys.parent())
 
             if (!inherits(x, 'Raster')) stop('"x" should be a "Raster*" object')
             if (!inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if (!identicalCRS(x, s.dat)) stop("projections do not match")
             if (is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
-            if (union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
+            if (raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
             if (parallel){
               if (n < 1 | !is.numeric(n)) {
                 n <- parallel::detectCores() - 1
@@ -306,7 +306,7 @@ setMethod("enfa",
               warning('cannot do this because sf is not available')
             }
 
-            call <- sys.calls()[[1]]
+            call <- sys.call(sys.parent())
 
             if (!inherits(x, 'Raster')) stop('"x" should be a "Raster*" object')
             if (!identicalCRS(x, s.dat)) stop("projections do not match")

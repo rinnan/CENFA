@@ -77,7 +77,7 @@ setMethod("departure",
           signature(x = "GLdeparture", y = "missing", s.dat = "cnfa"),
           function(x, s.dat, filename = '', ...){
 
-            call <- sys.calls()[[1]]
+            call <- sys.call(sys.parent())
             s.dat.ras <- s.dat@weights
             ras <- x@global_difras
             ext <- extent(ras)
@@ -118,7 +118,7 @@ setMethod("departure",
           signature(x = "GLdeparture", y = "missing", s.dat = "Spatial"),
           function(x, s.dat, field, fun = "last", filename = '', ...){
 
-            call <- sys.calls()[[1]]
+            call <- sys.call(sys.parent())
             ras <- x@global_difras
             ext <- extent(ras)
             ext.s <- extent(s.dat)
@@ -159,7 +159,7 @@ setMethod("departure",
           signature(x = "Raster", y = "Raster", s.dat = "cnfa"),
           function(x, y, s.dat, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...) {
 
-            call <- sys.calls()[[1]]
+            call <- sys.call(sys.parent())
 
             GLdep <- GLdeparture(x, y, center = center, scale = scale, quiet = quiet, parallel = parallel, n = n)
             dep <- departure(x = GLdep, s.dat = s.dat, filename = filename, ...)
@@ -173,7 +173,7 @@ setMethod("departure",
           signature(x = "Raster", y = "Raster", s.dat = "Spatial"),
           function(x, y, s.dat, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...) {
 
-            call <- sys.calls()[[1]]
+            call <- sys.call(sys.parent())
 
             GLdep <- GLdeparture(x, y, center = center, scale = scale, quiet = quiet, parallel = parallel, n = n)
             dep <- departure(x = GLdep, s.dat = s.dat, filename = filename, ...)
