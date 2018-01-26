@@ -1,5 +1,5 @@
 
--   [Climate- and Ecological- Niche Factor Analysis (CENFA)](#climate--and-ecological--niche-factor-analysis-cenfa)
+-   [CENFA: Climate and Ecological Niche Factor Analysis](#cenfa-climate-and-ecological-niche-factor-analysis)
     -   [Installation](#installation)
     -   [Examples](#examples)
         -   [`enfa`](#enfa)
@@ -8,8 +8,8 @@
         -   [`parScale`](#parscale)
         -   [`parCov`](#parcov)
 
-Climate- and Ecological- Niche Factor Analysis (CENFA)
-======================================================
+CENFA: Climate and Ecological Niche Factor Analysis
+===================================================
 
 `CENFA` provides tools for performing ecological-niche factor analysis (ENFA) and climate-niche factor analysis (CNFA). This package was created with three goals in mind:
 
