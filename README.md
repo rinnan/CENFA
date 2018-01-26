@@ -38,7 +38,7 @@ We will use some example datasets to perform a basic ENFA. The historical climat
 
 A plot of the data, using the one of the layers of `climdat.hist`:
 
-![](README-QUGA-plot-1.png)
+![](man/figures/README-QUGA-plot-1.png)
 
 The `enfa` function takes three basic arguments: the dataset of ecological variables (`climdat.hist`), the map of species presence (`QUGA`), and the values of `QUGA` that specify presence (in this case, a column named "CODE"). Calling the `enfa` object by name provides a standard summary of the ENFA results.
 
@@ -138,7 +138,7 @@ Using the `sensitivity_map` function, we can create a habitat map that identifie
 s.map <- sensitivity_map(mod.cnfa)
 ```
 
-![](README-sensitivity-map-1.png)
+![](man/figures/README-sensitivity-map-1.png)
 
 Useful raster functions
 -----------------------
