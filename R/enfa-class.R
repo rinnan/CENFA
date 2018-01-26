@@ -34,7 +34,7 @@ setMethod ("show", "enfa", function(object){
   print(round(object@mf, 2))
   cat("\nEigenvalues of specialization: \n")
   print(round(object@sf, 2))
-  cat("\nPercentage of specialization contained in factors: \n")
+  cat("\nPercentage of specialization contained in ENFA factors: \n")
   print(round(100*object@p.spec, 2))
   cat("\nOverall marginality: ", round(object@marginality, 3), "\n")
   cat("\nOverall specialization: ", round(object@specialization, 3), "\n")
