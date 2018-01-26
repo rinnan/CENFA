@@ -4,7 +4,7 @@
 #'
 #' @param cnfa Object of class \code{cnfa}
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
-#' @param n numeric. Number of cores to use for calculation (optional)
+#' @param n numeric. Number of cores to use for calculation
 #' @param filename character. Output filename (optional)
 #' @param ... Additional arguments for file writing as for \code{\link[raster]{writeRaster}}
 #'
@@ -25,7 +25,7 @@
 #'
 #' @export
 
-sensitivity_map <- function(cnfa, parallel = FALSE, n, filename = "", ...){
+sensitivity_map <- function(cnfa, parallel = FALSE, n = 1, filename = "", ...){
 
   ras <- cnfa@ras
   m <- cnfa@mf
