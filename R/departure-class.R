@@ -20,8 +20,8 @@ setMethod("show",
               stop("Object of class 'departure' expected")
             cat("CLIMATIC DEPARTURE")
             cat("\n\nDeparture factor: \n")
-            print(sort(round(object@df, 2), decreasing = T))
-            cat("\nDeparture: ")
+            print(round(object@df, 2))
+            cat("\nOverall departure: ")
             cat(signif(object@departure, 4))
           }
 )
