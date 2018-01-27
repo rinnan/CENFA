@@ -227,16 +227,6 @@ setMethod("cnfa",
             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
             if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
 
-            if(parallel){
-              if(n < 1 | !is.numeric(n)) {
-                n <- parallel::detectCores() - 1
-                message('incorrect number of cores specified, using ', n)
-              } else if(n > parallel::detectCores()) {
-                n <- parallel::detectCores() - 1
-                message('too many cores specified, using ', n)
-              }
-            }
-
             s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
 
             if(scale) {
@@ -344,15 +334,6 @@ setMethod("cnfa",
 
             s.dat <- as(s.dat, "Spatial")
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('geometry of "s.dat" should be of class "sfc_POLYGON", "sfc_MULTIPOLYGON", "sfc_POINT", or "sfc_MULTIPOINT"')
-            if(parallel){
-              if(n < 1 | !is.numeric(n)) {
-                n <- parallel::detectCores() - 1
-                message('incorrect number of cores specified, using ', n)
-              } else if(n > parallel::detectCores()) {
-                n <- parallel::detectCores() - 1
-                message('too many cores specified, using ', n)
-              }
-            }
 
             s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
 
