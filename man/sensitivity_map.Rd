@@ -4,14 +4,14 @@
 \alias{sensitivity_map}
 \title{Create a sensitivity map}
 \usage{
-sensitivity_map(cnfa, parallel = FALSE, n, filename = "", ...)
+sensitivity_map(cnfa, parallel = FALSE, n = 1, filename = "", ...)
 }
 \arguments{
 \item{cnfa}{Object of class \code{cnfa}}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
-\item{n}{numeric. Number of cores to use for calculation (optional)}
+\item{n}{numeric. Number of cores to use for calculation}
 
 \item{filename}{character. Output filename (optional)}
 
