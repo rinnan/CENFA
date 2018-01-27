@@ -4,9 +4,12 @@
     -   [Examples](#examples)
         -   [`enfa`](#enfa)
         -   [`cnfa`](#cnfa)
+        -   [`departure`](#departure)
+        -   [`vulnerability`](#vulnerability)
     -   [Useful raster functions](#useful-raster-functions)
         -   [`parScale`](#parscale)
         -   [`parCov`](#parcov)
+        -   [`map`](#map)
 
 CENFA: Climate and Ecological Niche Factor Analysis
 ===================================================
@@ -140,6 +143,54 @@ s.map <- sensitivity_map(mod.cnfa)
 
 ![](man/figures/README-sensitivity-map-1.png)
 
+### `departure`
+
+The `departure` function provides a measure of a species' potential exposure to climate change. It takes a future climate dataset as an additional argument, and calculates the absolute differences between historical and future values.
+
+``` r
+dep <- departure(x = climdat.hist, y = climdat.fut, s.dat = QUGA, field = "CODE")
+dep
+#> CLIMATIC DEPARTURE
+#> 
+#> Departure factor: 
+#>   MDR   ISO    TS HMmax CMmin   PWM   PDM    PS   PWQ   PDQ 
+#>  0.05  0.10  0.22  0.53  0.44  0.23  0.12  0.38  0.23  0.16 
+#> 
+#> Overall departure: 2.317
+```
+
+The departure factor tells us the average amount of change that is expected in each climate variable across the species' range. Using the `exposure_map` function, we can create a habitat map that identifies where we expect the species to be most exposed to climate change.
+
+``` r
+e.map <- exposure_map(dep)
+```
+
+![](man/figures/README-exposure-map-1.png)
+
+### `vulnerability`
+
+The `vulnerability` function provides a measure of a species' potential vulnerability to climate change, taking both sensitivity and exposure into account. It takes a `cnfa` object and a `departure` object as its arguments.
+
+``` r
+vuln <- vulnerability(cnfa = mod.cnfa, dep = dep)
+vuln
+#> CLIMATIC VULNERABILITY
+#> 
+#> Vulnerability factor: 
+#>   MDR   ISO    TS HMmax CMmin   PWM   PDM    PS   PWQ   PDQ 
+#>  0.14  0.16  0.28  0.40  0.40  0.26  0.12  0.26  0.25  0.11 
+#> 
+#> Overall vulnerability: 0.821
+```
+
+Using the `vulnerability_map` function, we can create a habitat map that identifies where we expect the species to be most vulnerable to climate change.
+
+``` r
+v.map <- vulnerability_map(vuln)
+```
+
+![](man/figures/README-vulnerability-map-1.png)
+
 Useful raster functions
 -----------------------
 
@@ -155,7 +206,7 @@ clim.scaled <- parScale(x = climdat.hist, parallel = TRUE, n = 4)
 
 ### `parCov`
 
-The `parCov` function returnds the covariance matrix of a Raster\* object `x`, computing the covariance between each layer of `x`. This is similar to `raster::layerStats(x, stat = 'cov')`, but much faster when parallelization is employed.
+The `parCov` function returns the covariance matrix of a Raster\* object `x`, computing the covariance between each layer of `x`. This is similar to `raster::layerStats(x, stat = 'cov')`, but much faster when parallelization is employed.
 
 ``` r
 mat <- parCov(x = climdat.hist, parallel = TRUE, n = 4)
@@ -166,3 +217,17 @@ Additionally, `parCov` can accept two Raster\* objects as arguments, similar to 
 ``` r
 mat <- parCov(x = climdat.hist, y = climdat.fut, parallel = TRUE, n = 4)
 ```
+
+### `map`
+
+The `map` function provides a simple way to adjust the contrast of plots of RasterLayers to emphasize difference in values. It can perform histogram equalization and standard deviation stretching.
+
+``` r
+sm <- sensitivity_map(mod.cnfa)
+par(mfrow = c(1, 3), oma = c(2,2,2,3))
+map(sm, main = "Linear")
+map(sm, type = "stretch", main = "Histogram equalization")
+map(sm, type = "sd", n = 2, main = "Standard deviation (n = 2)")
+```
+
+![](man/figures/README-map-1.png)

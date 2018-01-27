@@ -1,8 +1,8 @@
 Package: CENFA
 Type: Package
-Title: Climate- and Ecological-Niche Factor Analysis
-Version: 0.1
-Date: 2016-09-10
+Title: Climate and Ecological Niche Factor Analysis
+Version: 0.1.0
+Date: 2018-1-26
 Author: D. Scott Rinnan
 Maintainer: Who to complain to <rinnan@uw.edu>
 Description: Performs climate- and ecological-niche factor analysis of spatial data. Processing of large files and parallelization is supported.
@@ -49,6 +49,7 @@ Collate:
     'departure.R'
     'enfa.R'
     'exposure_map.R'
+    'map.R'
     'parCov.R'
     'parScale.R'
     'sensitivity_map.R'
