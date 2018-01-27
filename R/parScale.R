@@ -67,10 +67,10 @@ setMethod("parScale",
             if (is.logical(scale)) scale <- rep(scale, nl)
 
             if (n < 1 | !is.numeric(n)) {
-              n <- parallel::detectCores() - 1
+              n <- min(parallel::detectCores() - 1, nl)
               if (!quiet) message('incorrect number of cores specified, using ', n)
             } else if (n > parallel::detectCores()) {
-              n <- parallel::detectCores() - 1
+              n <- min(parallel::detectCores() - 1, nl)
               if (!quiet) message('too many cores specified, using ', n)
             }
             cl <- snow::makeCluster(getOption("cl.cores", n))

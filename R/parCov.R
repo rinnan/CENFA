@@ -92,10 +92,10 @@ setMethod("parCov",
             if (parallel & n > 1) {
               on.exit(closeAllConnections())
               if(!is.numeric(n)) {
-                n <- parallel::detectCores() - 1
+                n <- min(parallel::detectCores() - 1, floor(s/2))
                 if (!quiet) message('incorrect number of cores specified, using ', n)
               } else if(n > parallel::detectCores()) {
-                n <- parallel::detectCores() - 1
+                n <- min(parallel::detectCores() - 1, floor(s/2))
                 if (!quiet) message('too many cores specified, using ', n)
               }
               w <- w
@@ -159,10 +159,10 @@ setMethod("parCov",
 
             if (parallel & n > 1) {
               if (!is.numeric(n)) {
-                n <- parallel::detectCores() - 1
+                n <- min(parallel::detectCores() - 1, floor(s/2))
                 if (!quiet) message('incorrect number of cores specified, using ', n)
               } else if (n > parallel::detectCores()) {
-                n <- parallel::detectCores() - 1
+                n <- min(parallel::detectCores() - 1, floor(s/2))
                 if (!quiet) message('too many cores specified, using ', n)
               }
               w <- w
