@@ -7,11 +7,12 @@
 #' @slot call Original function call
 #' @slot df Departure factor
 #' @slot departure Magnitude of the departure factor
+#' @slot g.cov historical global covariance matrix
 #' @slot ras Raster* object of transformed climate values
 #' @slot weights Raster layer of weights used for departure calculation
 #' @export
 
-setClass("departure", slots = list(call = "call", df = "numeric", departure = "numeric", ras = "Raster", weights = "Raster"))
+setClass("departure", slots = list(call = "call", df = "numeric", departure = "numeric", g.cov = "matrix", ras = "Raster", weights = "Raster"))
 
 setMethod("show",
           signature = "departure",

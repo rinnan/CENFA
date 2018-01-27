@@ -45,6 +45,7 @@
 #'   \item{df}{Departure factor. Vector of length p that describes the amount of
 #'    departure between future and historical conditions for each climate variable}
 #'   \item{departure}{Magnitude of the departure factor}
+#'   \item{g.cov}{g.cov p x p historical global covariance matrix}
 #'   \item{ras}{RasterBrick of climate departures, with p layers}
 #'   \item{weights}{Raster layer of weights used for departure calculation}
 #' }
@@ -108,7 +109,7 @@ setMethod("departure",
               writeRaster(x.dif, filename = filename, ...)
             }
 
-            depart <- methods::new("departure", call = call, df = d, departure = D, ras = x.dif, weights = s.dat.ras)
+            depart <- methods::new("departure", call = call, df = d, departure = D, g.cov = Rg, ras = x.dif, weights = s.dat.ras)
             return(depart)
           }
 )
@@ -149,7 +150,7 @@ setMethod("departure",
               writeRaster(x.dif, filename = filename, ...)
             }
 
-            depart <- methods::new("departure", call = call, df = d, departure = D, ras = x.dif, weights = s.dat.ras)
+            depart <- methods::new("departure", call = call, df = d, departure = D, g.cov = Rg, ras = x.dif, weights = s.dat.ras)
             return(depart)
           }
 )

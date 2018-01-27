@@ -180,7 +180,7 @@ vuln
 #>   MDR   ISO    TS HMmax CMmin   PWM   PDM    PS   PWQ   PDQ 
 #>  0.14  0.16  0.28  0.40  0.40  0.26  0.12  0.26  0.25  0.11 
 #> 
-#> Overall vulnerability: 0.821
+#> Overall vulnerability: 0.9049
 ```
 
 Using the `vulnerability_map` function, we can create a habitat map that identifies where we expect the species to be most vulnerable to climate change.
@@ -224,7 +224,7 @@ The `map` function provides a simple way to adjust the contrast of plots of Rast
 
 ``` r
 sm <- sensitivity_map(mod.cnfa)
-par(mfrow = c(1, 3), oma = c(2,2,2,3))
+par(mfrow = c(1, 3), oma = c(1,1,1,1))
 map(sm, main = "Linear")
 map(sm, type = "stretch", main = "Histogram equalization")
 map(sm, type = "sd", n = 2, main = "Standard deviation (n = 2)")

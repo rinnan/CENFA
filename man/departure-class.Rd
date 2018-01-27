@@ -18,6 +18,8 @@ and future climate conditions inside a species' habitat.
 
 \item{\code{departure}}{Magnitude of the departure factor}
 
+\item{\code{g.cov}}{historical global covariance matrix}
+
 \item{\code{ras}}{Raster* object of transformed climate values}
 
 \item{\code{weights}}{Raster layer of weights used for departure calculation}
