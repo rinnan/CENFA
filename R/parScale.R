@@ -32,6 +32,7 @@
 #'
 #' @export
 #' @importFrom pbapply pbsapply pboptions
+#' @importFrom foreach '%dopar%'
 
 setGeneric("parScale", function(x, ...){
   standardGeneric("parScale")})
@@ -59,6 +60,7 @@ setMethod("parScale",
               return(x)
             }
 
+            on.exit(closeAllConnections())
             nl <- nlayers(x)
             s <- 1:nl
             if (is.logical(center)) center <- rep(center, nl)

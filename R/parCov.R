@@ -55,6 +55,7 @@
 #'
 #' @export
 #' @importFrom pbapply pbsapply pboptions
+#' @importFrom foreach '%dopar%'
 
 setGeneric("parCov", function(x, y, ...){
   standardGeneric("parCov")})
@@ -89,6 +90,7 @@ setMethod("parCov",
             }
 
             if (parallel & n > 1) {
+              on.exit(closeAllConnections())
               if(!is.numeric(n)) {
                 n <- parallel::detectCores() - 1
                 if (!quiet) message('incorrect number of cores specified, using ', n)
@@ -108,13 +110,13 @@ setMethod("parCov",
               result <- foreach::foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
                 do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample))
               }
+              close(pb)
               } else if(quiet) {
                 result <- foreach::foreach(p = s, .combine=c) %dopar% {
                   do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample))
                 }
               }
-              close(pb)
-              snow::stopCluster(cl)
+             snow::stopCluster(cl)
             }
 
             for (p in s) {
