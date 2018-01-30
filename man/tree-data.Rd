@@ -8,17 +8,19 @@
 \title{Tree distribution data}
 \format{SpatialPolygonDataFrame}
 \source{
-\url{www.usgs.gov}
+\url{https://www.usgs.gov/}
 }
 \description{
 Some example datasets of historical tree distributions, from "Atlas of United
 States Trees" by Elbert L. Little, Jr.
 }
-\seealso{
-\code{\link{climdat.hist}}, \code{\link{climdat.fut}}
+\details{
 \describe{
   \item{ABPR}{Historical range map for the noble fir (\emph{Abies procera})}
   \item{QUGA}{Historical range map for the Oregon white oak (\emph{Quercus garryana})}
   \item{SESE}{Historical range map for the coast redwood (\emph{Sequoia sempervirens})}
 }
+}
+\seealso{
+\code{\link{climdat.hist}}, \code{\link{climdat.fut}}
 }

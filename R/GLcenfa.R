@@ -1,4 +1,4 @@
-#' GLcenfa
+#' Climate-niche factor analysis for reference study area
 #'
 #' This function is used to facilitate comparisons between species in the same
 #' study area. It speeds up the computation of multiple CNFAs or ENFAs by calculating
@@ -7,7 +7,7 @@
 #' This saves the user from having to calculate the global covariance matrix for
 #' each species, which can take quite a bit of time.
 #'
-#' @aliases print.GLcenfa, show.GLcenfa
+#' @aliases print.GLcenfa show.GLcenfa
 #'
 #' @param x Raster* object, typically a brick or stack of p environmental raster
 #'   layers

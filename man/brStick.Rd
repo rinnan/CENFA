@@ -2,7 +2,7 @@
 % Please edit documentation in R/brStick.R
 \name{brStick}
 \alias{brStick}
-\title{Broken-stick method}
+\title{Broken-stick method for detection of significant factors}
 \usage{
 brStick(eigs)
 }

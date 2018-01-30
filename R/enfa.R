@@ -1,9 +1,9 @@
-#' Ecological-Niche Factor Analysis
+#' Ecological-niche factor analysis
 #'
 #' Performs ecological-niche factor analysis using environmental raster data and
 #' species presence data.
 #'
-#' @aliases print.enfa, show.enfa
+#' @aliases print.enfa show.enfa
 #'
 #' @param x Raster* object, typically a brick or stack of ecological raster layers,
 #'  or a \code{GLcenfa} object

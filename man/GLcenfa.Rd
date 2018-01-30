@@ -3,10 +3,10 @@
 \docType{methods}
 \name{GLcenfa}
 \alias{GLcenfa}
-\alias{print.GLcenfa,}
+\alias{print.GLcenfa}
 \alias{show.GLcenfa}
 \alias{GLcenfa,Raster-method}
-\title{GLcenfa}
+\title{Climate-niche factor analysis for reference study area}
 \usage{
 GLcenfa(x, center = TRUE, scale = TRUE, filename = "", quiet = TRUE,
   parallel = FALSE, n = 1, ...)

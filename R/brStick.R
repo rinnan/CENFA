@@ -1,4 +1,4 @@
-#' Broken-stick method
+#' Broken-stick method for detection of significant factors
 #'
 #' This function provides a simple way to determine the number of significant
 #' factors in a factor analysis. This is done by comparing the eigenvalues of

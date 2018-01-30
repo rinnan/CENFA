@@ -3,12 +3,12 @@
 \docType{methods}
 \name{enfa}
 \alias{enfa}
-\alias{print.enfa,}
+\alias{print.enfa}
 \alias{show.enfa}
 \alias{enfa,GLcenfa,Spatial-method}
 \alias{enfa,Raster,Spatial-method}
 \alias{enfa,Raster,sf-method}
-\title{Ecological-Niche Factor Analysis}
+\title{Ecological-niche factor analysis}
 \usage{
 enfa(x, s.dat, ...)
 

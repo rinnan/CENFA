@@ -1,4 +1,4 @@
-#' GLdeparture
+#' Climatic departure of reference study area
 #'
 #' This function is used to facilitate comparisons between species in the same
 #' study area. It speeds up the computation of multiple departures by calculating
@@ -7,7 +7,7 @@
 #' This saves the user from having to calculate the global covariance matrix for
 #' each species, which can take quite a bit of time.
 #'
-#' @aliases print.GLdeparture, show.GLdeparture
+#' @aliases print.GLdeparture show.GLdeparture
 #'
 #' @param x Raster* object of p historical climate layers
 #' @param y Raster* object of p future climate layers, with the same names as

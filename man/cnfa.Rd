@@ -8,7 +8,7 @@
 \alias{cnfa,GLcenfa,Spatial-method}
 \alias{cnfa,Raster,Spatial-method}
 \alias{cnfa,Raster,sf-method}
-\title{Climate-Niche Factor Analysis}
+\title{Climate-niche factor analysis}
 \usage{
 cnfa(x, s.dat, ...)
 

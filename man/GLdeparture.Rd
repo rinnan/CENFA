@@ -3,10 +3,10 @@
 \docType{methods}
 \name{GLdeparture}
 \alias{GLdeparture}
-\alias{print.GLdeparture,}
+\alias{print.GLdeparture}
 \alias{show.GLdeparture}
 \alias{GLdeparture,Raster,Raster-method}
-\title{GLdeparture}
+\title{Climatic departure of reference study area}
 \usage{
 GLdeparture(x, y, center = TRUE, scale = TRUE, filename = "",
   quiet = TRUE, parallel = FALSE, n = 1, ...)

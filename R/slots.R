@@ -2,7 +2,7 @@
 #'
 #' Functions for extracting data from slots of objects of classes \code{cnfa} and \code{enfa}.
 #'
-#' @aliases m.factor, s.factor, marginality, specialization, sensitivity, cov, raster
+#' @aliases m.factor s.factor marginality specialization sensitivity cov raster
 #'
 #' @param x cnfa or enfa object
 #'

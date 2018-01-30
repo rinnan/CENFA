@@ -1,4 +1,4 @@
-#' Climate-Niche Factor Analysis
+#' Climate-niche factor analysis
 #'
 #' Performs climate-niche factor analysis using climate raster data and species
 #' presence data.
