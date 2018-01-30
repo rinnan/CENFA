@@ -103,9 +103,13 @@ setMethod("scatter",
   .adjust_arrows(x = co[, 1], y = co[, 2], xfact, yfact, xpd=T, length = .05)
   .adjust_labels(co[mags, 1], co[mags, 2], xfact, yfact, labels = rownames(co[mags, ]), cex = .7, xpd = T)
   legend("topright",
-         legend = c(as.expression(bquote(xax == .(names(s.ras)[xax]))),
+         legend = c("reference habitat",
+                    "species habitat",
+                    as.expression(bquote(xax == .(names(s.ras)[xax]))),
                     as.expression(bquote(yax == .(names(s.ras)[yax]))),
                     as.expression(bquote(~~~p == .(p)))),
+         fill = c("white", "grey60", NA, NA, NA),
+         border = c("black", "black", NA, NA, NA),
          bty = "n")
           }
 )
@@ -183,9 +187,13 @@ setMethod("scatter",
   .adjust_arrows(x = co[, 1], y = co[, 2], xfact, yfact, xpd=T, length = .05)
   .adjust_labels(co[mags, 1], co[mags, 2], xfact, yfact, labels = rownames(co[mags, ]), cex = .7, xpd = T)
   legend("topright",
-         legend = c(as.expression(bquote(xax == .(names(s.ras)[xax]))),
+         legend = c("reference habitat",
+                    "species habitat",
+                    as.expression(bquote(xax == .(names(s.ras)[xax]))),
                     as.expression(bquote(yax == .(names(s.ras)[yax]))),
                     as.expression(bquote(~~~p == .(p)))),
+         fill = c("white", "grey60", NA, NA, NA),
+         border = c("black", "black", NA, NA, NA),
          bty = "n")
           }
 )
