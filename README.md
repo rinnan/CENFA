@@ -3,6 +3,7 @@
     -   [Installation](#installation)
     -   [Examples](#examples)
         -   [`enfa`](#enfa)
+        -   [`scatter`](#scatter)
         -   [`cnfa`](#cnfa)
         -   [`departure`](#departure)
         -   [`vulnerability`](#vulnerability)
@@ -10,6 +11,7 @@
         -   [`parScale`](#parscale)
         -   [`parCov`](#parcov)
         -   [`map`](#map)
+    -   [Guidelines for contributing](#guidelines-for-contributing)
 
 CENFA: Climate and Ecological Niche Factor Analysis
 ===================================================
@@ -50,7 +52,8 @@ mod.enfa <- enfa(x = climdat.hist, s.dat = QUGA, field = "CODE")
 mod.enfa
 #> ENFA
 #> 
-#> Original function call: enfa(x = climdat.hist, s.dat = QUGA, field = "CODE")
+#> Original function call: enfa(x = x, s.dat = s.dat.ras, filename = filename, quiet = quiet, 
+#>     parallel = parallel, n = n, ...)
 #> 
 #> Marginality factor: 
 #>   MDR   ISO    TS HMmax CMmin   PWM   PDM    PS   PWQ   PDQ 
@@ -64,23 +67,34 @@ mod.enfa
 #>  Marg Spec1 Spec2 Spec3 Spec4 Spec5 Spec6 Spec7 Spec8 Spec9 
 #> 17.36 30.24 16.32 10.20  8.64  6.80  4.33  2.61  2.30  1.21 
 #> 
-#> Overall marginality:  1.191 
+#> Overall marginality:  1.654 
 #> 
 #> Overall specialization:  0.543 
 #> 
 #> Significant ENFA factors: 
 #>        Marg Spec1 Spec2 Spec3
-#> PWQ    0.61  0.03 -0.19 -0.25
-#> PWM    0.60 -0.08  0.26  0.27
-#> PS     0.59  0.12 -0.11 -0.02
-#> TS    -0.56 -0.34 -0.54  0.39
-#> CMmin  0.56 -0.54  0.00  0.49
-#> ISO    0.43  0.11 -0.46 -0.05
-#> MDR   -0.11 -0.46  0.59  0.38
-#> PDM   -0.11  0.10  0.09  0.03
-#> PDQ    0.11  0.00 -0.11 -0.04
+#> PWQ    0.44  0.03 -0.19 -0.25
+#> PWM    0.43 -0.08  0.26  0.27
+#> PS     0.42  0.12 -0.11 -0.02
+#> TS    -0.41 -0.34 -0.54  0.39
+#> CMmin  0.40 -0.54  0.00  0.49
+#> ISO    0.31  0.11 -0.46 -0.05
+#> MDR   -0.08 -0.46  0.59  0.38
+#> PDM   -0.08  0.10  0.09  0.03
+#> PDQ    0.08  0.00 -0.11 -0.04
 #> HMmax -0.02  0.58 -0.07 -0.57
 ```
+
+### `scatter`
+
+We can visualize the ENFA results via the `scatter` function, which produces a biplot of the marginality axis and one of the specialization axes. This gives us a portrait of the species' niche to compare with the global niche of the reference study area, with the ecological axes projected onto the ENFA dimensions. (Note: since `mod.enfa` only contains information about the species habitat, we must first construct a `GLcenfa` object that also describes the global habitat.)
+
+``` r
+glc <- GLcenfa(x = climdat.hist)
+scatter(x = mod.enfa, y = glc)
+```
+
+![](man/figures/README-scatter-1.png)
 
 For larger datasets, we can speed up the computation via parallelization. We provide two additional arguments, `parallel = TRUE`, and `n`, which specifies the number of cores to use. `n` has a default value of 1, so only setting `parallel = TRUE` will not parallelize the function by itself.
 
@@ -103,7 +117,8 @@ mod.cnfa <- cnfa(x = climdat.hist, s.dat = QUGA, field = "CODE")
 mod.cnfa
 #> CNFA
 #> 
-#> Original function call: cnfa(x = climdat.hist, s.dat = QUGA, field = "CODE")
+#> Original function call: cnfa(x = x, s.dat = s.dat.ras, filename = filename, quiet = quiet, 
+#>     parallel = parallel, n = n, ...)
 #> 
 #> Marginality factor: 
 #>   MDR   ISO    TS HMmax CMmin   PWM   PDM    PS   PWQ   PDQ 
@@ -123,16 +138,16 @@ mod.cnfa
 #> 
 #> Significant CNFA factors: 
 #>        Marg Spec1 Spec2 Spec3
-#> PWQ    0.44 -0.03  0.19  0.25
-#> PWM    0.43  0.08 -0.26 -0.27
-#> PS     0.42 -0.12  0.11  0.02
-#> TS    -0.41  0.34  0.54 -0.39
-#> CMmin  0.40  0.54  0.00 -0.49
-#> ISO    0.31 -0.11  0.46  0.05
-#> MDR   -0.08  0.46 -0.59 -0.38
-#> PDM   -0.08 -0.10 -0.09 -0.03
-#> PDQ    0.08  0.00  0.11  0.04
-#> HMmax -0.02 -0.58  0.07  0.57
+#> PWQ    0.44  0.03 -0.19 -0.25
+#> PWM    0.43 -0.08  0.26  0.27
+#> PS     0.42  0.12 -0.11 -0.02
+#> TS    -0.41 -0.34 -0.54  0.39
+#> CMmin  0.40 -0.54  0.00  0.49
+#> ISO    0.31  0.11 -0.46 -0.05
+#> MDR   -0.08 -0.46  0.59  0.38
+#> PDM   -0.08  0.10  0.09  0.03
+#> PDQ    0.08  0.00 -0.11 -0.04
+#> HMmax -0.02  0.58 -0.07 -0.57
 ```
 
 Using the `sensitivity_map` function, we can create a habitat map that identifies where we expect the species to be most sensitivite to changes in climate.
@@ -231,3 +246,8 @@ map(sm, type = "sd", n = 2, main = "Standard deviation (n = 2)")
 ```
 
 ![](man/figures/README-map-1.png)
+
+Guidelines for contributing
+---------------------------
+
+I welcome contributions and suggestions for improving this package. Please do not hesitate to submit any issues you may encounter.
