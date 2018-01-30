@@ -57,6 +57,8 @@
 #'   found in each CNFA factor}
 #'   \item{co}{A p x p matrix describing the amount of marginality and specialization
 #'    on each CNFA factor. (The marginality column is normalized)}
+#'   \item{cov}{p x p species covariance matrix}
+#'   \item{g.cov}{p x p global covariance matrix}
 #'   \item{ras}{RasterBrick of transformed climate values, with p layers}
 #'   \item{weights}{Raster layer of weights used for CNFA calculation}
 #' }
@@ -166,10 +168,7 @@ setMethod("cnfa",
             }
 
             cZ <- nlayers(ras)
-            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg, tol = 1e-10) %*% mar)),
-                          error = function(e){
-                            message("Warning: global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.")
-                            return(as.numeric(NA))})
+            m <- sqrt(as.numeric(t(mar) %*% mar))
             if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
             Rs12 <- eigRs$vectors %*% diag(eigRs$values^(-0.5)) %*% t(eigRs$vectors)
@@ -180,21 +179,15 @@ setMethod("cnfa",
             s <- Re(eigen(H)$values)[-cZ]
             s.p <- (t(mar) %*% Rg %*% mar) / (t(mar) %*% Rs %*% mar)
             s <- c(s.p, s)
-            s.p <- abs(s)/sum(abs(s))
+            s.p <- abs(s) / sum(abs(s))
             v <- Re(eigen(H)$vectors)
             co <- matrix(nrow = cZ, ncol = cZ)
             u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
             norw <- sqrt(diag(t(u) %*% u))
             co[, -1] <- sweep(u, 2, norw, "/")
-            if(is.na(m)) {
-              co[, 1] <- mar / norm(mar, "2")
-              sf <- as.numeric(abs(co) %*% s.p)
-              sens <- as.numeric(NA)
-            } else {
-              co[, 1] <- mar / m
-              sf <- as.numeric(abs(co) %*% s.p)
-              sens <- sqrt(as.numeric(sf %*% solve(Rg) %*% sf))
-            }
+            co[, 1] <- mar / m
+            sf <- sqrt(as.numeric(abs(co) %*% s))
+            sens <- sqrt(as.numeric(t(sf) %*% sf)/cZ)
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x.crop) & !parallel){
               s.ras <- brick(x.crop)
@@ -209,7 +202,7 @@ setMethod("cnfa",
             rownames(co) <- names(sf) <- names(ras)
 
             cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
-                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
+                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat.ras)
             return(cnfa)
           }
 )
@@ -227,7 +220,9 @@ setMethod("cnfa",
             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
             if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
 
-            s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
+            s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)#, background = 1)
+            # temp <- which(values(s.dat.ras) == 1) %>% sample(10000)
+            # values(s.dat.ras)[temp] <- 0
 
             if(scale) {
               if (!quiet) cat("Scaling raster data...\n")
@@ -269,10 +264,7 @@ setMethod("cnfa",
             }
 
             cZ <- nlayers(x)
-            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg, tol = 1e-10) %*% mar)),
-                          error = function(e){
-                            message("Warning: global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.")
-                            return(as.numeric(NA))})
+            m <- sqrt(as.numeric(t(mar) %*% mar))
             if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
             Rs12 <- eigRs$vectors %*% diag(eigRs$values^(-0.5)) %*% t(eigRs$vectors)
@@ -283,21 +275,15 @@ setMethod("cnfa",
             s <- Re(eigen(H)$values)[-cZ]
             s.p <- (t(mar) %*% Rg %*% mar) / (t(mar) %*% Rs %*% mar)
             s <- c(s.p, s)
-            s.p <- abs(s)/sum(abs(s))
+            s.p <- abs(s) / sum(abs(s))
             v <- Re(eigen(H)$vectors)
             co <- matrix(nrow = cZ, ncol = cZ)
             u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
             norw <- sqrt(diag(t(u) %*% u))
             co[, -1] <- sweep(u, 2, norw, "/")
-            if(is.na(m)) {
-              co[, 1] <- mar / norm(mar, "2")
-              sf <- as.numeric(abs(co) %*% s.p)
-              sens <- as.numeric(NA)
-            } else {
-              co[, 1] <- mar / m
-              sf <- as.numeric(abs(co) %*% s.p)
-              sens <- sqrt(as.numeric(sf %*% solve(Rg) %*% sf))
-            }
+            co[, 1] <- mar / m
+            sf <- sqrt(as.numeric(abs(co) %*% s))
+            sens <- sqrt(as.numeric(t(sf) %*% sf)/cZ)
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x) & !parallel) {
               s.ras <- brick(x)
@@ -312,7 +298,7 @@ setMethod("cnfa",
             rownames(co) <- names(sf) <- names(x)
 
             cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
-                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
+                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat.ras)
             return(cnfa)
           }
 )
@@ -377,10 +363,7 @@ setMethod("cnfa",
             }
 
             cZ <- nlayers(x)
-            m <- tryCatch(sqrt(as.numeric(t(mar) %*% solve(Rg, tol = 1e-10) %*% mar)),
-                          error = function(e){
-                            message("Warning: global covariance matrix not invertible. Overall marginality and sensitivity will not be computed.")
-                            return(as.numeric(NA))})
+            m <- sqrt(as.numeric(t(mar) %*% mar))
             if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
             Rs12 <- eigRs$vectors %*% diag(eigRs$values^(-0.5)) %*% t(eigRs$vectors)
@@ -391,20 +374,15 @@ setMethod("cnfa",
             s <- Re(eigen(H)$values)[-cZ]
             s.p <- (t(mar) %*% Rg %*% mar) / (t(mar) %*% Rs %*% mar)
             s <- c(s.p, s)
-            s.p <- abs(s)/sum(abs(s))
+            s.p <- abs(s) / sum(abs(s))
             v <- Re(eigen(H)$vectors)
             co <- matrix(nrow = cZ, ncol = cZ)
             u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
             norw <- sqrt(diag(t(u) %*% u))
             co[, -1] <- sweep(u, 2, norw, "/")
-            sf <- as.numeric( abs(co) %*% s.p )
-            if(is.na(m)) {
-              co[, 1] <- mar / norm(mar, "2")
-              sens <- as.numeric(NA)
-            } else {
-              co[, 1] <- mar / m
-              sens <- sqrt(as.numeric(sf %*% solve(Rg) %*% sf))
-            }
+            co[, 1] <- mar / m
+            sf <- sqrt(as.numeric(abs(co) %*% s))
+            sens <- sqrt(as.numeric(t(sf) %*% sf)/cZ)
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x) & !parallel){
               s.ras <- brick(x)
@@ -419,7 +397,7 @@ setMethod("cnfa",
             rownames(co) <- names(sf) <- names(x)
 
             cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
-                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat.ras)
+                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat.ras)
             return(cnfa)
           }
 )

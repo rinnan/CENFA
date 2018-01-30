@@ -30,13 +30,12 @@ sensitivity_map <- function(cnfa, parallel = FALSE, n = 1, filename = "", ...){
   ras <- cnfa@ras
   m <- cnfa@mf
   s <- cnfa@sf
-
   filename <- trim(filename)
   if (!canProcessInMemory(ras) && filename == '') {
     filename <- rasterTmpFile()
   }
 
-  f1 <- function(x) abs(x - m) %*% s
+  f1 <- function(x) sqrt(abs(x - m) %*%  s)
 
   if(parallel) {
     beginCluster(n, exclude = "CENFA")

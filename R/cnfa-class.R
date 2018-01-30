@@ -15,13 +15,14 @@
 #'   found on each factor
 #' @slot co p x p matrix of standardized variable loadings
 #' @slot cov p x p species covariance matrix
+#' @slot g.cov p x p global covariance matrix
 #' @slot ras RasterBrick of transformed climate values, with p layers
 #' @slot weights Raster layer of weights used for CNFA calculation
 #'
 #' @export
 
 setClass("cnfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", sf = "numeric",
-                           sensitivity = "numeric", p.spec = "numeric", co = "matrix", cov = "matrix", ras = "Raster", weights = "Raster"))
+                           sensitivity = "numeric", p.spec = "numeric", co = "matrix", cov = "matrix", g.cov = "matrix", ras = "Raster", weights = "Raster"))
 
 setMethod ("show", "cnfa", function(object){
   if (!inherits(object, "cnfa"))

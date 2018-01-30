@@ -31,6 +31,8 @@ found on each factor}
 
 \item{\code{cov}}{p x p species covariance matrix}
 
+\item{\code{g.cov}}{p x p global covariance matrix}
+
 \item{\code{ras}}{RasterBrick of transformed climate values, with p layers}
 
 \item{\code{weights}}{Raster layer of weights used for CNFA calculation}

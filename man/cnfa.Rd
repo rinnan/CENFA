@@ -71,6 +71,8 @@ Returns an S4 object of class \code{cnfa} with the following components:
   found in each CNFA factor}
   \item{co}{A p x p matrix describing the amount of marginality and specialization
    on each CNFA factor. (The marginality column is normalized)}
+  \item{cov}{p x p species covariance matrix}
+  \item{g.cov}{p x p global covariance matrix}
   \item{ras}{RasterBrick of transformed climate values, with p layers}
   \item{weights}{Raster layer of weights used for CNFA calculation}
 }
