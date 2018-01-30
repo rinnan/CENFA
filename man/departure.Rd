@@ -3,7 +3,6 @@
 \docType{methods}
 \name{departure}
 \alias{departure}
-\alias{departure-method}
 \alias{departure,GLdeparture,missing,cnfa-method}
 \alias{departure,GLdeparture,missing,Spatial-method}
 \alias{departure,Raster,Raster,cnfa-method}
