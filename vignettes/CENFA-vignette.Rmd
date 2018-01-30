@@ -6,7 +6,8 @@ output:
 ```{r, echo = FALSE, message=FALSE}
 knitr::opts_chunk$set(
   comment = "#>",
-  fig.align = 'center'
+  fig.align = 'center',
+  fig.path = "../inst/doc/"
 )
 library(CENFA)
 ```

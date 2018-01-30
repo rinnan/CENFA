@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-inst/doc
 README.Rmd
 CENFA.Rproj
 cran-comments.md
