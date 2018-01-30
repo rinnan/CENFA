@@ -4,7 +4,7 @@
 #' factors in a factor analysis. This is done by comparing the eigenvalues of
 #' each factor with those expected from a broken-stick distribution.
 #'
-#' @param eigs numeric. Vector of eigenvalues.
+#' @param eigs numeric. Vector of eigenvalues
 #'
 #' @examples
 #' mod1 <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")

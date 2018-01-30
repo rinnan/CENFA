@@ -105,6 +105,7 @@
 #' @seealso \code{\link{GLcenfa}}, \code{\link{enfa}}
 #'
 #' @export
+#' @name cnfa
 #'
 #' @importFrom stats cov
 #' @importFrom methods as

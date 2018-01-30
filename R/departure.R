@@ -74,7 +74,6 @@ setGeneric("departure", function(x, y, s.dat, ...) {
 })
 
 #' @rdname departure
-#' @export
 setMethod("departure",
           signature(x = "GLdeparture", y = "missing", s.dat = "cnfa"),
           function(x, s.dat, filename = '', ...){
@@ -116,7 +115,6 @@ setMethod("departure",
 )
 
 #' @rdname departure
-#' @export
 setMethod("departure",
           signature(x = "GLdeparture", y = "missing", s.dat = "Spatial"),
           function(x, s.dat, field, fun = "last", filename = '', ...){
@@ -158,7 +156,6 @@ setMethod("departure",
 )
 
 #' @rdname departure
-#' @export
 setMethod("departure",
           signature(x = "Raster", y = "Raster", s.dat = "cnfa"),
           function(x, y, s.dat, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...) {
@@ -173,7 +170,6 @@ setMethod("departure",
 )
 
 #' @rdname departure
-#' @export
 setMethod("departure",
           signature(x = "Raster", y = "Raster", s.dat = "Spatial"),
           function(x, y, s.dat, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...) {

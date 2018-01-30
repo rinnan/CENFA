@@ -7,7 +7,7 @@
 brStick(eigs)
 }
 \arguments{
-\item{eigs}{numeric. Vector of eigenvalues.}
+\item{eigs}{numeric. Vector of eigenvalues}
 }
 \value{
 Returns the number of significant factors.
