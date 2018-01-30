@@ -1,17 +1,5 @@
 
--   [CENFA: Climate and Ecological Niche Factor Analysis](#cenfa-climate-and-ecological-niche-factor-analysis)
-    -   [Installation](#installation)
-    -   [Examples](#examples)
-        -   [`enfa`](#enfa)
-        -   [`scatter`](#scatter)
-        -   [`cnfa`](#cnfa)
-        -   [`departure`](#departure)
-        -   [`vulnerability`](#vulnerability)
-    -   [Useful raster functions](#useful-raster-functions)
-        -   [`parScale`](#parscale)
-        -   [`parCov`](#parcov)
-        -   [`map`](#map)
-    -   [Guidelines for contributing](#guidelines-for-contributing)
+[![Build Status](https://travis-ci.org/rinnan/CENFA.svg?branch=master)](https://travis-ci.org/rinnan/CENFA)
 
 CENFA: Climate and Ecological Niche Factor Analysis
 ===================================================

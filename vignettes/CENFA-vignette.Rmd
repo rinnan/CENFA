@@ -11,6 +11,8 @@ knitr::opts_chunk$set(
 )
 library(CENFA)
 ```
+[![Build Status](https://travis-ci.org/rinnan/CENFA.svg?branch=master)](https://travis-ci.org/rinnan/CENFA)
+
 # An introduction to the `CENFA` package
 
 `Version: 0.1.0`
