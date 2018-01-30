@@ -3,6 +3,8 @@
 #' This function quantifies the amount of change between historical and future
 #' climate conditions inside a species' habitat.
 #'
+#' @aliases departure-method
+#'
 #' @param x Raster* object, typically a brick or stack of historical climate
 #'   raster layers or a brick of absolute differences (see Details)
 #' @param y  Raster* object, future climate values with the same layers as \code{x}
