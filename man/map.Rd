@@ -8,7 +8,7 @@
 \usage{
 map(x, ...)
 
-\S4method{map}{RasterLayer}(x, type = "linear", n, legend.args, ...)
+\S4method{map}{RasterLayer}(x, type = "linear", n, ...)
 }
 \arguments{
 \item{x}{a RasterLayer}
@@ -18,9 +18,6 @@ map(x, ...)
 \item{type}{character. Possible values are "linear", "stretch", and "sd"}
 
 \item{n}{number of standard deviations to include if \code{type = "sd"}}
-
-\item{legend.args}{a list of arguments to pass on to adjust the plot legend.
-See \code{\link[fields]{image.plot}} for possible options}
 }
 \description{
 A plotting function that provides methods for improving the contrast

@@ -3,7 +3,7 @@
 #' Performs climate-niche factor analysis using climate raster data and species
 #' presence data.
 #'
-#' @aliases print.cnfa, show.cnfa
+#' @aliases print.cnfa show.cnfa
 #'
 #' @param x Raster* object, typically a brick or stack with p climate
 #'   raster layers, or a \code{GLcenfa} object

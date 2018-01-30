@@ -7,8 +7,6 @@
 #' @param x a RasterLayer
 #' @param type character. Possible values are "linear", "stretch", and "sd"
 #' @param n number of standard deviations to include if \code{type = "sd"}
-#' @param legend.args a list of arguments to pass on to adjust the plot legend.
-#'   See \code{\link[fields]{image.plot}} for possible options
 #' @param ... Additional arguments for raster::plot
 #'
 #' @details

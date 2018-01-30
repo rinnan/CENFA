@@ -3,8 +3,8 @@
 \docType{data}
 \name{tree-data}
 \alias{tree-data}
-\alias{ABPR,}
-\alias{QUGA,}
+\alias{ABPR}
+\alias{QUGA}
 \alias{SESE}
 \alias{ABPR
 Historical range map for the noble fir (\emph{Abies procera}).}

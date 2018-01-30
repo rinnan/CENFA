@@ -3,7 +3,7 @@
 \docType{methods}
 \name{cnfa}
 \alias{cnfa}
-\alias{print.cnfa,}
+\alias{print.cnfa}
 \alias{show.cnfa}
 \alias{cnfa,GLcenfa,Spatial-method}
 \alias{cnfa,Raster,Spatial-method}

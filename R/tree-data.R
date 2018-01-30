@@ -3,7 +3,7 @@
 #' Some example datasets of historical tree distributions, from "Atlas of United
 #' States Trees" by Elbert L. Little, Jr.
 #'
-#' @aliases ABPR, QUGA, SESE
+#' @aliases ABPR QUGA SESE
 #' @format SpatialPolygonDataFrame
 #' @name tree-data
 #' @source \url{www.usgs.gov}
