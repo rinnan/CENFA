@@ -7,7 +7,7 @@
 #'
 #' @param x Raster* object, typically a brick or stack with p climate
 #'   raster layers, or a \code{GLcenfa} object
-#' @param s.dat SpatialPolygons*, SpatialPoints*, or sf object indicating
+#' @param s.dat RasterLayer, SpatialPolygons*, or SpatialPoints* object indicating
 #'   species presence
 #' @param field field of \code{s.dat} that specifies presence or abundance. This
 #'   is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}
@@ -264,29 +264,28 @@ setMethod("cnfa",
           }
 )
 
-#' @rdname cnfa
-setMethod("cnfa",
-          signature(x = "Raster", s.dat = "sf"),
-          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
-            if (!requireNamespace("sf")) {
-              warning('cannot do this because sf is not available')
-            }
-
-            call <- sys.call(sys.parent())
-
-            if(!identicalCRS(x, s.dat)) stop("projections do not match")
-            if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
-            if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
-
-            s.dat <- as(s.dat, "Spatial")
-            if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('geometry of "s.dat" should be of class "sfc_POLYGON", "sfc_MULTIPOLYGON", "sfc_POINT", or "sfc_MULTIPOINT"')
-
-            s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
-            if (scale) {
-              if (!quiet) cat("Scaling raster data...\n")
-              x <- GLcenfa(x = x, center = T, scale = T, quiet = quiet, parallel = parallel, n = n)
-            } else x <- GLcenfa(x = x, center = F, scale = F, quiet = quiet, parallel = parallel, n = n)
-
-            cnfa(x = x, s.dat = s.dat.ras, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
-          }
-)
+# setMethod("cnfa",
+#           signature(x = "Raster", s.dat = "sf"),
+#           function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+#             if (!requireNamespace("sf")) {
+#               warning('cannot do this because sf is not available')
+#             }
+#
+#             call <- sys.call(sys.parent())
+#
+#             if(!identicalCRS(x, s.dat)) stop("projections do not match")
+#             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
+#             if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
+#
+#             s.dat <- as(s.dat, "Spatial")
+#             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('geometry of "s.dat" should be of class "sfc_POLYGON", "sfc_MULTIPOLYGON", "sfc_POINT", or "sfc_MULTIPOINT"')
+#
+#             s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
+#             if (scale) {
+#               if (!quiet) cat("Scaling raster data...\n")
+#               x <- GLcenfa(x = x, center = T, scale = T, quiet = quiet, parallel = parallel, n = n)
+#             } else x <- GLcenfa(x = x, center = F, scale = F, quiet = quiet, parallel = parallel, n = n)
+#
+#             cnfa(x = x, s.dat = s.dat.ras, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
+#           }
+# )

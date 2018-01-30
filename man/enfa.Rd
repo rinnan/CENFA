@@ -9,7 +9,6 @@
 \alias{enfa,GLcenfa,Spatial-method}
 \alias{enfa,Raster,Raster-method}
 \alias{enfa,Raster,Spatial-method}
-\alias{enfa,Raster,sf-method}
 \title{Ecological-niche factor analysis}
 \usage{
 enfa(x, s.dat, ...)
@@ -23,17 +22,14 @@ enfa(x, s.dat, ...)
 \S4method{enfa}{Raster,Raster}(x, s.dat, scale = TRUE, filename = "",
   quiet = TRUE, parallel = FALSE, n = 1, ...)
 
-\S4method{enfa}{Raster,Spatial}(x, s.dat, scale = TRUE, filename = "",
-  quiet = TRUE, parallel = FALSE, n = 1, ...)
-
-\S4method{enfa}{Raster,sf}(x, s.dat, scale = TRUE, filename = "",
-  quiet = TRUE, parallel = FALSE, n = 1, ...)
+\S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
+  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers,
 or a \code{GLcenfa} object}
 
-\item{s.dat}{SpatialPolygons*, SpatialPoints*, or sf object indicating
+\item{s.dat}{RasterLayer, SpatialPolygons*, or SpatialPoints* object indicating
 species presence}
 
 \item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
