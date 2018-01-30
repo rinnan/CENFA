@@ -35,18 +35,29 @@ setGeneric("map", function(x, ...) {
 #' @rdname map
 setMethod("map",
           signature(x = "RasterLayer"),
-          function(x, type = "linear", n, legend.args, ...) {
+          function(x, type = "linear", n, ...) {
 
-            if(type == "stretch") y <- .stretch(x, type = "hist.equal")
-            if(type == "linear") y <- x
-            if(type == "sd") y <- .stretch(x, type = "sd", n = n)
+            xx <- pretty(values(x), 2)
 
-            if(missing(legend.args)) legend.args <- list()
-            legend.args$x <- x
-            legend.args$legend.only <- TRUE
-
-            plot(y, legend = F, ...)
-            do.call(plot, args = legend.args)
+            if(type == "stretch") {
+              y <- .stretch(x, type = "hist.equal")
+              plot(y[[1]], breaks = .quantile_breaks(y[[1]]),
+                   axis.args = list(at = y[[2]],
+                                    labels = xx), ...)
+            }
+            if(type == "linear") {
+              y <- .stretch(x, type = "linear")
+              plot(y[[1]],
+                   axis.args = list(at = y[[2]],
+                                    labels = xx), ...)
+            }
+            if(type == "sd") {
+              y <- .stretch(x, type = "sd", n = n)
+              f <- duplicated(y[[2]])
+              plot(y[[1]],
+                   axis.args = list(at = y[[2]][!f],
+                                    labels = xx[!f]), ...)
+            }
           }
 )
 
@@ -56,7 +67,9 @@ setMethod("map",
   if (type == "hist.equal") {
     ecdfun <- stats::ecdf(getValues(x))
     y <- calc(x, fun = function(x) round(ecdfun(x)*255, 0))
-    return(y)
+    v <- pretty(values(x), 2)
+    vv <- round(ecdfun(v)*255, 0)
+    return(list(y, vv))
   } else if (type == "sd") {
     if (missing(n)) stop("number of standard deviations not specified")
     x.sd <- cellStats(x, sd)
@@ -69,7 +82,25 @@ setMethod("map",
       tt <- (y - x.min) / (x.max - x.min)
       return(tt*255)
     }
-    return(calc(x, fun = function(x) sdfun(x)))
+    y <- calc(x, fun = function(x) sdfun(x))
+    v <- pretty(values(x), 2)
+    vv <- sdfun(v)
+    return(list(y, vv))
+  } else if (type == "linear") {
+    y <- x
+    vv <- pretty(values(x), 2)
+    return(list(y, vv))
   }
 
+}
+
+#' @keywords internal
+.quantile_breaks <- function(ras){
+  qts <- quantile(ras)
+  seq1 <- seq(qts[1], qts[2], length.out = 65)
+  seq2 <- seq(qts[2], qts[3], length.out = 65)
+  seq3 <- seq(qts[3], qts[4], length.out = 65)
+  seq4 <- seq(qts[4], qts[5], length.out = 64)
+  brks <- c(seq1, seq2[-1], seq3[-1], seq4[-1])
+  brks
 }
