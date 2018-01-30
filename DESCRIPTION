@@ -4,12 +4,12 @@ Title: Climate and Ecological Niche Factor Analysis
 Version: 0.1.0
 Date: 2018-1-26
 Author: D. Scott Rinnan
-Maintainer: Who to complain to <rinnan@uw.edu>
-Description: Performs climate- and ecological-niche factor analysis of spatial data. Processing of large files and parallelization is supported.
+Maintainer: D. Scott Rinnan <rinnan@u.washington.edu>
+Description: Tools for climate- and ecological-niche factor analysis of spatial data, including methods for visualization of spatial variability of species sensitivity, exposure, and vulnerability to climate change. Processing of large files and parallelization is supported.
 Depends:
         R (>= 3.0.0),
-	raster,
-        sp
+	raster (>= 2.6.7),
+        sp (>= 1.2.7)
 Imports:
         pbapply, 
         methods,
@@ -19,7 +19,6 @@ Imports:
         grDevices,
         magrittr,
         Rcpp (>= 0.12.14),
-        sf,
         snow,
         devtools
 LinkingTo: Rcpp
@@ -27,7 +26,8 @@ License: GPL (>= 3)
 LazyData: TRUE
 RoxygenNote: 6.0.1
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    sf
 VignetteBuilder: knitr
 Collate: 
     'CENFA.R'
@@ -36,22 +36,22 @@ Collate:
     'GLdeparture-class.R'
     'GLdeparture.R'
     'RcppExports.R'
-    'enfa-class.R'
-    'cnfa-class.R'
-    'biplot.R'
     'brStick.R'
     'calc.R'
     'climdat.fut.R'
     'climdat.hist.R'
+    'cnfa-class.R'
     'cnfa.R'
     'covij.R'
     'departure-class.R'
     'departure.R'
+    'enfa-class.R'
     'enfa.R'
     'exposure_map.R'
     'map.R'
     'parCov.R'
     'parScale.R'
+    'scatter.R'
     'sensitivity_map.R'
     'slots.R'
     'tree-data.R'
