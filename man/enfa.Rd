@@ -5,21 +5,29 @@
 \alias{enfa}
 \alias{print.enfa}
 \alias{show.enfa}
+\alias{enfa,GLcenfa,Raster-method}
 \alias{enfa,GLcenfa,Spatial-method}
+\alias{enfa,Raster,Raster-method}
 \alias{enfa,Raster,Spatial-method}
 \alias{enfa,Raster,sf-method}
 \title{Ecological-niche factor analysis}
 \usage{
 enfa(x, s.dat, ...)
 
+\S4method{enfa}{GLcenfa,Raster}(x, s.dat, filename = "", quiet = TRUE,
+  parallel = FALSE, n = 1, ...)
+
 \S4method{enfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
   filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
 
-\S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
+\S4method{enfa}{Raster,Raster}(x, s.dat, scale = TRUE, filename = "",
+  quiet = TRUE, parallel = FALSE, n = 1, ...)
 
-\S4method{enfa}{Raster,sf}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
+\S4method{enfa}{Raster,Spatial}(x, s.dat, scale = TRUE, filename = "",
+  quiet = TRUE, parallel = FALSE, n = 1, ...)
+
+\S4method{enfa}{Raster,sf}(x, s.dat, scale = TRUE, filename = "",
+  quiet = TRUE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers,
@@ -29,14 +37,6 @@ or a \code{GLcenfa} object}
 species presence}
 
 \item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
-
-\item{field}{field of \code{s.dat} that specifies presence or abundance. This
-is equivalent to the \code{field} argument in the \code{raster} package}
-
-\item{fun}{function or character. Determines what values to assign to cells
-with multiple spatial features, similar to the \code{fun} argument in
-\code{\link[raster]{rasterize}}.  Options are 'first', 'last' (default),
-and 'count' (see Details)}
 
 \item{filename}{character. Optional filename to save the Raster* output to
 file. If this is not provided, a temporary file will be created for large \code{x}}
@@ -48,6 +48,14 @@ suppressed}
 calculation of the covariance matrices}
 
 \item{n}{numeric. Number of CPU cores to utilize for parallel processing}
+
+\item{field}{field of \code{s.dat} that specifies presence or abundance. This
+is equivalent to the \code{field} argument in the \code{raster} package}
+
+\item{fun}{function or character. Determines what values to assign to cells
+with multiple spatial features, similar to the \code{fun} argument in
+\code{\link[raster]{rasterize}}.  Options are 'first', 'last' (default),
+and 'count' (see Details)}
 
 \item{scale}{logical. If \code{TRUE} then the values of the Raster* object will
 be centered and scaled. Depending on the resolution of the climate data and
