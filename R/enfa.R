@@ -228,7 +228,7 @@ setMethod("enfa",
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "Raster", s.dat = "Spatial"),
-          function(x, s.dat, scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
 
@@ -250,7 +250,7 @@ setMethod("enfa",
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "Raster", s.dat = "sf"),
-          function(x, s.dat, scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
 
