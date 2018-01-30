@@ -111,27 +111,27 @@ mod.cnfa
 #> 
 #> Sensitivity factor: 
 #>   MDR   ISO    TS HMmax CMmin   PWM   PDM    PS   PWQ   PDQ 
-#>  0.38  0.26  0.37  0.31  0.36  0.30  0.12  0.17  0.27  0.08 
+#>  3.33  2.68  3.20  3.00  3.13  2.85  1.83  2.08  2.67  1.50 
 #> 
 #> Percentage of specialization contained in CNFA factors: 
 #>  Marg Spec1 Spec2 Spec3 Spec4 Spec5 Spec6 Spec7 Spec8 Spec9 
 #> 17.36 30.24 16.32 10.20  8.64  6.80  4.33  2.61  2.30  1.21 
 #> 
-#> Overall marginality:  1.191 
+#> Overall marginality:  1.654 
 #> 
-#> Overall sensitivity:  9.213 
+#> Overall sensitivity:  2.691 
 #> 
 #> Significant CNFA factors: 
 #>        Marg Spec1 Spec2 Spec3
-#> PWQ    0.61 -0.03  0.19  0.25
-#> PWM    0.60  0.08 -0.26 -0.27
-#> PS     0.59 -0.12  0.11  0.02
-#> TS    -0.56  0.34  0.54 -0.39
-#> CMmin  0.56  0.54  0.00 -0.49
-#> ISO    0.43 -0.11  0.46  0.05
-#> MDR   -0.11  0.46 -0.59 -0.38
-#> PDM   -0.11 -0.10 -0.09 -0.03
-#> PDQ    0.11  0.00  0.11  0.04
+#> PWQ    0.44 -0.03  0.19  0.25
+#> PWM    0.43  0.08 -0.26 -0.27
+#> PS     0.42 -0.12  0.11  0.02
+#> TS    -0.41  0.34  0.54 -0.39
+#> CMmin  0.40  0.54  0.00 -0.49
+#> ISO    0.31 -0.11  0.46  0.05
+#> MDR   -0.08  0.46 -0.59 -0.38
+#> PDM   -0.08 -0.10 -0.09 -0.03
+#> PDQ    0.08  0.00  0.11  0.04
 #> HMmax -0.02 -0.58  0.07  0.57
 ```
 
@@ -156,7 +156,7 @@ dep
 #>   MDR   ISO    TS HMmax CMmin   PWM   PDM    PS   PWQ   PDQ 
 #>  0.05  0.10  0.22  0.53  0.44  0.23  0.12  0.38  0.23  0.16 
 #> 
-#> Overall departure: 2.317
+#> Overall departure: 0.909
 ```
 
 The departure factor tells us the average amount of change that is expected in each climate variable across the species' range. Using the `exposure_map` function, we can create a habitat map that identifies where we expect the species to be most exposed to climate change.
@@ -178,9 +178,9 @@ vuln
 #> 
 #> Vulnerability factor: 
 #>   MDR   ISO    TS HMmax CMmin   PWM   PDM    PS   PWQ   PDQ 
-#>  0.14  0.16  0.28  0.40  0.40  0.26  0.12  0.26  0.25  0.11 
+#>  0.14  0.16  0.27  0.40  0.38  0.25  0.12  0.24  0.24  0.11 
 #> 
-#> Overall vulnerability: 0.9049
+#> Overall vulnerability: 0.792
 ```
 
 Using the `vulnerability_map` function, we can create a habitat map that identifies where we expect the species to be most vulnerable to climate change.
