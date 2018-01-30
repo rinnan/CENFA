@@ -45,7 +45,7 @@ NULL
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("500womenscientists.org")
+  packageStartupMessage("\nSupport women in science: 500womenscientists.org")
 }
 
 .onUnload <- function (libpath) {
