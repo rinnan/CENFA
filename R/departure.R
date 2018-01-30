@@ -45,7 +45,7 @@
 #'   \item{df}{Departure factor. Vector of length p that describes the amount of
 #'    departure between future and historical conditions for each climate variable}
 #'   \item{departure}{Magnitude of the departure factor}
-#'   \item{g.cov}{g.cov p x p historical global covariance matrix}
+#'   \item{g.cov}{p x p historical global covariance matrix}
 #'   \item{ras}{RasterBrick of climate departures, with p layers}
 #'   \item{weights}{Raster layer of weights used for departure calculation}
 #' }
@@ -98,7 +98,7 @@ setMethod("departure",
             x.dif.w <- overlay(x = x.dif, y = w, fun = function(x,y) {return(x*y)})
             d <- cellStats(x.dif.w, sum)
             names(d) <- nm
-            D <- tryCatch(sqrt(as.numeric(t(d) %*% solve(Rg, tol = 1e-10) %*% d)),
+            D <- tryCatch(sqrt(as.numeric(t(d) %*% d)),
                           error = function(e){
                             message("Warning: global covariance matrix not invertible. Overall departure will not be computed.")
                             return(as.numeric(NA))})
@@ -139,7 +139,7 @@ setMethod("departure",
             x.dif.w <- overlay(x = x.dif, y = w, fun = function(x,y) {return(x*y)})
             d <- cellStats(x.dif.w, sum)
             names(d) <- nm
-            D <- tryCatch(sqrt(as.numeric(t(d) %*% solve(Rg, tol = 1e-10) %*% d)),
+            D <- tryCatch(sqrt(as.numeric(t(d) %*% d)),
                           error = function(e){
                             message("Warning: global covariance matrix not invertible. Overall departure will not be computed.")
                             return(as.numeric(NA))})

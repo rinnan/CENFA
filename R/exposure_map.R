@@ -30,7 +30,6 @@ exposure_map <- function(dep, parallel = FALSE, n, filename = "", ...){
 
   ras <- dep@ras
   d <- dep@df
-
   filename <- trim(filename)
   if (!canProcessInMemory(ras) && filename == '') {
     filename <- rasterTmpFile()
