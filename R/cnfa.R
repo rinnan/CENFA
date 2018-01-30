@@ -115,30 +115,20 @@ setGeneric("cnfa", function(x, s.dat, ...){
 
 #' @rdname cnfa
 setMethod("cnfa",
-          signature(x = "GLcenfa", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+          signature(x = "GLcenfa", s.dat = "Raster"),
+          function(x, s.dat, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
 
-            if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
+            if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
             ras <- raster(x)
             ext <- extent(ras)
             ext.s <- extent(s.dat)
             if (is.null(intersect(ext, ext.s))) stop("climate and species data do not overlap")
             if (raster::union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
-            if(parallel){
-              if(n < 1 | !is.numeric(n)) {
-                n <- parallel::detectCores() - 1
-                message('incorrect number of cores specified, using ', n)
-              } else if(n > parallel::detectCores()) {
-                n <- parallel::detectCores() - 1
-                message('too many cores specified, using ', n)
-              }
-            }
 
             x.crop <- crop(ras, ext.s)
-            s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun)
 
             filename <- trim(filename)
             if (!canProcessInMemory(x.crop) && filename == '') {
@@ -146,11 +136,11 @@ setMethod("cnfa",
             }
 
             if (canProcessInMemory(x.crop) & !parallel) {
-              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x.crop))))
+              pres <- which(!is.na(values(s.dat)) & !is.na(values(max(x.crop))))
               S <- values(x.crop)[pres, ]
               nS <- nrow(S)
               Rg <- x@cov
-              p <- values(s.dat.ras)[pres]
+              p <- values(s.dat)[pres]
               p.sum <- sum(p)
               mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
               if (!quiet) cat("Calculating species covariance matrix...\n")
@@ -158,14 +148,14 @@ setMethod("cnfa",
               DpSm <- apply(Sm, 2, function(x) x * p)
               Rs <- crossprod(Sm, DpSm) * 1 / (p.sum - 1)
             } else {
-              x.mask <- mask(x.crop, s.dat.ras)
+              x.mask <- mask(x.crop, s.dat)
               Rg <- x@cov
-              p.sum <- cellStats(s.dat.ras, sum)
-              DpS <- x.mask * s.dat.ras
+              p.sum <- cellStats(s.dat, sum)
+              DpS <- x.mask * s.dat
               mar <- cellStats(DpS, sum) / p.sum
               if (!quiet) cat("Calculating species covariance matrix...\n")
               Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, quiet = T)
-              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n, quiet = quiet)
+              Rs <- parCov(x = Sm, w = s.dat, parallel = parallel, n = n, quiet = quiet)
             }
 
             cZ <- nlayers(ras)
@@ -203,8 +193,52 @@ setMethod("cnfa",
             rownames(co) <- names(sf) <- names(ras)
 
             cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
-                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat.ras)
+                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat)
             return(cnfa)
+          }
+)
+
+#' @rdname cnfa
+setMethod("cnfa",
+          signature(x = "GLcenfa", s.dat = "Spatial"),
+          function(x, s.dat, field, fun = "last", filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+
+            call <- sys.call(sys.parent())
+
+            if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
+            if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
+            ras <- raster(x)
+            ext <- extent(ras)
+            ext.s <- extent(s.dat)
+            if (is.null(intersect(ext, ext.s))) stop("climate and species data do not overlap")
+            if (raster::union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
+
+            x.crop <- crop(ras, ext.s)
+            s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun)
+
+            cnfa(x = x, s.dat = s.dat.ras, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
+          }
+)
+
+#' @rdname cnfa
+setMethod("cnfa",
+          signature(x = "Raster", s.dat = "Raster"),
+          function(x, s.dat, scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+
+            call <- sys.call(sys.parent())
+
+            if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
+            if(!identicalCRS(x, s.dat)) stop("projections do not match")
+            if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
+            if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
+
+            if (scale) {
+              if (!quiet) cat("Scaling raster data...\n")
+              #x <- parScale(x, center = T, scale = T, parallel = parallel, n = n, quiet = quiet)
+              x <- GLcenfa(x = x, center = T, scale = T, quiet = quiet, parallel = parallel, n = n)
+            } else x <- GLcenfa(x = x, center = F, scale = F, quiet = quiet, parallel = parallel, n = n)
+
+            cnfa(x = x, s.dat = s.dat, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
           }
 )
 
@@ -215,92 +249,18 @@ setMethod("cnfa",
 
             call <- sys.call(sys.parent())
 
-            if (! inherits(x, 'Raster')) stop('"x" should be a "Raster*" object')
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
             if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
 
-            s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)#, background = 1)
-            # temp <- which(values(s.dat.ras) == 1) %>% sample(10000)
-            # values(s.dat.ras)[temp] <- 0
-
-            if(scale) {
+            s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
+            if (scale) {
               if (!quiet) cat("Scaling raster data...\n")
-              x <- parScale(x, center = T, scale = T, parallel = parallel, n = n, quiet = quiet)
-            }
+              x <- GLcenfa(x = x, center = T, scale = T, quiet = quiet, parallel = parallel, n = n)
+            } else x <- GLcenfa(x = x, center = F, scale = F, quiet = quiet, parallel = parallel, n = n)
 
-            filename <- trim(filename)
-            if (!canProcessInMemory(x) && filename == '') {
-              filename <- rasterTmpFile()
-            }
-
-            if(canProcessInMemory(x) & !parallel){
-              gpres <- which(!is.na(values(max(x))))
-              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x))))
-              Z <- values(x)[gpres, ]
-              S <- values(x)[pres, ]
-              nZ <- nrow(Z)
-              nS <- nrow(S)
-              if (!quiet) cat("Calculating global covariance matrix...\n")
-              Rg <- crossprod(Z, Z)/(nZ - 1)
-              p <- values(s.dat.ras)[pres]
-              p.sum <- sum(p)
-              mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
-              if (!quiet) cat("Calculating species covariance matrix...\n")
-              Sm <- sweep(S, 2, mar)
-              DpSm <- apply(Sm, 2, function(x) x * p)
-              Rs <- crossprod(Sm, DpSm) * 1 / (p.sum - 1)
-            } else {
-              center <- cellStats(x, mean)
-              x.mask <- mask(x, s.dat.ras)
-              p.sum <- cellStats(s.dat.ras, sum)
-              DpS <- x.mask * s.dat.ras
-              mar <- cellStats(DpS, sum) / p.sum
-              if (!quiet) cat("Calculating global covariance matrix...\n")
-              Rg <- parCov(x, parallel = parallel, n = n, quiet = quiet)
-              if (!quiet) cat("Calculating species covariance matrix...\n")
-              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, quiet = T)
-              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n, quiet = quiet)
-            }
-
-            cZ <- nlayers(x)
-            m <- sqrt(as.numeric(t(mar) %*% mar))
-            if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
-            eigRs <- lapply(eigen(Rs), Re)
-            Rs12 <- eigRs$vectors %*% diag(eigRs$values^(-0.5)) %*% t(eigRs$vectors)
-            W <- Rs12 %*% Rg %*% Rs12
-            z <- Rs12 %*% mar
-            y <- z/sqrt(sum(z^2))
-            H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
-            s <- Re(eigen(H)$values)[-cZ]
-            s.p <- (t(mar) %*% Rg %*% mar) / (t(mar) %*% Rs %*% mar)
-            s <- c(s.p, s)
-            s.p <- abs(s) / sum(abs(s))
-            v <- Re(eigen(H)$vectors)
-            co <- matrix(nrow = cZ, ncol = cZ)
-            u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
-            norw <- sqrt(diag(t(u) %*% u))
-            co[, -1] <- sweep(u, 2, norw, "/")
-            co[, 1] <- mar / m
-            sf <- sqrt(as.numeric(abs(co) %*% s))
-            sens <- sqrt(as.numeric(t(sf) %*% sf)/cZ)
-            nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
-            if (canProcessInMemory(x) & !parallel) {
-              s.ras <- brick(x)
-              if (!quiet) cat("Creating factor rasters...")
-              values(s.ras)[pres, ] <- S %*% co
-              names(s.ras) <- nm
-            } else {
-              if (!quiet) cat("Creating factor rasters...")
-              s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
-            }
-            colnames(co) <- names(s.p) <- nm
-            rownames(co) <- names(sf) <- names(x)
-
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
-                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat.ras)
-            return(cnfa)
+            cnfa(x = x, s.dat = s.dat.ras, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
           }
 )
 
@@ -314,7 +274,6 @@ setMethod("cnfa",
 
             call <- sys.call(sys.parent())
 
-            if (! inherits(x, 'Raster')) stop('"x" should be a "Raster*" object')
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
             if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
@@ -323,83 +282,12 @@ setMethod("cnfa",
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('geometry of "s.dat" should be of class "sfc_POLYGON", "sfc_MULTIPOLYGON", "sfc_POINT", or "sfc_MULTIPOINT"')
 
             s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
-
-            if(scale) {
+            if (scale) {
               if (!quiet) cat("Scaling raster data...\n")
-              x <- parScale(x, center = T, scale = T, parallel = parallel, n = n, quiet = quiet)
-            }
+              x <- GLcenfa(x = x, center = T, scale = T, quiet = quiet, parallel = parallel, n = n)
+            } else x <- GLcenfa(x = x, center = F, scale = F, quiet = quiet, parallel = parallel, n = n)
 
-            filename <- trim(filename)
-            if (!canProcessInMemory(x) && filename == '') {
-              filename <- rasterTmpFile()
-            }
-
-            if(canProcessInMemory(x) & !parallel){
-              gpres <- which(!is.na(values(max(x))))
-              pres <- which(!is.na(values(s.dat.ras)) & !is.na(values(max(x))))
-              Z <- values(x)[gpres, ]
-              S <- values(x)[pres, ]
-              nZ <- nrow(Z)
-              nS <- nrow(S)
-              if (!quiet) cat("Calculating global covariance matrix...\n")
-              Rg <- crossprod(Z, Z)/(nZ - 1)
-              p <- values(s.dat.ras)[pres]
-              p.sum <- sum(p)
-              mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
-              if (!quiet) cat("Calculating species covariance matrix...\n")
-              Sm <- sweep(S, 2, mar)
-              DpSm <- apply(Sm, 2, function(x) x * p)
-              Rs <- crossprod(Sm, DpSm) / (p.sum - 1)
-            } else {
-              center <- cellStats(x, mean)
-              x.mask <- mask(x, s.dat.ras)
-              p.sum <- cellStats(s.dat.ras, sum)
-              DpS <- x.mask * s.dat.ras
-              mar <- cellStats(DpS, sum) / p.sum
-              if (!quiet) cat("Calculating global covariance matrix...\n")
-              Rg <- parCov(x, parallel = parallel, n = n, quiet = quiet)
-              if (!quiet) cat("Calculating species covariance matrix...\n")
-              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, quiet = T)
-              Rs <- parCov(x = Sm, w = s.dat.ras, parallel = parallel, n = n, quiet = quiet)
-            }
-
-            cZ <- nlayers(x)
-            m <- sqrt(as.numeric(t(mar) %*% mar))
-            if(max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
-            eigRs <- lapply(eigen(Rs), Re)
-            Rs12 <- eigRs$vectors %*% diag(eigRs$values^(-0.5)) %*% t(eigRs$vectors)
-            W <- Rs12 %*% Rg %*% Rs12
-            z <- Rs12 %*% mar
-            y <- z/sqrt(sum(z^2))
-            H <- (diag(cZ) - y %*% t(y)) %*% W %*% (diag(cZ) - y %*% t(y))
-            s <- Re(eigen(H)$values)[-cZ]
-            s.p <- (t(mar) %*% Rg %*% mar) / (t(mar) %*% Rs %*% mar)
-            s <- c(s.p, s)
-            s.p <- abs(s) / sum(abs(s))
-            v <- Re(eigen(H)$vectors)
-            co <- matrix(nrow = cZ, ncol = cZ)
-            u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
-            norw <- sqrt(diag(t(u) %*% u))
-            co[, -1] <- sweep(u, 2, norw, "/")
-            co[, 1] <- mar / m
-            sf <- sqrt(as.numeric(abs(co) %*% s))
-            sens <- sqrt(as.numeric(t(sf) %*% sf)/cZ)
-            nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
-            if (canProcessInMemory(x) & !parallel){
-              s.ras <- brick(x)
-              if (!quiet) cat("Creating factor rasters...")
-              values(s.ras)[pres, ] <- S %*% co
-              names(s.ras) <- nm
-            } else {
-              if (!quiet) cat("\nCreating factor rasters...")
-              s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
-            }
-            colnames(co) <- names(s.p) <- nm
-            rownames(co) <- names(sf) <- names(x)
-
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
-                                 sensitivity = sens, p.spec = s.p, co = co, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat.ras)
-            return(cnfa)
+            cnfa(x = x, s.dat = s.dat.ras, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
           }
 )
 

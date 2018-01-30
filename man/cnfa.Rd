@@ -5,15 +5,23 @@
 \alias{cnfa}
 \alias{print.cnfa}
 \alias{show.cnfa}
+\alias{cnfa,GLcenfa,Raster-method}
 \alias{cnfa,GLcenfa,Spatial-method}
+\alias{cnfa,Raster,Raster-method}
 \alias{cnfa,Raster,Spatial-method}
 \alias{cnfa,Raster,sf-method}
 \title{Climate-niche factor analysis}
 \usage{
 cnfa(x, s.dat, ...)
 
+\S4method{cnfa}{GLcenfa,Raster}(x, s.dat, filename = "", quiet = TRUE,
+  parallel = FALSE, n = 1, ...)
+
 \S4method{cnfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
   filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
+
+\S4method{cnfa}{Raster,Raster}(x, s.dat, scale = TRUE, filename = "",
+  quiet = TRUE, parallel = FALSE, n = 1, ...)
 
 \S4method{cnfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
   filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
@@ -30,14 +38,6 @@ species presence}
 
 \item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 
-\item{field}{field of \code{s.dat} that specifies presence or abundance. This
-is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}}
-
-\item{fun}{function or character. Determines what values to assign to cells
-with multiple spatial features, similar to the \code{fun} argument in
-\code{\link[raster]{rasterize}}.  Options are 'first', 'last' (default),
-and 'count' (see Details)}
-
 \item{filename}{character. Optional filename to save the Raster* output to
 file. If this is not provided, a temporary file will be created for large \code{x}}
 
@@ -48,6 +48,14 @@ suppressed}
 calculation of the covariance matrices}
 
 \item{n}{numeric. Number of CPU cores to utilize for parallel processing}
+
+\item{field}{field of \code{s.dat} that specifies presence or abundance. This
+is equivalent to the \code{field} argument in \code{\link[raster]{rasterize}}}
+
+\item{fun}{function or character. Determines what values to assign to cells
+with multiple spatial features, similar to the \code{fun} argument in
+\code{\link[raster]{rasterize}}.  Options are 'first', 'last' (default),
+and 'count' (see Details)}
 
 \item{scale}{logical. If \code{TRUE} then the values of \code{x} will get
 centered and scaled. Depending on the resolution of the climate data and
