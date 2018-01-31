@@ -228,8 +228,8 @@ The `stretchPlot` function provides a simple way to adjust the contrast of plots
 ``` r
 sm <- sensitivity_map(mod.cnfa)
 par(mfrow = c(1, 3), oma = c(1,1,1,1))
-stretchPlot(sm, main = "Linear")
-stretchPlot(sm, type = "stretch", main = "Histogram equalization")
+stretchPlot(sm, main = "linear")
+stretchPlot(sm, type = "hist.equal", main = "Histogram equalization")
 stretchPlot(sm, type = "sd", n = 2, main = "Standard deviation (n = 2)")
 ```
 
