@@ -50,6 +50,9 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 #' @importFrom foreach '%dopar%'
+#' @importFrom doSNOW registerDoSNOW
+#' @importFrom snow makeCluster clusterExport
+#' @importFrom parallel detectCores
 
 setGeneric("parCov", function(x, y, ...){
   standardGeneric("parCov")})
