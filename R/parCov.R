@@ -89,17 +89,17 @@ setMethod("parCov",
             if (parallel & n > 1) {
               on.exit(closeAllConnections())
               if(!is.numeric(n)) {
-                n <- min(parallel::detectCores() - 1, floor(s/2))
+                n <- min(detectCores() - 1, floor(s/2))
                 if (!quiet) message('incorrect number of cores specified, using ', n)
-              } else if(n > parallel::detectCores()) {
-                n <- min(parallel::detectCores() - 1, floor(s/2))
+              } else if(n > detectCores()) {
+                n <- min(detectCores() - 1, floor(s/2))
                 if (!quiet) message('too many cores specified, using ', n)
               }
               w <- w
-              cl <- snow::makeCluster(getOption("cl.cores", n))
-              snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
+              cl <- makeCluster(getOption("cl.cores", n))
+              clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
                                   envir = environment())
-              doSNOW::registerDoSNOW(cl)
+              registerDoSNOW(cl)
               if (!quiet) {
               pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
               progress <- function(n) setTxtProgressBar(pb, n)
