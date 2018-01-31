@@ -5,7 +5,7 @@ Version: 0.1.0
 Date: 2018-1-26
 Author: D. Scott Rinnan
 Maintainer: D. Scott Rinnan <rinnan@u.washington.edu>
-Description: Tools for climate- and ecological-niche factor analysis of spatial data, including methods for visualization of spatial variability of species sensitivity, exposure, and vulnerability to climate change. Processing of large files and parallelization is supported.
+Description: Tools for climate- and ecological-niche factor analysis of spatial data, including methods for visualization of spatial variability of species sensitivity, exposure, and vulnerability to climate change. Processing of large files and parallel methods are supported.
 Depends:
         R (>= 3.0.0)
 Imports:
