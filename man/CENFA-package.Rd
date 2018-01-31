@@ -6,13 +6,16 @@
 \title{Tools for climate- and ecological-niche factor analysis}
 \description{
 \code{CENFA} provides tools for performing ecological-niche factor analysis
-(ENFA) and climate-niche factor analysis (CNFA). This package was created with
-three goals in mind:
+(ENFA) and climate-niche factor analysis (CNFA).
 }
 \details{
+This package was created with three goals in mind:
+
 - To update the ENFA method for use with large datasets and modern data formats.
+
 - To correct a critical error in the ENFA method itself, that has managed to
   persist since Hirzel et al. first introduced ENFA in 2002.
+
 - To expand the application of ENFA in the context of climate change in order
   to quantify different aspects of species vulnerability to climate change,
   and to facilitate quantitative comparisons of vulnerability between species.
