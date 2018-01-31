@@ -80,7 +80,7 @@ climate conditions inside a species' habitat.
 For comparisons of multiple species in the same study area, it is much more
  efficient to first construct a Raster* object of absolute differences between
  the historical and future values, so that the differences do not need to be
- recalculated for each species. This can be acheived with by passing \code{x}
+ recalculated for each species. This can be achieved with by passing \code{x}
  and \code{y} to the \code{difRaster} function, and then passing the
  results to the \code{departure} function.
 
