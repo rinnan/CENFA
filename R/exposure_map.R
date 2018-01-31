@@ -25,7 +25,6 @@
 #'
 #' @importFrom raster beginCluster clusterR endCluster
 #' @importMethodsFrom raster raster
-#' @include map.R
 #' @export
 
 exposure_map <- function(dep, parallel = FALSE, n, filename = "", ...){

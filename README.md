@@ -27,7 +27,7 @@ Examples
 
 ### `enfa`
 
-We will use some example datasets to perform a basic ENFA. The historical climate dataset `climdat.hist` is a RasterBrick of 10 climate variables, covering much of the western US coast. `QUGA` is a SpatialPolygonsDataFrame of the historical range map of Garry oak (*Quercus garryana*).
+We will use some example datasets to perform a basic ENFA. The historical climate dataset `climdat.hist` is a RasterBrick of 10 climate variables, covering much of the western US coast. `QUGA` is a SpatialPolygonsDataFrame of the historical range map of Oregon white oak (*Quercus garryana*).
 
 A plot of the data, using the one of the layers of `climdat.hist`:
 
@@ -221,21 +221,28 @@ Additionally, `parCov` can accept two Raster\* objects as arguments, similar to 
 mat <- parCov(x = climdat.hist, y = climdat.fut, parallel = TRUE, n = 4)
 ```
 
-### `map`
+### `stretchPlot`
 
-The `map` function provides a simple way to adjust the contrast of plots of RasterLayers to emphasize difference in values. It can perform histogram equalization and standard deviation stretching.
+The `stretchPlot` function provides a simple way to adjust the contrast of plots of RasterLayers to emphasize difference in values. It can perform histogram equalization and standard deviation stretching.
 
 ``` r
 sm <- sensitivity_map(mod.cnfa)
 par(mfrow = c(1, 3), oma = c(1,1,1,1))
-map(sm, main = "Linear")
-map(sm, type = "stretch", main = "Histogram equalization")
-map(sm, type = "sd", n = 2, main = "Standard deviation (n = 2)")
+stretchPlot(sm, main = "Linear")
+stretchPlot(sm, type = "stretch", main = "Histogram equalization")
+stretchPlot(sm, type = "sd", n = 2, main = "Standard deviation (n = 2)")
 ```
 
-![](man/figures/README-map-1.png)
+![](man/figures/README-stretchPlot-1.png)
 
 Guidelines for contributing
 ---------------------------
 
 I welcome contributions and suggestions for improving this package. Please do not hesitate to submit any issues you may encounter.
+
+References
+----------
+
+Basille, Mathieu, et al. Assessing habitat selection using multivariate statistics: Some refinements of the ecological-niche factor analysis. Ecological Modelling 211.1 (2008): 233-240.
+
+Hirzel, Alexandre H., et al. Ecological-niche factor analysis: how to compute habitat-suitability maps without absence data?. Ecology 83.7 (2002): 2027-2036.

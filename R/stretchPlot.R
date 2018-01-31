@@ -5,12 +5,12 @@
 #'
 #'
 #' @param x a RasterLayer
-#' @param type character. Possible values are "linear", "stretch", and "sd"
+#' @param type character. Possible values are "linear", "hist.equal", and "sd"
 #' @param n number of standard deviations to include if \code{type = "sd"}
 #' @param ... Additional arguments for raster::plot
 #'
 #' @details
-#' If \code{type = "stretch"}, a histogram equalization procedure will be
+#' If \code{type = "hist.equal"}, a histogram equalization procedure will be
 #' applied to the values of \code{x}. If \code{type = "sd"}, the values of
 #' \code{x} will be scaled between values that fall between \code{n} standard
 #' deviations of the mean.
@@ -18,9 +18,9 @@
 #' @examples
 #' mod <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
 #' sm <- sensitivity_map(mod)
-#' map(sm)
-#' map(sm, type = "stretch")
-#' map(sm, type = "sd", n = 2)
+#' stretchPlot(sm)
+#' stretchPlot(sm, type = "hist.equal")
+#' stretchPlot(sm, type = "sd", n = 2)
 #'
 #' @importFrom stats ecdf sd
 #' @importFrom raster calc cellStats
@@ -28,18 +28,18 @@
 #'
 #' @export
 
-setGeneric("map", function(x, ...) {
-  standardGeneric("map")
+setGeneric("stretchPlot", function(x, ...) {
+  standardGeneric("stretchPlot")
 })
 
-#' @rdname map
-setMethod("map",
+#' @rdname stretchPlot
+setMethod("stretchPlot",
           signature(x = "RasterLayer"),
           function(x, type = "linear", n, ...) {
 
             xx <- pretty(values(x), 2)
 
-            if(type == "stretch") {
+            if(type == "hist.equal") {
               y <- .stretch(x, type = "hist.equal")
               plot(y[[1]], breaks = .quantile_breaks(y[[1]]),
                    axis.args = list(at = y[[2]],
