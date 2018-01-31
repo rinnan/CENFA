@@ -7,26 +7,28 @@ Author: D. Scott Rinnan
 Maintainer: D. Scott Rinnan <rinnan@u.washington.edu>
 Description: Tools for climate- and ecological-niche factor analysis of spatial data, including methods for visualization of spatial variability of species sensitivity, exposure, and vulnerability to climate change. Processing of large files and parallelization is supported.
 Depends:
-        R (>= 3.0.0),
-	raster (>= 2.6.7),
-        sp (>= 1.2.7)
+        R (>= 3.0.0)
 Imports:
-        pbapply, 
-        methods,
-        doSNOW (>= 1.0.14),
-        foreach,
+        devtools,
+        doSNOW (>= 1.0.16),
+        foreach (>= 1.4.4),
         graphics,
         grDevices,
         magrittr,
+        methods,
+        pbapply (>= 1.3.3), 
+	raster (>= 2.6.7),
         Rcpp (>= 0.12.14),
-        snow,
-        devtools
+        snow (>= 0.4.2),
+        sp (>= 1.2.7)
 LinkingTo: Rcpp
 License: GPL (>= 3)
 LazyData: TRUE
 RoxygenNote: 6.0.1
-Suggests: knitr,
-    rmarkdown
+Suggests: 
+        knitr,
+        maps,
+        rmarkdown
 VignetteBuilder: knitr
 Collate: 
     'CENFA.R'
@@ -46,8 +48,9 @@ Collate:
     'departure.R'
     'enfa-class.R'
     'enfa.R'
-    'exposure_map.R'
     'map.R'
+    'exposure_map.R'
+    'names.R'
     'parCov.R'
     'parScale.R'
     'scatter.R'

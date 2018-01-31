@@ -30,9 +30,10 @@ applied to the values of \code{x}. If \code{type = "sd"}, the values of
 deviations of the mean.
 }
 \examples{
-mdr <- climdat.hist[[1]]
-map(mdr)
-map(mdr, type = "stretch")
-map(mdr, type = "sd", n = 2)
+mod <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
+sm <- sensitivity_map(mod)
+map(sm)
+map(sm, type = "stretch")
+map(sm, type = "sd", n = 2)
 
 }

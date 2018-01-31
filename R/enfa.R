@@ -92,6 +92,8 @@
 #'
 #' @seealso \code{\link{GLcenfa}}, \code{\link{cnfa}}
 #'
+#' @importFrom raster rasterize
+#' @importFrom sp identicalCRS
 #' @export
 
 setGeneric("enfa", function(x, s.dat, ...){

@@ -17,7 +17,6 @@
 #' @examples
 #' mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
 #' sens.map <- sensitivity_map(mod1)
-#' plot(sens.map)
 #'
 #' @return A RasterLayer of sensitivity values
 #'

@@ -18,12 +18,14 @@
 #' @examples
 #' dep <- departure(x = climdat.hist, y = climdat.fut, s.dat = ABPR)
 #' exp.map <- exposure_map(dep)
-#' plot(exp.map)
 #'
 #' @return A RasterLayer of exposure values
 #'
 #' @seealso \code{\link{departure}}, \code{\link{sensitivity_map}}, \code{\link{vulnerability_map}}
 #'
+#' @importFrom raster beginCluster clusterR endCluster
+#' @importMethodsFrom raster raster
+#' @include map.R
 #' @export
 
 exposure_map <- function(dep, parallel = FALSE, n, filename = "", ...){

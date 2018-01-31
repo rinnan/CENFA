@@ -27,12 +27,6 @@
 #'
 #' # covariance between two Raster* objects
 #' mat3 <- parCov(x = climdat.hist, y = climdat.fut)
-#' dat.h <- values(climdat.hist)
-#' dat.f <- values(climdat.fut)
-#' mat4 <- cov(dat.h, dat.f, use = "na.or.complete", method = "pearson")
-#'
-#' # same results either way
-#' all.equal(mat3, mat4)
 #'
 #' @return Returns a matrix with the same row and column names as the layers of
 #'   \code{x}. If \code{y} is supplied, then the covariances between the layers

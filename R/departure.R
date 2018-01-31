@@ -67,7 +67,7 @@
 #' @export
 #' @importFrom stats sd
 #' @importFrom parallel detectCores
-#'
+#' @importFrom raster overlay crop
 
 setGeneric("departure", function(x, y, s.dat, ...) {
   standardGeneric("departure")

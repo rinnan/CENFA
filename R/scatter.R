@@ -20,7 +20,8 @@
 #' @importFrom grDevices chull
 #' @importFrom magrittr %>%
 #' @importFrom stats ecdf sd
-#' @importFrom graphics abline arrows legend par points polygon
+#' @importFrom graphics abline arrows legend par points polygon text
+#' @importFrom raster quantile
 #'
 #' @include CENFA.R cnfa-class.R enfa-class.R GLcenfa-class.R
 #'

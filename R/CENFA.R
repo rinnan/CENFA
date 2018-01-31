@@ -36,8 +36,9 @@
 #' @name CENFA-package
 #' @useDynLib CENFA
 #' @importFrom Rcpp sourceCpp
-#' @import raster
-#' @import sp
+#' @importClassesFrom raster RasterBrick RasterStack RasterLayer
+#' @importClassesFrom sp SpatialPolygons SpatialPolygonsDataFrame SpatialPoints SpatialPointsDataFrame
+#' @importMethodsFrom raster raster
 #' @importFrom magrittr %>%
 NULL
 

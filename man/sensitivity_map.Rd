@@ -33,7 +33,6 @@ and projecting onto the sensitivity factor \strong{s}, given by the formula
 \examples{
 mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
 sens.map <- sensitivity_map(mod1)
-plot(sens.map)
 
 }
 \seealso{

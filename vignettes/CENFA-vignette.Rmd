@@ -1,18 +1,22 @@
 ---
-output:
-  pdf_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to the 'CENFA' package}
+  %\VignetteEngine{knitr::knitr}
+  \usepackage[utf8]{inputenc}
 ---
 
 ```{r, echo = FALSE, message=FALSE}
 knitr::opts_chunk$set(
   comment = "#>",
   fig.align = 'center',
-  fig.path = "../inst/doc/"
+  fig.width = 6,
+  fig.height = 4
 )
+library(raster)
+library(sp)
 library(CENFA)
 ```
-[![Build Status](https://travis-ci.org/rinnan/CENFA.svg?branch=master)](https://travis-ci.org/rinnan/CENFA)
-
 # An introduction to the `CENFA` package
 
 `Version: 0.1.0`
@@ -79,7 +83,7 @@ The function will attempt to match the value provided to `n` with the number of 
 
 ### `cnfa`
 
-The `cnfa` function is very similar to `enfa`, but performs a slightly different analysis. Whereas ENFA returns a *specialization factor* (the eigenvalues of specialization) describing the amount of specialization found in each *ENFA factor*, CNFA returns a *sensitivity factor* that reflects the amount of specialization found in each *ecological variable*. This makes the sensitivity factor more directly comparable to the marginality factor, and more interpretable in the context of species' sensitivity to a given variable.
+The `cnfa` function is very similar to `enfa`, but performs a slightly different analysis. Whereas ENFA returns a *specialization factor* (the eigenvalues of specialization) describing the amount of specialization found in each *ENFA factor*, CNFA returns a *sensitivity factor* that reflects the amount of sensitivity found in each *ecological variable*. This makes the sensitivity factor more directly comparable to the marginality factor, and more interpretable in the context of species' sensitivity to a given variable.
 
 ```{r cnfa}
 mod.cnfa <- cnfa(x = climdat.hist, s.dat = QUGA, field = "CODE")
@@ -92,7 +96,7 @@ Using the `sensitivity_map` function, we can create a habitat map that identifie
 s.map <- sensitivity_map(mod.cnfa)
 
 par(mar = c(1, 1, 1, 1))
-plot(QUGA, col = "darkgreen", main = "Oregon white oak sensitivity to climate change")
+plot(QUGA, col = "darkgreen", main = "Oregon white oak sensitivity")
 maps::map("state", regions = c("California", "Oregon", "Washington"), add = T, resolution = 0)
 maps::map("world", regions = c("Canada"), add = T, resolution = 0)
 map(s.map, type = "sd", n = 2, add = T,
@@ -113,7 +117,7 @@ The departure factor tells us the average amount of change that is expected in e
 ```{r "exposure-map", echo=1}
 e.map <- exposure_map(dep)
 par(mar = c(1, 1, 1, 1))
-plot(QUGA, col = "darkgreen", main = "Oregon white oak exposure to climate change")
+plot(QUGA, col = "darkgreen", main = "Oregon white oak exposure")
 maps::map("state", regions = c("California", "Oregon", "Washington"), add = T, resolution = 0)
 maps::map("world", regions = c("Canada"), add = T, resolution = 0)
 map(e.map, type = "sd", n = 2, add = T,
@@ -134,7 +138,7 @@ Using the `vulnerability_map` function, we can create a habitat map that identif
 ```{r "vulnerability-map", echo=1}
 v.map <- vulnerability_map(vuln)
 par(mar = c(1, 1, 1, 1))
-plot(QUGA, col = "darkgreen", main = "Oregon white oak vulnerability to climate change")
+plot(QUGA, col = "darkgreen", main = "Oregon white oak vulnerability")
 maps::map("state", regions = c("California", "Oregon", "Washington"), add = T, resolution = 0)
 maps::map("world", regions = c("Canada"), add = T, resolution = 0)
 map(v.map, type = "sd", n = 2, add = T,
@@ -171,7 +175,7 @@ mat <- parCov(x = climdat.hist, y = climdat.fut, parallel = TRUE, n = 4)
 
 The `map` function provides a simple way to adjust the contrast of plots of RasterLayers to emphasize difference in values. It can perform histogram equalization and standard deviation stretching.
 
-```{r "map", fig.width=10, fig.height = 5}
+```{r "map", fig.width=8, fig.height = 5}
 sm <- sensitivity_map(mod.cnfa)
 par(mfrow = c(1, 3), oma = c(1,1,1,1))
 map(sm, main = "Linear")

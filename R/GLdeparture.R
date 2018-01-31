@@ -49,6 +49,7 @@
 #'
 #' @seealso \code{\link{departure}}
 #' @export
+#' @importFrom raster compareRaster cellStats
 
 setGeneric("GLdeparture", function(x, y, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...) {
   standardGeneric("GLdeparture")

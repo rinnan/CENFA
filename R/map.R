@@ -16,13 +16,15 @@
 #' deviations of the mean.
 #'
 #' @examples
-#' mdr <- climdat.hist[[1]]
-#' map(mdr)
-#' map(mdr, type = "stretch")
-#' map(mdr, type = "sd", n = 2)
+#' mod <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
+#' sm <- sensitivity_map(mod)
+#' map(sm)
+#' map(sm, type = "stretch")
+#' map(sm, type = "sd", n = 2)
 #'
 #' @importFrom stats ecdf sd
-#'
+#' @importFrom raster calc cellStats
+#' @importMethodsFrom raster [ plot
 #'
 #' @export
 

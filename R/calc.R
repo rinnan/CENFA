@@ -1,8 +1,8 @@
 #' @keywords internal
 #'
-#' @importFrom doSNOW registerDoSNOW
+#' @importFrom raster brick trim canProcessInMemory setValues writeRaster pbStep
+#'   nlayers getValues writeStart blockSize pbCreate writeValues writeStop pbClose
 #' @importFrom foreach %dopar% foreach
-#' @importFrom snow makeCluster clusterExport stopCluster
 #' @importFrom stats cov na.omit
 #' @importFrom utils setTxtProgressBar txtProgressBar
 

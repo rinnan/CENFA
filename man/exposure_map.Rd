@@ -33,7 +33,6 @@ departure factor \strong{d}, given by the formula
 \examples{
 dep <- departure(x = climdat.hist, y = climdat.fut, s.dat = ABPR)
 exp.map <- exposure_map(dep)
-plot(exp.map)
 
 }
 \seealso{

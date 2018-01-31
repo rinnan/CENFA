@@ -109,6 +109,7 @@
 #'
 #' @importFrom stats cov
 #' @importFrom methods as
+#' @importFrom raster rasterTmpFile intersect extent values mask crop values<-
 
 setGeneric("cnfa", function(x, s.dat, ...){
   standardGeneric("cnfa")})
