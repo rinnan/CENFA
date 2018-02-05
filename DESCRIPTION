@@ -9,7 +9,7 @@ Description: Tools for climate- and ecological-niche factor analysis of spatial 
 Depends:
         R (>= 3.0.0)
 Imports:
-        doParallel (>= 1.0.11),
+        doSNOW (>= 1.0.16),
         foreach (>= 1.4.4),
         graphics,
         grDevices,
@@ -19,6 +19,7 @@ Imports:
         pbapply (>= 1.3.3), 
 	raster (>= 2.6.7),
         Rcpp (>= 0.12.14),
+        snow (>= 0.4.2),
         sp (>= 1.2.7)
 LinkingTo: Rcpp
 License: GPL (>= 3)

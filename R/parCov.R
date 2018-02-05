@@ -50,10 +50,11 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 #' @importFrom foreach '%dopar%'
-#' @importFrom doParallel registerDoParallel
-#' @importFrom parallel detectCores makeCluster clusterExport stopCluster
+#' @importFrom doSNOW registerDoSNOW
+#' @importFrom snow makeCluster clusterExport
+#' @importFrom parallel detectCores
 
-setGeneric("parCov", function(x, y = NULL, w = NULL, sample = TRUE, quiet = TRUE, parallel = FALSE, n = 1){
+setGeneric("parCov", function(x, y, ...){
   standardGeneric("parCov")})
 
 #' @rdname parCov
@@ -78,8 +79,8 @@ setMethod("parCov",
 
             if (!parallel | n == 1) {
               if (!quiet) {
-              pboptions(char = "-", txt.width = NA, type = "txt")
-              result <- pbsapply(s, function(p) do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample)))
+                pboptions(char = "-", txt.width = NA, type = "txt")
+                result <- pbsapply(s, function(p) do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample)))
               } else if (quiet) {
                 result <- sapply(s, function(p) do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample)))
               }
@@ -88,31 +89,31 @@ setMethod("parCov",
             if (parallel & n > 1) {
               on.exit(closeAllConnections())
               if(!is.numeric(n)) {
-                n <- min(detectCores() - 1, floor(s/2))
+                n <- min(detectCores() - 1, floor(length(s)/2))
                 if (!quiet) message('incorrect number of cores specified, using ', n)
               } else if(n > detectCores()) {
-                n <- min(detectCores() - 1, floor(s/2))
+                n <- min(detectCores() - 1, floor(length(s)/2))
                 if (!quiet) message('too many cores specified, using ', n)
               }
               w <- w
               cl <- makeCluster(getOption("cl.cores", n))
               clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
-                                  envir = environment())
-              registerDoParallel(cl)
+                            envir = environment())
+              registerDoSNOW(cl)
               if (!quiet) {
-              pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
-              progress <- function(n) setTxtProgressBar(pb, n)
-              opts <- list(progress = progress)
-              result <- foreach::foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
-                do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample))
-              }
-              close(pb)
+                pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
+                progress <- function(n) setTxtProgressBar(pb, n)
+                opts <- list(progress = progress)
+                result <- foreach::foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
+                  do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample))
+                }
+                close(pb)
               } else if(quiet) {
                 result <- foreach::foreach(p = s, .combine=c) %dopar% {
                   do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample))
                 }
               }
-             stopCluster(cl)
+              snow::stopCluster(cl)
             }
 
             for (p in s) {
@@ -155,31 +156,31 @@ setMethod("parCov",
 
             if (parallel & n > 1) {
               if (!is.numeric(n)) {
-                n <- min(detectCores() - 1, floor(s/2))
+                n <- min(parallel::detectCores() - 1, floor(length(s)/2))
                 if (!quiet) message('incorrect number of cores specified, using ', n)
               } else if (n > parallel::detectCores()) {
-                n <- min(detectCores() - 1, floor(s/2))
+                n <- min(parallel::detectCores() - 1, floor(length(s)/2))
                 if (!quiet) message('too many cores specified, using ', n)
               }
               w <- w
-              cl <- makeCluster(getOption("cl.cores", n))
-              clusterExport(cl, c(".covij", "raster", "cellStats", "x", "y", "z", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
+              cl <- snow::makeCluster(getOption("cl.cores", n))
+              snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "y", "z", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
                                   envir = environment())
-              registerDoParallel(cl)
+              doSNOW::registerDoSNOW(cl)
               if (!quiet) {
-              pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
-              progress <- function(n) setTxtProgressBar(pb, n)
-              opts <- list(progress = progress)
-              result <- foreach::foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
-                do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample))
-              }
-              close(pb)
+                pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
+                progress <- function(n) setTxtProgressBar(pb, n)
+                opts <- list(progress = progress)
+                result <- foreach::foreach(p = s, .combine=c, .options.snow = opts) %dopar% {
+                  do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample))
+                }
+                close(pb)
               } else if (quiet) {
                 result <- foreach::foreach(p = s, .combine=c) %dopar% {
                   do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample))
                 }
               }
-              stopCluster(cl)
+              snow::stopCluster(cl)
             }
 
             for (p in s) {
