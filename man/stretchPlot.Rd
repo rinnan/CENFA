@@ -6,18 +6,18 @@
 \alias{stretchPlot,RasterLayer-method}
 \title{Contrast adjustments for RasterLayer plots}
 \usage{
-stretchPlot(x, ...)
+stretchPlot(x, type = "linear", n, ...)
 
 \S4method{stretchPlot}{RasterLayer}(x, type = "linear", n, ...)
 }
 \arguments{
 \item{x}{a RasterLayer}
 
-\item{...}{Additional arguments for raster::plot}
-
 \item{type}{character. Possible values are "linear", "hist.equal", and "sd"}
 
 \item{n}{number of standard deviations to include if \code{type = "sd"}}
+
+\item{...}{Additional arguments for raster::plot}
 }
 \description{
 A plotting function that provides methods for improving the contrast

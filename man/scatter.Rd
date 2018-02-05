@@ -7,7 +7,7 @@
 \alias{scatter,enfa,GLcenfa-method}
 \title{Biplots of \code{cnfa} and \code{enfa} objects.}
 \usage{
-scatter(x, y, ...)
+scatter(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...)
 
 \S4method{scatter}{cnfa,GLcenfa}(x, y, xax = 1, yax = 2, p = 0.99,
   n = 5, plot = TRUE, ...)
@@ -22,8 +22,6 @@ occupied habitat}
 \item{y}{an object of class \code{GLcenfa} describing the global reference
 habitat}
 
-\item{...}{additional \code{plot} arguments}
-
 \item{xax}{the column number of the x-axis}
 
 \item{yax}{the column number of the y-axis}
@@ -34,6 +32,8 @@ the minimum convex polygons}
 \item{n}{the number of projected variables to label}
 
 \item{plot}{if \code{TRUE}, plot will be returned on function call}
+
+\item{...}{additional \code{plot} arguments}
 }
 \description{
 Biplots of \code{cnfa} and \code{enfa} objects.

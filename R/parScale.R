@@ -33,8 +33,10 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 #' @importFrom foreach '%dopar%'
+#' @importFrom doParallel registerDoParallel
+#' @importFrom parallel detectCores makeCluster clusterExport stopCluster
 
-setGeneric("parScale", function(x, ...){
+setGeneric("parScale", function(x, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...){
   standardGeneric("parScale")})
 
 #' @rdname parScale
@@ -67,16 +69,16 @@ setMethod("parScale",
             if (is.logical(scale)) scale <- rep(scale, nl)
 
             if (n < 1 | !is.numeric(n)) {
-              n <- min(parallel::detectCores() - 1, nl)
+              n <- min(detectCores() - 1, nl)
               if (!quiet) message('incorrect number of cores specified, using ', n)
-            } else if (n > parallel::detectCores()) {
-              n <- min(parallel::detectCores() - 1, nl)
+            } else if (n > detectCores()) {
+              n <- min(detectCores() - 1, nl)
               if (!quiet) message('too many cores specified, using ', n)
             }
-            cl <- snow::makeCluster(getOption("cl.cores", n))
-            snow::clusterExport(cl, c("x", "s", "scale", "center", "subset"),
+            cl <- makeCluster(getOption("cl.cores", n))
+            clusterExport(cl, c("x", "s", "scale", "center", "subset"),
                                 envir = environment())
-            doSNOW::registerDoSNOW(cl)
+            registerDoParallel(cl)
             if (!quiet) {
               pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
             progress <- function(n) setTxtProgressBar(pb, n)
@@ -90,7 +92,7 @@ setMethod("parScale",
                 do.call(raster::scale, list(x = subset(x, i), center = center[i], scale = scale[i]))
               }
             }
-            snow::stopCluster(cl)
+            stopCluster(cl)
 
             # resolves error message for global binding of i
             for(i in s){}

@@ -28,7 +28,7 @@
 #'
 #' @export
 
-setGeneric("stretchPlot", function(x, ...) {
+setGeneric("stretchPlot", function(x, type = "linear", n, ...) {
   standardGeneric("stretchPlot")
 })
 

@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/rinnan/CENFA.svg?branch=master)](https://travis-ci.org/rinnan/CENFA)
+[![Build Status](https://travis-ci.org/rinnan/CENFA.svg?branch=master)](https://travis-ci.org/rinnan/CENFA) [![CRAN](http://www.r-pkg.org/badges/version/CENFA)]()
 
 CENFA: Climate and Ecological Niche Factor Analysis
 ===================================================

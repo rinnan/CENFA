@@ -7,12 +7,13 @@
 \alias{parCov,Raster,Raster-method}
 \title{Efficient calculation of covariance matrices for Raster* objects}
 \usage{
-parCov(x, y, ...)
+parCov(x, y = NULL, w = NULL, sample = TRUE, quiet = TRUE,
+  parallel = FALSE, n = 1)
 
 \S4method{parCov}{Raster,missing}(x, w = NULL, sample = TRUE,
   quiet = TRUE, parallel = FALSE, n = 1)
 
-\S4method{parCov}{Raster,Raster}(x, y, w = NULL, sample = TRUE,
+\S4method{parCov}{Raster,Raster}(x, y = NULL, w = NULL, sample = TRUE,
   quiet = TRUE, parallel = FALSE, n = 1)
 }
 \arguments{
@@ -20,8 +21,6 @@ parCov(x, y, ...)
 
 \item{y}{NULL (default) or a Raster* object with the same extent and resolution
 as \code{x}}
-
-\item{...}{additional arguments, including any of the following:}
 
 \item{w}{optional Raster* object of weights for a weighted covariance matrix}
 
@@ -34,6 +33,8 @@ suppressed}
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
 \item{n}{numeric. Number of CPU cores to utilize for parallel processing}
+
+\item{...}{additional arguments, including any of the following:}
 }
 \value{
 Returns a matrix with the same row and column names as the layers of

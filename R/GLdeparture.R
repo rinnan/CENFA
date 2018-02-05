@@ -72,28 +72,6 @@ setMethod("GLdeparture",
               y <- parScale(y, center = means, scale = sds, filename = '', quiet = quiet, parallel = parallel, n = n)
             }
 
-            # if(parallel == T) {
-            #   if(scale == T) {
-            #     if (missing(n)) {
-            #       n <- parallel::detectCores()
-            #       message(n, ' cores detected, using ', n-1)
-            #       n <- n-1
-            #     }
-            #     means <- cellStats(x, mean)
-            #     sds <- cellStats(x, sd)
-            #     beginCluster(n = n)
-            #     x <- clusterR(x, fun = scale, export = list("means", "sds"), args = list(center = means, scale = sds))
-            #     y <- clusterR(y, scale, export = list("means", "sds"), args = list(center = means, scale = sds))
-            #     endCluster()
-            #   }
-            # } else {
-            #   if(scale == T) {
-            #     means <- cellStats(x, mean)
-            #     sds <- cellStats(x, sd)
-            #     x <- scale(x)
-            #     y <- scale(y, center = means, scale = sds)
-            #   }
-            # }
             x.dif <- abs(y - x)
             names(x.dif) <- names(x)
 

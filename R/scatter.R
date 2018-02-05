@@ -29,7 +29,7 @@
 #'
 #' @export
 
-setGeneric("scatter", function(x, y, ...){
+setGeneric("scatter", function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...){
   standardGeneric("scatter")})
 
 #' @rdname scatter
