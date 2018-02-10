@@ -33,6 +33,7 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 #' @importFrom foreach '%dopar%'
+#' @importFrom raster subset
 
 setGeneric("parScale", function(x, ...){
   standardGeneric("parScale")})
@@ -82,12 +83,12 @@ setMethod("parScale",
               progress <- function(n) setTxtProgressBar(pb, n)
               opts <- list(progress = progress)
               result <- foreach::foreach(i = s, .options.snow = opts) %dopar% {
-                do.call(raster::scale, list(x = subset(x, i), center = center[i], scale = scale[i]))
+                do.call(raster::scale, list(x = raster::subset(x, i), center = center[i], scale = scale[i]))
               }
               close(pb)
             } else if (!progress) {
               result <- foreach::foreach(i = s) %dopar% {
-                do.call(raster::scale, list(x = subset(x, i), center = center[i], scale = scale[i]))
+                do.call(raster::scale, list(x = raster::subset(x, i), center = center[i], scale = scale[i]))
               }
             }
             snow::stopCluster(cl)
@@ -96,7 +97,7 @@ setMethod("parScale",
             for(i in s){}
 
             x <- brick(result)
-            writeRaster(x, filename = filename, ...)
+            writeRaster(x, filename = filename)#, ...)
 
             closeAllConnections()
             return(x)

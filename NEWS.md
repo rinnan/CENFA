@@ -13,6 +13,8 @@ In current development.
 
 -   Different definition of vulnerability factor and overall vulnerability.
 
+-   Fixed bug in `parScale` function involving parallel methods.
+
 CENFA 0.1.0
 -----------
 
