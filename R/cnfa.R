@@ -195,9 +195,9 @@ setMethod("cnfa",
             colnames(U) <- names(s) <- nm
             rownames(U) <- names(sf) <- names(ras)
 
-            cnfa <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
+            mod <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
                                  sensitivity = sens, eig = s, co = U, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat)
-            return(cnfa)
+            return(mod)
           }
 )
 
@@ -219,7 +219,9 @@ setMethod("cnfa",
             x.crop <- crop(ras, ext.s)
             s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun)
 
-            cnfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, ...)
+            mod <- cnfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, ...)
+            mod@call <- call
+            return(mod)
           }
 )
 
@@ -241,7 +243,9 @@ setMethod("cnfa",
               x <- GLcenfa(x = x, center = T, scale = T, progress = progress, parallel = parallel, n = n)
             } else x <- GLcenfa(x = x, center = F, scale = F, progress = progress, parallel = parallel, n = n)
 
-            cnfa(x = x, s.dat = s.dat, filename = filename, progress = progress, parallel = parallel, n = n, ...)
+            mod <- cnfa(x = x, s.dat = s.dat, filename = filename, progress = progress, parallel = parallel, n = n, ...)
+            mod@call <- call
+            return(mod)
           }
 )
 
@@ -263,7 +267,9 @@ setMethod("cnfa",
               x <- GLcenfa(x = x, center = T, scale = T, progress = progress, parallel = parallel, n = n)
             } else x <- GLcenfa(x = x, center = F, scale = F, progress = progress, parallel = parallel, n = n)
 
-            cnfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, ...)
+            mod <- cnfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, ...)
+            mod@call <- call
+            return(mod)
           }
 )
 
