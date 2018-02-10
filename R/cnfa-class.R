@@ -11,8 +11,8 @@
 #' @slot sf numeric. Named vector representing the sensitivity factor
 #' @slot sensitivity numeric. The magnitude of the sensitivity factor \code{sf},
 #'   scaled by the global covariance matrix
-#' @slot p.spec numeric. Named vector representing the proportion of specialization
-#'   found on each factor
+#' @slot eig numeric. Named vector representing the eigenvalues of specialization,
+#'   reflecting the amount of variance on each factor
 #' @slot co p x p matrix of standardized variable loadings
 #' @slot cov p x p species covariance matrix
 #' @slot g.cov p x p global covariance matrix
@@ -22,7 +22,7 @@
 #' @export
 
 setClass("cnfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", sf = "numeric",
-                           sensitivity = "numeric", p.spec = "numeric", co = "matrix", cov = "matrix", g.cov = "matrix", ras = "Raster", weights = "Raster"))
+                           sensitivity = "numeric", eig = "numeric", co = "matrix", cov = "matrix", g.cov = "matrix", ras = "Raster", weights = "Raster"))
 
 setMethod ("show", "cnfa", function(object){
   if (!inherits(object, "cnfa"))
@@ -35,11 +35,12 @@ setMethod ("show", "cnfa", function(object){
   cat("\nSensitivity factor: \n")
   print(round(object@sf, 2))
   cat("\nPercentage of specialization contained in CNFA factors: \n")
-  print(round(100*object@p.spec, 2))
+  p.spec <- 100 * object@eig / sum(object@eig)
+  print(round(p.spec, 2))
   cat("\nOverall marginality: ", round(object@marginality, 3), "\n")
   cat("\nOverall sensitivity: ", round(object@sensitivity, 3), "\n")
   cat("\nSignificant CNFA factors: \n")
-  n <- brStick(object@p.spec[-1])
+  n <- brStick(object@eig[-1])
   co <- as.data.frame(object@co[order(abs(object@co[,1]), decreasing = T), ])
   print(round(co[, 1:(n+1)], 2))
 }

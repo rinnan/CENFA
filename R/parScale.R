@@ -17,8 +17,8 @@
 #'   value. Scaling is done after centering
 #' @param filename character. Optional filename to save the Raster* output to
 #'   file. If this is not provided, a temporary file will be created for large \code{x}
-#' @param quiet logical. If \code{TRUE}, messages and progress bar will be
-#'   suppressed
+#' @param progress logical. If \code{TRUE}, messages and progress bar will be
+#'   printed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
 #' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
@@ -40,7 +40,7 @@ setGeneric("parScale", function(x, ...){
 #' @rdname parScale
 setMethod("parScale",
           signature(x = "Raster"),
-          function(x, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...){
+          function(x, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, ...){
 
             if (is.logical(center) & is.logical(scale)) {
               if (!center & !scale) return(x) }
@@ -68,16 +68,16 @@ setMethod("parScale",
 
             if (n < 1 | !is.numeric(n)) {
               n <- min(parallel::detectCores() - 1, nl)
-              if (!quiet) message('incorrect number of cores specified, using ', n)
+              if (progress) message('incorrect number of cores specified, using ', n)
             } else if (n > parallel::detectCores()) {
               n <- min(parallel::detectCores() - 1, nl)
-              if (!quiet) message('too many cores specified, using ', n)
+              if (progress) message('too many cores specified, using ', n)
             }
             cl <- snow::makeCluster(getOption("cl.cores", n))
             snow::clusterExport(cl, c("x", "s", "scale", "center", "subset"),
                                 envir = environment())
             doSNOW::registerDoSNOW(cl)
-            if (!quiet) {
+            if (progress) {
               pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
               progress <- function(n) setTxtProgressBar(pb, n)
               opts <- list(progress = progress)
@@ -85,7 +85,7 @@ setMethod("parScale",
                 do.call(raster::scale, list(x = subset(x, i), center = center[i], scale = scale[i]))
               }
               close(pb)
-            } else if (quiet) {
+            } else if (!progress) {
               result <- foreach::foreach(i = s) %dopar% {
                 do.call(raster::scale, list(x = subset(x, i), center = center[i], scale = scale[i]))
               }

@@ -12,7 +12,7 @@
 #'   equivalent to the eigenvalues of specialization
 #' @slot specialization numeric. The square root of the sum of eigenvalues, divided
 #'   by the length of \code{sf}
-#' @slot p.spec numeric. Named vector representing the proportion of
+#' @slot sf.prop numeric. Named vector representing the proportion of
 #'   specialization found on each factor
 #' @slot co p x p matrix of standardized variable loadings
 #' @slot cov p x p species covariance matrix
@@ -21,7 +21,7 @@
 #' @export
 
 setClass("enfa", slots = list(call = "call", mf = "numeric", marginality = "numeric",
-                              sf = "numeric", specialization = "numeric", p.spec = "numeric",
+                              sf = "numeric", specialization = "numeric", sf.prop = "numeric",
                               co = "matrix", cov = "matrix", ras = "Raster", weights = "Raster"))
 
 setMethod ("show", "enfa", function(object){
@@ -35,11 +35,11 @@ setMethod ("show", "enfa", function(object){
   cat("\nEigenvalues of specialization: \n")
   print(round(object@sf, 2))
   cat("\nPercentage of specialization contained in ENFA factors: \n")
-  print(round(100*object@p.spec, 2))
+  print(round(100*object@sf.prop, 2))
   cat("\nOverall marginality: ", round(object@marginality, 3), "\n")
   cat("\nOverall specialization: ", round(object@specialization, 3), "\n")
   cat("\nSignificant ENFA factors: \n")
-  n <- brStick(object@p.spec[-1])
+  n <- brStick(object@sf.prop[-1])
   co <- as.data.frame(object@co[order(abs(object@co[,1]), decreasing = T), ])
   print(round(co[, 1:(n+1)], 2))
 }

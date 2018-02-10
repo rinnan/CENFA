@@ -13,17 +13,17 @@
 \usage{
 enfa(x, s.dat, ...)
 
-\S4method{enfa}{GLcenfa,Raster}(x, s.dat, filename = "", quiet = TRUE,
+\S4method{enfa}{GLcenfa,Raster}(x, s.dat, filename = "", progress = FALSE,
   parallel = FALSE, n = 1, ...)
 
 \S4method{enfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
+  filename = "", progress = FALSE, parallel = FALSE, n = 1, ...)
 
 \S4method{enfa}{Raster,Raster}(x, s.dat, scale = TRUE, filename = "",
-  quiet = TRUE, parallel = FALSE, n = 1, ...)
+  progress = FALSE, parallel = FALSE, n = 1, ...)
 
 \S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
+  filename = "", progress = FALSE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers,
@@ -37,8 +37,8 @@ species presence}
 \item{filename}{character. Optional filename to save the Raster* output to
 file. If this is not provided, a temporary file will be created for large \code{x}}
 
-\item{quiet}{logical. If \code{TRUE}, messages and progress bar will be
-suppressed}
+\item{progress}{logical. If \code{TRUE}, messages and progress bar will be
+printed}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized for the
 calculation of the covariance matrices}
@@ -70,10 +70,10 @@ Returns an S4 object of class \code{enfa} with the following components:
   \item{sf}{Specialization factor. Vector of eigenvalues of specialization}
   \item{specialization}{Overall specialization, equal to the square root of the sum
   of eigenvalues, divided by the length of \code{sf}}
-  \item{s.prop}{Vector representing the amount of specialization found in each
-   ENFA factor}
+  \item{sf.prop}{Vector representing the proportion of specialization found in each
+  ENFA factor}
   \item{co}{A matrix describing the amount of marginality and specialization
-   on each ENFA factor. (The marginality column is normalized)}
+   on each ENFA factor}
   \item{ras}{RasterBrick of transformed climate values, with p layers}
   \item{weights}{Raster layer of weights used for ENFA calculation}
 }

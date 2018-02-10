@@ -22,8 +22,8 @@
 #'   be scaled beforehand using the \code{\link{GLcenfa}} function
 #' @param filename character. Optional filename to save the Raster* output to
 #'   file. If this is not provided, a temporary file will be created for large \code{x}
-#' @param quiet logical. If \code{TRUE}, messages and progress bar will be
-#'   suppressed
+#' @param progress logical. If \code{TRUE}, messages and progress bar will be
+#'   printed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized for the
 #'   calculation of the covariance matrices
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
@@ -74,10 +74,10 @@
 #'   \item{sf}{Specialization factor. Vector of eigenvalues of specialization}
 #'   \item{specialization}{Overall specialization, equal to the square root of the sum
 #'   of eigenvalues, divided by the length of \code{sf}}
-#'   \item{s.prop}{Vector representing the amount of specialization found in each
-#'    ENFA factor}
+#'   \item{sf.prop}{Vector representing the proportion of specialization found in each
+#'   ENFA factor}
 #'   \item{co}{A matrix describing the amount of marginality and specialization
-#'    on each ENFA factor. (The marginality column is normalized)}
+#'    on each ENFA factor}
 #'   \item{ras}{RasterBrick of transformed climate values, with p layers}
 #'   \item{weights}{Raster layer of weights used for ENFA calculation}
 #' }
@@ -102,7 +102,7 @@ setGeneric("enfa", function(x, s.dat, ...){
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "GLcenfa", s.dat = "Raster"),
-          function(x, s.dat, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
 
@@ -129,7 +129,7 @@ setMethod("enfa",
               p <- values(s.dat)[pres]
               p.sum <- sum(p)
               mar <- apply(S, 2, function(x) sum(x * p)) / p.sum
-              if (!quiet) cat("Calculating species covariance matrix...\n")
+              if (progress) cat("Calculating species covariance matrix...\n")
               Sm <- sweep(S, 2, mar)
               DpSm <- apply(Sm, 2, function(x) x * p)
               Rs <- crossprod(Sm, DpSm)/ (p.sum - 1)
@@ -139,9 +139,9 @@ setMethod("enfa",
               p.sum <- cellStats(s.dat, sum)
               DpS <- x.mask * s.dat
               mar <- cellStats(DpS, sum) / p.sum
-              if (!quiet) cat("Calculating species covariance matrix...\n")
-              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, quiet = T)
-              Rs <- parCov(x = Sm, w = s.dat, parallel = parallel, n = n, quiet = quiet)
+              if (progress) cat("Calculating species covariance matrix...\n")
+              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, progress = F)
+              Rs <- parCov(x = Sm, w = s.dat, parallel = parallel, n = n, progress = progress)
             }
 
             cZ <- nlayers(ras)
@@ -156,7 +156,7 @@ setMethod("enfa",
             sf <- eigen(H)$values[-cZ]
             s.p <- (t(mar) %*% Rg %*% mar) / (t(mar) %*% Rs %*% mar)
             s <- c(s.p, sf)
-            spec <- sqrt(sum(s))/length(s)
+            spec <- sqrt(mean(s))
             s.p <- abs(s)/sum(abs(s))
             v <- eigen(H)$vectors
             co <- matrix(nrow = cZ, ncol = cZ)
@@ -164,22 +164,22 @@ setMethod("enfa",
             u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
             norw <- sqrt(diag(t(u) %*% u))
             co[, -1] <- sweep(u, 2, norw, "/")
-            co[, 1] <- mar / m
+            co[, 1] <- mar
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x.crop)) {
               s.ras <- brick(x.crop)
-              if (!quiet) cat("Creating factor rasters...")
+              if (progress) cat("Creating factor rasters...")
               values(s.ras)[pres, ] <- S %*% co
               names(s.ras) <- nm
             } else {
-              if (!quiet) cat("Creating factor rasters...")
+              if (progress) cat("Creating factor rasters...")
               s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
             }
             colnames(co) <- names(s.p) <- names(s) <- nm
             rownames(co) <- names(x)
 
             enfa <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = s,
-                                 specialization = spec, p.spec = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat)
+                                 specialization = spec, sf.prop = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat)
             return(enfa)
           }
 )
@@ -187,7 +187,7 @@ setMethod("enfa",
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "GLcenfa", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
 
@@ -202,14 +202,14 @@ setMethod("enfa",
             x.crop <- crop(ras, ext.s)
             s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun)
 
-            enfa(x = x, s.dat = s.dat.ras, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
+            enfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, ...)
           }
 )
 
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "Raster", s.dat = "Raster"),
-          function(x, s.dat, scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
 
@@ -219,18 +219,18 @@ setMethod("enfa",
             if (raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
 
             if (scale) {
-              if (!quiet) cat("Scaling raster data...\n")
-              x <- GLcenfa(x = x, center = T, scale = T, quiet = quiet, parallel = parallel, n = n)
-            } else x <- GLcenfa(x = x, center = F, scale = F, quiet = quiet, parallel = parallel, n = n)
+              if (progress) cat("Scaling raster data...\n")
+              x <- GLcenfa(x = x, center = T, scale = T, progress = progress, parallel = parallel, n = n)
+            } else x <- GLcenfa(x = x, center = F, scale = F, progress = progress, parallel = parallel, n = n)
 
-            enfa(x = x, s.dat = s.dat, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
+            enfa(x = x, s.dat = s.dat, filename = filename, progress = progress, parallel = parallel, n = n, ...)
           }
 )
 
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "Raster", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
 
@@ -241,17 +241,17 @@ setMethod("enfa",
 
             s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
             if (scale) {
-              if (!quiet) cat("Scaling raster data...\n")
-              x <- GLcenfa(x = x, center = T, scale = T, quiet = quiet, parallel = parallel, n = n)
-            } else x <- GLcenfa(x = x, center = F, scale = F, quiet = quiet, parallel = parallel, n = n)
+              if (progress) cat("Scaling raster data...\n")
+              x <- GLcenfa(x = x, center = T, scale = T, progress = progress, parallel = parallel, n = n)
+            } else x <- GLcenfa(x = x, center = F, scale = F, progress = progress, parallel = parallel, n = n)
 
-            enfa(x = x, s.dat = s.dat.ras, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
+            enfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, ...)
           }
 )
 
 # setMethod("enfa",
 #           signature(x = "Raster", s.dat = "sf"),
-#           function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...){
+#           function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 #
 #             call <- sys.call(sys.parent())
 #
@@ -263,10 +263,10 @@ setMethod("enfa",
 #             if (!inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('geometry of "s.dat" should be of class "sfc_POLYGON", "sfc_MULTIPOLYGON", "sfc_POINT", or "sfc_MULTIPOINT"')
 #             s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
 #             if (scale) {
-#               if (!quiet) cat("Scaling raster data...\n")
-#               x <- GLcenfa(x = x, center = T, scale = T, quiet = quiet, parallel = parallel, n = n)
-#             } else x <- GLcenfa(x = x, center = F, scale = F, quiet = quiet, parallel = parallel, n = n)
+#               if (progress) cat("Scaling raster data...\n")
+#               x <- GLcenfa(x = x, center = T, scale = T, progress = progress, parallel = parallel, n = n)
+#             } else x <- GLcenfa(x = x, center = F, scale = F, progress = progress, parallel = parallel, n = n)
 #
-#             enfa(x = x, s.dat = s.dat.ras, filename = filename, quiet = quiet, parallel = parallel, n = n, ...)
+#             enfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, ...)
 #           }
 # )

@@ -13,17 +13,17 @@
 \usage{
 cnfa(x, s.dat, ...)
 
-\S4method{cnfa}{GLcenfa,Raster}(x, s.dat, filename = "", quiet = TRUE,
+\S4method{cnfa}{GLcenfa,Raster}(x, s.dat, filename = "", progress = FALSE,
   parallel = FALSE, n = 1, ...)
 
 \S4method{cnfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
+  filename = "", progress = FALSE, parallel = FALSE, n = 1, ...)
 
 \S4method{cnfa}{Raster,Raster}(x, s.dat, scale = TRUE, filename = "",
-  quiet = TRUE, parallel = FALSE, n = 1, ...)
+  progress = FALSE, parallel = FALSE, n = 1, ...)
 
 \S4method{cnfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
+  filename = "", progress = FALSE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack with p climate
@@ -37,8 +37,8 @@ species presence}
 \item{filename}{character. Optional filename to save the Raster* output to
 file. If this is not provided, a temporary file will be created for large \code{x}}
 
-\item{quiet}{logical. If \code{TRUE}, messages and progress bar will be
-suppressed}
+\item{progress}{logical. If \code{TRUE}, messages and progress bar will be
+printed}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized for the
 calculation of the covariance matrices}
@@ -71,10 +71,9 @@ Returns an S4 object of class \code{cnfa} with the following components:
    sensitivity for each climate variable}
   \item{sensitivity}{Magnitude of the sensitivity factor, scaled by the
   global covariance matrix}
-  \item{s.prop}{Vector of length p representing the amount of specialization
-  found in each CNFA factor}
+  \item{eig}{Named vector of eigenvalues of specialization for each CNFA factor}
   \item{co}{A p x p matrix describing the amount of marginality and specialization
-   on each CNFA factor. (The marginality column is normalized)}
+   in each CNFA factor.}
   \item{cov}{p x p species covariance matrix}
   \item{g.cov}{p x p global covariance matrix}
   \item{ras}{RasterBrick of transformed climate values, with p layers}

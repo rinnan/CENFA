@@ -9,10 +9,10 @@
 \title{Climatic departure of reference study area}
 \usage{
 GLdeparture(x, y, center = TRUE, scale = TRUE, filename = "",
-  quiet = TRUE, parallel = FALSE, n = 1, ...)
+  progress = FALSE, parallel = FALSE, n = 1, ...)
 
 \S4method{GLdeparture}{Raster,Raster}(x, y, center = TRUE, scale = TRUE,
-  filename = "", quiet = TRUE, parallel = FALSE, n = 1, ...)
+  filename = "", progress = FALSE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{x}{Raster* object of p historical climate layers}
@@ -37,8 +37,8 @@ value. Scaling is done after centering}
 to file. If this is not provided, a temporary file will be created for large
 \code{x}}
 
-\item{quiet}{logical. If \code{TRUE}, messages and progress bar will be
-suppressed}
+\item{progress}{logical. If \code{TRUE}, messages and progress bar will be
+printed}
 
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 

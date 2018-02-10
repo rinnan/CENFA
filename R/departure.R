@@ -21,8 +21,8 @@
 #'   climate data
 #' @param filename character. Optional filename to save the Raster* output to
 #'   file. If this is not provided, a temporary file will be created for large \code{x}
-#' @param quiet logical. If \code{TRUE}, messages and progress bar will be
-#'   suppressed
+#' @param progress logical. If \code{TRUE}, messages and progress bar will be
+#'   printed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Optional number of CPU cores to utilize for parallel processing
 #' @param ... Additional arguments for \code{\link[raster]{clusterR}}
@@ -158,11 +158,11 @@ setMethod("departure",
 #' @rdname departure
 setMethod("departure",
           signature(x = "Raster", y = "Raster", s.dat = "cnfa"),
-          function(x, y, s.dat, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...) {
+          function(x, y, s.dat, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, ...) {
 
             call <- sys.call(sys.parent())
 
-            GLdep <- GLdeparture(x, y, center = center, scale = scale, quiet = quiet, parallel = parallel, n = n)
+            GLdep <- GLdeparture(x, y, center = center, scale = scale, progress = progress, parallel = parallel, n = n)
             dep <- departure(x = GLdep, s.dat = s.dat, filename = filename, ...)
             dep@call <- call
             return(dep)
@@ -172,11 +172,11 @@ setMethod("departure",
 #' @rdname departure
 setMethod("departure",
           signature(x = "Raster", y = "Raster", s.dat = "Spatial"),
-          function(x, y, s.dat, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...) {
+          function(x, y, s.dat, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, ...) {
 
             call <- sys.call(sys.parent())
 
-            GLdep <- GLdeparture(x, y, center = center, scale = scale, quiet = quiet, parallel = parallel, n = n)
+            GLdep <- GLdeparture(x, y, center = center, scale = scale, progress = progress, parallel = parallel, n = n)
             dep <- departure(x = GLdep, s.dat = s.dat, filename = filename, ...)
             dep@call <- call
             return(dep)

@@ -23,8 +23,8 @@
 #'   no scaling is done. If scale is a numeric vector with length equal to
 #'   \code{nlayers(x)}, each layer of \code{x} is divided by the corresponding
 #'   value. Scaling is done after centering
-#' @param quiet logical. If \code{TRUE}, messages and progress bar will be
-#'   suppressed
+#' @param progress logical. If \code{TRUE}, messages and progress bar will be
+#'   printed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
 #' @param filename character. Optional filename to save the RasterBrick output
@@ -51,25 +51,25 @@
 #' @export
 #' @importFrom raster compareRaster cellStats
 
-setGeneric("GLdeparture", function(x, y, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...) {
+setGeneric("GLdeparture", function(x, y, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, ...) {
   standardGeneric("GLdeparture")
 })
 
 #' @rdname GLdeparture
 setMethod("GLdeparture",
           signature(x = "Raster", y = "Raster"),
-          function(x, y, center = TRUE, scale = TRUE, filename = '', quiet = TRUE, parallel = FALSE, n = 1, ...){
+          function(x, y, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, ...){
 
             if(!all.equal(names(x), names(y))) stop("historical and future raster layers do not match")
             if(!compareRaster(x, y)) stop("historical and future rasters resolutions or extent do not match")
 
             if (center | scale) {
-              if (!quiet) cat("Scaling historical raster data...\n")
+              if (progress) cat("Scaling historical raster data...\n")
               means <- cellStats(x, mean)
               sds <- cellStats(x, sd)
-              x <- parScale(x, center = center, scale = scale, filename = '', quiet = quiet, parallel = parallel, n = n)
-              if (!quiet) cat("Scaling future raster data...\n")
-              y <- parScale(y, center = means, scale = sds, filename = '', quiet = quiet, parallel = parallel, n = n)
+              x <- parScale(x, center = center, scale = scale, filename = '', progress = progress, parallel = parallel, n = n)
+              if (progress) cat("Scaling future raster data...\n")
+              y <- parScale(y, center = means, scale = sds, filename = '', progress = progress, parallel = parallel, n = n)
             }
 
             x.dif <- abs(y - x)
@@ -81,8 +81,8 @@ setMethod("GLdeparture",
               writeRaster(x.dif, filename = filename, ...)
             }
 
-            if (!quiet) cat("Calculating global covariance matrix...\n")
-            cov.mat <- parCov(x = x, parallel = parallel, n = n, quiet = quiet)
+            if (progress) cat("Calculating global covariance matrix...\n")
+            cov.mat <- parCov(x = x, parallel = parallel, n = n, progress = progress)
             tryCatch(solve(cov.mat, tol = 1e-10),
                      error = function(e) message("Warning: covariance matrix is not invertible. Consider removing correlated variables or transforming data and trying again."))
 

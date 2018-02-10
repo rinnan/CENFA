@@ -13,8 +13,8 @@
 #' @param w optional Raster* object of weights for a weighted covariance matrix
 #' @param sample logical. If \code{TRUE}, the sample covariance is calculated
 #'   with a denominator of $n-1$
-#' @param quiet logical. If \code{TRUE}, messages and progress bar will be
-#'   suppressed
+#' @param progress logical. If \code{TRUE}, messages and progress bar will be
+#'   printed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
 #'
@@ -60,7 +60,7 @@ setGeneric("parCov", function(x, y, ...){
 #' @rdname parCov
 setMethod("parCov",
           signature(x = "Raster", y = "missing"),
-          function(x, w = NULL, sample = TRUE, quiet = TRUE, parallel = FALSE, n = 1){
+          function(x, w = NULL, sample = TRUE, progress = FALSE, parallel = FALSE, n = 1){
 
             if (canProcessInMemory(x) & !parallel) {
               dat <- na.omit(values(x))
@@ -78,10 +78,10 @@ setMethod("parCov",
             s <- 1:length(ii)
 
             if (!parallel | n == 1) {
-              if (!quiet) {
+              if (progress) {
                 pboptions(char = "-", txt.width = NA, type = "txt")
                 result <- pbsapply(s, function(p) do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample)))
-              } else if (quiet) {
+              } else if (!progress) {
                 result <- sapply(s, function(p) do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample)))
               }
             }
@@ -90,17 +90,17 @@ setMethod("parCov",
               on.exit(closeAllConnections())
               if(!is.numeric(n)) {
                 n <- min(detectCores() - 1, floor(length(s)/2))
-                if (!quiet) message('incorrect number of cores specified, using ', n)
+                if (progress) message('incorrect number of cores specified, using ', n)
               } else if(n > detectCores()) {
                 n <- min(detectCores() - 1, floor(length(s)/2))
-                if (!quiet) message('too many cores specified, using ', n)
+                if (progress) message('too many cores specified, using ', n)
               }
               w <- w
               cl <- makeCluster(getOption("cl.cores", n))
               clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
                             envir = environment())
               registerDoSNOW(cl)
-              if (!quiet) {
+              if (progress) {
                 pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
                 progress <- function(n) setTxtProgressBar(pb, n)
                 opts <- list(progress = progress)
@@ -108,7 +108,7 @@ setMethod("parCov",
                   do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample))
                 }
                 close(pb)
-              } else if(quiet) {
+              } else if(!progress) {
                 result <- foreach::foreach(p = s, .combine=c) %dopar% {
                   do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample))
                 }
@@ -128,7 +128,7 @@ setMethod("parCov",
 #' @rdname parCov
 setMethod("parCov",
           signature(x = "Raster", y = "Raster"),
-          function(x, y, w = NULL, sample = TRUE, quiet = TRUE, parallel = FALSE, n = 1){
+          function(x, y, w = NULL, sample = TRUE, progress = FALSE, parallel = FALSE, n = 1){
 
             if (canProcessInMemory(x) & !parallel) {
               x.dat <- values(x)
@@ -146,10 +146,10 @@ setMethod("parCov",
             s <- 1:nrow(z)
 
             if (!parallel | n == 1) {
-              if (!quiet) {
+              if (progress) {
                 pboptions(char = "-", txt.width = NA, type = "txt")
                 result <- pbsapply(s, function(p) do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample)))
-              } else if (quiet){
+              } else if (!progress){
                 result <- sapply(s, function(p) do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample)))
               }
             }
@@ -157,17 +157,17 @@ setMethod("parCov",
             if (parallel & n > 1) {
               if (!is.numeric(n)) {
                 n <- min(parallel::detectCores() - 1, floor(length(s)/2))
-                if (!quiet) message('incorrect number of cores specified, using ', n)
+                if (progress) message('incorrect number of cores specified, using ', n)
               } else if (n > parallel::detectCores()) {
                 n <- min(parallel::detectCores() - 1, floor(length(s)/2))
-                if (!quiet) message('too many cores specified, using ', n)
+                if (progress) message('too many cores specified, using ', n)
               }
               w <- w
               cl <- snow::makeCluster(getOption("cl.cores", n))
               snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "y", "z", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
                                   envir = environment())
               doSNOW::registerDoSNOW(cl)
-              if (!quiet) {
+              if (progress) {
                 pb <- txtProgressBar(min = 0, max = length(s), style = 3, char = "-")
                 progress <- function(n) setTxtProgressBar(pb, n)
                 opts <- list(progress = progress)
@@ -175,7 +175,7 @@ setMethod("parCov",
                   do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample))
                 }
                 close(pb)
-              } else if (quiet) {
+              } else if (!progress) {
                 result <- foreach::foreach(p = s, .combine=c) %dopar% {
                   do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample))
                 }
