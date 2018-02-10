@@ -178,7 +178,7 @@ setMethod("cnfa",
             U[, -1] <- sweep(u, 2, norw, "/")
             #co[, 1] <- mar / m
             U[, 1] <- mar
-            V <- abs(U) / colSums(abs(U))
+            V <- sweep(abs(U), 2, colSums(abs(U)), "/")
             sf <- as.numeric(V %*% s)
             #sens <- sqrt(as.numeric(t(sf) %*% sf)/cZ)
             sens <- sqrt(mean(sf))
@@ -193,7 +193,7 @@ setMethod("cnfa",
               s.ras <- .calc(x.mask, function(x) {x %*% U}, forceapply = T, filename = filename, names = nm, ...)
             }
             colnames(U) <- names(s) <- nm
-            rownames(U) <- names(sf) <- names(ras)
+            rownames(U) <- names(sf) <- names(mf) <- names(ras)
 
             mod <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
                                  sensitivity = sens, eig = s, co = U, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat)
