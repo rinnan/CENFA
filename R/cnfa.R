@@ -193,7 +193,7 @@ setMethod("cnfa",
               s.ras <- .calc(x.mask, function(x) {x %*% U}, forceapply = T, filename = filename, names = nm, ...)
             }
             colnames(U) <- names(s) <- nm
-            rownames(U) <- names(sf) <- names(mf) <- names(ras)
+            rownames(U) <- names(sf) <- names(mar) <- names(ras)
 
             mod <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
                                  sensitivity = sens, eig = s, co = U, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat)
