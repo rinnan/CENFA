@@ -25,7 +25,7 @@ equivalent to the eigenvalues of specialization}
 \item{\code{specialization}}{numeric. The square root of the sum of eigenvalues, divided
 by the length of \code{sf}}
 
-\item{\code{p.spec}}{numeric. Named vector representing the proportion of
+\item{\code{sf.prop}}{numeric. Named vector representing the proportion of
 specialization found on each factor}
 
 \item{\code{co}}{p x p matrix of standardized variable loadings}

@@ -24,8 +24,8 @@ by the global covariance matrix}
 \item{\code{sensitivity}}{numeric. The magnitude of the sensitivity factor \code{sf},
 scaled by the global covariance matrix}
 
-\item{\code{p.spec}}{numeric. Named vector representing the proportion of specialization
-found on each factor}
+\item{\code{eig}}{numeric. Named vector representing the eigenvalues of specialization,
+reflecting the amount of variance on each factor}
 
 \item{\code{co}}{p x p matrix of standardized variable loadings}
 
