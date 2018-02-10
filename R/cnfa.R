@@ -120,6 +120,9 @@ setMethod("cnfa",
 
             call <- sys.call(sys.parent())
 
+            if(file.exists(filename) & missing(overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            if(file.exists(filename) & !overwrite) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+
             if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
             ras <- raster(x)
@@ -208,6 +211,9 @@ setMethod("cnfa",
 
             call <- sys.call(sys.parent())
 
+            if(file.exists(filename) & missing(overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            if(file.exists(filename) & !overwrite) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
             ras <- raster(x)
@@ -232,6 +238,9 @@ setMethod("cnfa",
 
             call <- sys.call(sys.parent())
 
+            if(file.exists(filename) & missing(overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            if(file.exists(filename) & !overwrite) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+
             if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
@@ -255,6 +264,9 @@ setMethod("cnfa",
           function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
+
+            if(file.exists(filename) & missing(overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            if(file.exists(filename) & !overwrite) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
 
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
