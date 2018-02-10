@@ -120,9 +120,16 @@ setMethod("cnfa",
 
             call <- sys.call(sys.parent())
 
-            params <- list(...)
-            if(file.exists(filename) & is.null(params$overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
-            if(file.exists(filename) & !(params$overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            if(file.exists(filename)) {
+              params <- list(...)
+              if(length(params) > 0) {
+                if(is.null(params$overwrite)) {
+                  stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+                } else if(!(params$overwrite)) {
+                  stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+                }
+              } else stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            }
 
             if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
@@ -212,9 +219,16 @@ setMethod("cnfa",
 
             call <- sys.call(sys.parent())
 
-            params <- list(...)
-            if(file.exists(filename) & is.null(params$overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
-            if(file.exists(filename) & !(params$overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            if(file.exists(filename)) {
+              params <- list(...)
+              if(length(params) > 0) {
+                if(is.null(params$overwrite)) {
+                  stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+                } else if(!(params$overwrite)) {
+                  stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+                }
+              } else stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            }
 
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
@@ -240,9 +254,16 @@ setMethod("cnfa",
 
             call <- sys.call(sys.parent())
 
-            params <- list(...)
-            if(file.exists(filename) & is.null(params$overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
-            if(file.exists(filename) & !(params$overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            if(file.exists(filename)) {
+              params <- list(...)
+              if(length(params) > 0) {
+                if(is.null(params$overwrite)) {
+                  stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+                } else if(!(params$overwrite)) {
+                  stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+                }
+              } else stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            }
 
             if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
@@ -268,9 +289,16 @@ setMethod("cnfa",
 
             call <- sys.call(sys.parent())
 
-            params <- list(...)
-            if(file.exists(filename) & is.null(params$overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
-            if(file.exists(filename) & !(params$overwrite)) stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            if(file.exists(filename)) {
+              params <- list(...)
+              if(length(params) > 0) {
+                if(is.null(params$overwrite)) {
+                  stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+                } else if(!(params$overwrite)) {
+                  stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+                }
+              } else stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            }
 
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if(!identicalCRS(x, s.dat)) stop("projections do not match")
