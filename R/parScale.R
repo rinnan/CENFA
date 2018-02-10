@@ -97,7 +97,7 @@ setMethod("parScale",
             for(i in s){}
 
             x <- brick(result)
-            writeRaster(x, filename = filename)#, ...)
+            writeRaster(x, filename = filename, ...)
 
             closeAllConnections()
             return(x)
