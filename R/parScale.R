@@ -96,8 +96,8 @@ setMethod("parScale",
             # resolves error message for global binding of i
             for(i in s){}
 
-            x <- brick(result)
-            writeRaster(x, filename = filename, ...)
+            x <- stack(result)
+            x <- brick(x, filename = filename, ...)
 
             closeAllConnections()
             return(x)
