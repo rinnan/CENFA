@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 README.Rmd
+NEWS.Rmd
 CENFA.Rproj
 cran-comments.md
 **/.DS_Store
