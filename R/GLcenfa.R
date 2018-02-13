@@ -59,12 +59,12 @@ setMethod("GLcenfa",
           signature(x = "Raster"),
           function(x, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, ...){
 
-            if (center | scale) {
+            if (center || scale) {
               if (progress) cat("Scaling raster data...\n")
               x <- parScale(x, center = center, scale = scale, filename = filename, progress = progress, parallel = parallel, n = n, ...)
             }
 
-            if (!center & !scale) message("Warning: no scaling specified, raster will not be written to file")
+            if (!center && !scale) message("Warning: no scaling specified, raster will not be written to file")
 
             if (progress) cat("Calculating global covariance matrix...\n")
             cov.mat <- parCov(x = x, parallel = parallel, n = n, progress = progress)
