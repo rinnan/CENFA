@@ -34,7 +34,7 @@ sensitivity_map <- function(cnfa, parallel = FALSE, n = 1, filename = "", ...){
     filename <- rasterTmpFile()
   }
 
-  f1 <- function(x) abs(x - m) %*%  s
+  f1 <- function(x) (abs(x - m) %*%  s) / length(s)
 
   if(parallel) {
     beginCluster(n, exclude = "CENFA")
