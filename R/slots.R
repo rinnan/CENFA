@@ -102,6 +102,15 @@ setMethod("raster",
 )
 
 #' @rdname slot-access
+setMethod("raster",
+          signature(x = "GLdeparture"),
+          function(x){
+            temp <- x@global_difras
+            return(temp)
+          }
+)
+
+#' @rdname slot-access
 setMethod("names",
           signature(x = "GLcenfa"),
           function(x){
