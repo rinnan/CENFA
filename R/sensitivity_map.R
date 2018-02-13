@@ -37,7 +37,7 @@ sensitivity_map <- function(cnfa, parallel = FALSE, n = 1, filename = "", ...){
   f1 <- function(x) (abs(x - m) %*%  s) / length(s)
 
   if(parallel) {
-    beginCluster(n, exclude = "CENFA")
+    beginCluster(n)
     sens.ras <- clusterR(ras, fun = .calc, args = list(fun = f1, forceapply = T, names = "Sensitivity"), filename = filename, ...)
     endCluster()
   } else {
