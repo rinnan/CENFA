@@ -52,6 +52,7 @@ Collate:
     'names.R'
     'parCov.R'
     'parScale.R'
+    'predict.R'
     'scatter.R'
     'sensitivity_map.R'
     'slots.R'
