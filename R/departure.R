@@ -90,12 +90,16 @@ setMethod("departure",
             if (is.null(intersect(ext, ext.s))) stop("climate and species data do not overlap")
             if (raster::union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
 
-            Rg <- x@cov
+            filename <- trim(filename)
+            if (!canProcessInMemory(ras)) {
+              if (filename == '') filename <- rasterTmpFile()
+            }
 
+            Rg <- x@cov
             nm <- names(ras)
             x.dif <- crop(ras, s.dat.ras)
-            x.dif <- mask(x.dif, s.dat.ras)
             names(x.dif) <- nm
+            x.dif <- mask(x.dif, s.dat.ras, filename = filename, ...)
             w <- s.dat.ras / (cellStats(s.dat.ras, sum, na.rm = T) - 1)
             x.dif.w <- overlay(x = x.dif, y = w, fun = function(x,y) {return(x*y)})
             d <- cellStats(x.dif.w, sum)
@@ -104,12 +108,6 @@ setMethod("departure",
                           error = function(e){
                             message("Warning: global covariance matrix not invertible. Overall departure will not be computed.")
                             return(as.numeric(NA))})
-
-            filename <- trim(filename)
-            if (!canProcessInMemory(ras)) {
-              if (filename == '') filename <- rasterTmpFile()
-              writeRaster(x.dif, filename = filename, ...)
-            }
 
             depart <- methods::new("departure", call = call, df = d, departure = D, g.cov = Rg, ras = x.dif, weights = s.dat.ras)
             return(depart)
@@ -132,13 +130,18 @@ setMethod("departure",
             if (is.null(intersect(ext, ext.s))) stop("climate and species data do not overlap")
             if (raster::union(ext, ext.s) != ext) stop("extent of species data not contained within extent of climate data")
 
+            filename <- trim(filename)
+            if (!canProcessInMemory(ras)) {
+              if (filename == '') filename <- rasterTmpFile()
+            }
+
             Rg <- x@cov
             s.dat.ras <- rasterize(s.dat, ras, field = field, fun = fun)
 
             nm <- names(x)
             x.dif <- crop(ras, s.dat.ras)
-            x.dif <- mask(x.dif, s.dat.ras)
             names(x.dif) <- nm
+            x.dif <- mask(x.dif, s.dat.ras, filename = filename, ...)
             w <- s.dat.ras / (cellStats(s.dat.ras, sum, na.rm = T) - 1)
             x.dif.w <- overlay(x = x.dif, y = w, fun = function(x,y) {return(x*y)})
             d <- cellStats(x.dif.w, sum)
@@ -147,12 +150,6 @@ setMethod("departure",
                           error = function(e){
                             message("Warning: global covariance matrix not invertible. Overall departure will not be computed.")
                             return(as.numeric(NA))})
-
-            filename <- trim(filename)
-            if (!canProcessInMemory(ras)) {
-              if (filename == '') filename <- rasterTmpFile()
-              writeRaster(x.dif, filename = filename, ...)
-            }
 
             depart <- methods::new("departure", call = call, df = d, departure = D, g.cov = Rg, ras = x.dif, weights = s.dat.ras)
             return(depart)
