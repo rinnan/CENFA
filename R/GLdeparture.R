@@ -60,26 +60,36 @@ setMethod("GLdeparture",
           signature(x = "Raster", y = "Raster"),
           function(x, y, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, ...){
 
-            if(!all.equal(names(x), names(y))) stop("historical and future raster layers do not match")
-            if(!compareRaster(x, y)) stop("historical and future rasters resolutions or extent do not match")
+            if (!all.equal(names(x), names(y))) stop("historical and future raster layers do not match")
+            if (!compareRaster(x, y)) stop("historical and future rasters resolutions or extent do not match")
 
-            if (center | scale) {
+            if (missing(y)) {
+              x.dif <- x
+              if (progress) cat("Calculating global covariance matrix...\n")
+              cov.mat <- parCov(x = x, parallel = parallel, n = n, progress = progress)
+              GLdif <- methods::new("GLdeparture", global_difras = x.dif, cov = cov.mat)
+              return(GLdif)
+            }
+
+            if (center || scale) {
               if (progress) cat("Scaling historical raster data...\n")
               means <- cellStats(x, mean)
               sds <- cellStats(x, sd)
-              x <- parScale(x, center = center, scale = scale, filename = '', progress = progress, parallel = parallel, n = n)
+              x <- parScale(x, center = means, scale = sds, filename = '', progress = progress, parallel = parallel, n = n)
               if (progress) cat("Scaling future raster data...\n")
               y <- parScale(y, center = means, scale = sds, filename = '', progress = progress, parallel = parallel, n = n)
             }
 
-            x.dif <- abs(y - x)
+            filename <- trim(filename)
+            if (parallel || !canProcessInMemory(x)) {
+              if (filename == '') filename <- rasterTmpFile()
+            }
+
+            #x.dif <- abs(y - x)
+            x.dif <- overlay(x, y, fun = function(x, y) { return(abs(x - y)) }, filename = filename, ...)
             names(x.dif) <- names(x)
 
-            filename <- trim(filename)
-            if (parallel | !canProcessInMemory(x)) {
-              if (filename == '') filename <- rasterTmpFile()
-              writeRaster(x.dif, filename = filename, ...)
-            }
+
 
             if (progress) cat("Calculating global covariance matrix...\n")
             cov.mat <- parCov(x = x, parallel = parallel, n = n, progress = progress)
