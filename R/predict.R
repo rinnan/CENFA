@@ -20,14 +20,14 @@ setMethod("predict",
             if (!missing(newdata)){
               if (!all.equal(nm, names(newdata))) stop("layer names of newdata do not match layer names of model")
             }
-            if (is.null(object@call$scale) | as.logical(as.character(object@call$scale))) {
+            if (is.null(object@call$scale) || as.logical(as.character(object@call$scale))) {
               center <- cellStats(x, 'mean', na.rm = TRUE)
               sd <- cellStats(x, 'sd', na.rm = TRUE)
               if (missing(newdata)) x <- parScale(x, center = center, scale = sd)
             }
 
             if (!missing(newdata)) {
-              if (is.null(object@call$scale) | as.logical(as.character(object@call$scale))) {
+              if (is.null(object@call$scale) || as.logical(as.character(object@call$scale))) {
                 x <- parScale(newdata, center = center, scale = sd)
               } else {
                 x <- newdata
@@ -61,14 +61,14 @@ setMethod("predict",
               if (!all.equal(nm, names(newdata))) stop("layer names of newdata do not match layer names of model")
             }
             U <- object@co
-            if (is.null(object@call$scale) | as.logical(as.character(object@call$scale))) {
+            if (is.null(object@call$scale) || as.logical(as.character(object@call$scale))) {
               center <- cellStats(x, 'mean', na.rm = TRUE)
               sd <- cellStats(x, 'sd', na.rm = TRUE)
               if (missing(newdata)) x <- parScale(x, center = center, scale = sd)
             }
 
             if (!missing(newdata)) {
-              if (is.null(object@call$scale) | as.logical(as.character(object@call$scale))) {
+              if (is.null(object@call$scale) || as.logical(as.character(object@call$scale))) {
                 x <- parScale(newdata, center = center, scale = sd)
               } else {
                 x <- newdata
@@ -89,7 +89,7 @@ setMethod("predict",
 #' @rdname predict
 setMethod("predict",
           signature(object = "departure"),
-          function(object, newdata, filename = "", ...){
+          function(object, filename = "", ...){
 
             x <- get(as.character(object@call$x))
             if (is(x, "GLdeparture")) {
@@ -108,7 +108,7 @@ setMethod("predict",
             }
 
             d <- object@df
-            f1 <- function(x) x %*% d
+            f1 <- function(x) (x %*% d) / length(d)
 
             ras <- .calc(x, fun = f1, forceapply = T, filename = filename, names = "Exposure", ...)
 
@@ -116,20 +116,40 @@ setMethod("predict",
           }
 )
 
-# mod <- cnfa(climdat.hist, s.dat = ABPR, field = "CODE", scale = T)
-# as.logical(as.character(mod@call$scale))
-#
-# get(as.character(mod@call$x))
-#
-# glc <- GLcenfa(x = climdat.hist)
-# mod2 <- cnfa(x = glc, s.dat = ABPR, field = "CODE")
-#
-# sensitivity_map(mod)
-# test1 <- predict(mod2)
-# test2 <- predict(mod2, newdata = climdat.fut)
-# stretchPlot(test1, type = "sd", n = 2)
-# stretchPlot(test2, type = "sd", n = 2)
-#
-# dep1 <- departure(x = climdat.hist, y = climdat.fut, s.dat = ABPR, field = "CODE")
-# test3 <- predict(dep1)
-# plot(test3)
+#' @rdname predict
+setMethod("predict",
+          signature(object = "vulnerability"),
+          function(object, newdata, filename = "", ...){
+
+            x <- get(as.character(object@call$cnfa))
+            y <- get(as.character(object@call$dep))
+            if (is.null(object@call$w)) {
+              w <- c(1, 1)
+            } else {
+              w <- as.numeric(object@call$w)
+            }
+
+            if (is.null(object@call$method)) {
+              method <- "geometric"
+            } else {
+              method <- as.character(object@call$method)
+            }
+
+            ifelse(missing(newdata),
+                   s.map <- predict(x),
+                   s.map <- predict(x, newdata = newdata))
+            e.map <- predict(y)
+
+            if (method == "arithmetic") {
+              ras <- (w[1] * s.map + w[2] * e.map) / sum(w)
+            } else if (method == "geometric") {
+              if(w[1] == w[2]) {
+                ras <- sqrt(s.map * e.map)
+              } else {
+                w <- w / sum(w)
+                ras <- ( (s.map^w[1]) * (e.map^w[2]) )^(1/sum(w))
+              }
+            }
+            return(ras)
+          }
+)

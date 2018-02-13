@@ -5,13 +5,16 @@
 \alias{predict,cnfa-method}
 \alias{predict,enfa-method}
 \alias{predict,departure-method}
+\alias{predict,vulnerability-method}
 \title{Predict methods}
 \usage{
 \S4method{predict}{cnfa}(object, newdata, filename = "", ...)
 
 \S4method{predict}{enfa}(object, newdata, filename = "", ...)
 
-\S4method{predict}{departure}(object, newdata, filename = "", ...)
+\S4method{predict}{departure}(object, filename = "", ...)
+
+\S4method{predict}{vulnerability}(object, newdata, filename = "", ...)
 }
 \arguments{
 \item{object}{model object}
