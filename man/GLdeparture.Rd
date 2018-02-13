@@ -6,12 +6,16 @@
 \alias{print.GLdeparture}
 \alias{show.GLdeparture}
 \alias{GLdeparture,Raster,Raster-method}
+\alias{GLdeparture,Raster,missing-method}
 \title{Climatic departure of reference study area}
 \usage{
 GLdeparture(x, y, center = TRUE, scale = TRUE, filename = "",
   progress = FALSE, parallel = FALSE, n = 1, ...)
 
 \S4method{GLdeparture}{Raster,Raster}(x, y, center = TRUE, scale = TRUE,
+  filename = "", progress = FALSE, parallel = FALSE, n = 1, ...)
+
+\S4method{GLdeparture}{Raster,missing}(x, y, center = TRUE, scale = TRUE,
   filename = "", progress = FALSE, parallel = FALSE, n = 1, ...)
 }
 \arguments{
