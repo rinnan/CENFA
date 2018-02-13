@@ -15,6 +15,8 @@ In current development.
 
 -   Fixed bugs in `parScale` function involving parallel methods.
 
+-   Added predict methods for `enfa`, `cnfa`, and `departure` objects.
+
 CENFA 0.1.0
 -----------
 
