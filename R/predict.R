@@ -7,6 +7,7 @@
 #' @param filename character optional filename
 #' @param ... additional arguments
 #'
+#' @include CENFA.R vulnerability-class.R
 #' @export
 
 #' @rdname predict
