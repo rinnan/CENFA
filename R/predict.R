@@ -4,16 +4,21 @@
 #'
 #' @param object model object
 #' @param newdata optional new data
-#' @param filename character optional filename
-#' @param ... additional arguments
+#' @param parallel logical. If \code{TRUE} then multiple cores are utilized
+#' @param n numeric. Number of CPU cores to utilize for parallel processing
+#' @param filename character. Optional filename to save the RasterBrick output
+#'   to file. If this is not provided, a temporary file will be created for large
+#'   \code{x}
+#' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
 #'
 #' @include CENFA.R vulnerability-class.R
-#' @export
+#' @name predict
+NULL
 
 #' @rdname predict
 setMethod("predict",
           signature(object = "cnfa"),
-          function(object, newdata, filename = "", ...){
+          function(object, newdata, filename = "", parallel = FALSE, n = 1, ...){
 
             x <- get(as.character(object@call$x))
             if (!is(x, "Raster")) x <- raster(x)
@@ -24,12 +29,12 @@ setMethod("predict",
             if (is.null(object@call$scale) || as.logical(as.character(object@call$scale))) {
               center <- cellStats(x, 'mean', na.rm = TRUE)
               sd <- cellStats(x, 'sd', na.rm = TRUE)
-              if (missing(newdata)) x <- parScale(x, center = center, scale = sd)
+              if (missing(newdata)) x <- parScale(x, center = center, scale = sd, parallel = parallel, n = n)
             }
 
             if (!missing(newdata)) {
               if (is.null(object@call$scale) || as.logical(as.character(object@call$scale))) {
-                x <- parScale(newdata, center = center, scale = sd)
+                x <- parScale(newdata, center = center, scale = sd, parallel = parallel, n = n)
               } else {
                 x <- newdata
               }
@@ -43,8 +48,13 @@ setMethod("predict",
             }
 
             f1 <- function(x) (abs(x - m) %*%  s) / length(s)
-
-            ras <- .calc(x, f1, forceapply = T, filename = filename, names = "Sensitivity", ...)
+            if(parallel) {
+              beginCluster(n)
+              ras <- clusterR(x, fun = .calc, args = list(fun = f1, forceapply = T, names = "Sensitivity"), filename = filename, ...)
+              endCluster()
+            } else {
+              ras <- .calc(x, fun = f1, forceapply = T, filename = filename, names = "Sensitivity", ...)
+            }
 
             return(ras)
           }
@@ -53,7 +63,7 @@ setMethod("predict",
 #' @rdname predict
 setMethod("predict",
           signature(object = "enfa"),
-          function(object, newdata, filename = "", ...){
+          function(object, newdata, filename = "", parallel = FALSE, n = 1, ...){
 
             x <- get(as.character(object@call$x))
             if (!is(x, "Raster")) x <- raster(x)
@@ -65,12 +75,12 @@ setMethod("predict",
             if (is.null(object@call$scale) || as.logical(as.character(object@call$scale))) {
               center <- cellStats(x, 'mean', na.rm = TRUE)
               sd <- cellStats(x, 'sd', na.rm = TRUE)
-              if (missing(newdata)) x <- parScale(x, center = center, scale = sd)
+              if (missing(newdata)) x <- parScale(x, center = center, scale = sd, parallel = parallel, n = n)
             }
 
             if (!missing(newdata)) {
               if (is.null(object@call$scale) || as.logical(as.character(object@call$scale))) {
-                x <- parScale(newdata, center = center, scale = sd)
+                x <- parScale(newdata, center = center, scale = sd, parallel = parallel, n = n)
               } else {
                 x <- newdata
               }
@@ -81,7 +91,14 @@ setMethod("predict",
               filename <- rasterTmpFile()
             }
 
-            ras <- .calc(x, function(x) {x %*% U}, forceapply = T, filename = filename, names = nm, ...)
+            f1 <- function(x) x %*% U
+            if(parallel) {
+              beginCluster(n)
+              ras <- clusterR(x, fun = .calc, args = list(fun = f1, forceapply = T, names = nm), filename = filename, ...)
+              endCluster()
+            } else {
+              ras <- .calc(x, fun = f1, forceapply = T, filename = filename, names = "Sensitivity", ...)
+            }
 
             return(ras)
           }
@@ -90,7 +107,7 @@ setMethod("predict",
 #' @rdname predict
 setMethod("predict",
           signature(object = "departure"),
-          function(object, filename = "", ...){
+          function(object, filename = "", parallel = FALSE, n = 1, ...){
 
             x <- get(as.character(object@call$x))
             if (is(x, "GLdeparture")) {
@@ -99,7 +116,7 @@ setMethod("predict",
               y <- get(as.character(object@call$y))
               if (is.null(object@call$center)) center <- TRUE else center <- as.logical(as.character(object@call$center))
               if (is.null(object@call$scale)) scale <- TRUE else scale <- as.logical(as.character(object@call$scale))
-              gld <- GLdeparture(x = x, y = y, center = center, scale = scale)
+              gld <- GLdeparture(x = x, y = y, center = center, scale = scale, parallel = parallel, n = n)
               x <- raster(gld)
             }
 
@@ -110,8 +127,13 @@ setMethod("predict",
 
             d <- object@df
             f1 <- function(x) (x %*% d) / length(d)
-
-            ras <- .calc(x, fun = f1, forceapply = T, filename = filename, names = "Exposure", ...)
+            if(parallel) {
+              beginCluster(n)
+              ras <- clusterR(x, fun = .calc, args = list(fun = f1, forceapply = T, names = "Exposure"), filename = filename, ...)
+              endCluster()
+            } else {
+              ras <- .calc(x, fun = f1, forceapply = T, filename = filename, names = "Exposure", ...)
+            }
 
             return(ras)
           }
@@ -142,14 +164,17 @@ setMethod("predict",
             e.map <- predict(y)
 
             if (method == "arithmetic") {
-              ras <- (w[1] * s.map + w[2] * e.map) / sum(w)
+              f1 <- function(x,y) (x*w[1] + y*w[2]) / sum(w)
+              ras <- overlay(s.map, e.map, fun = f1, filename = filename, ...)
             } else if (method == "geometric") {
               if(w[1] == w[2]) {
-                ras <- sqrt(s.map * e.map)
+                w <- c(1, 1)
               } else {
                 w <- w / sum(w)
-                ras <- ( (s.map^w[1]) * (e.map^w[2]) )^(1/sum(w))
               }
+              f1 <- function(x,y) (x^w[1] * y^w[2])^(1 / sum(w))
+              ras <- overlay(s.map, e.map, fun = f1, filename = filename, ...)
+
             }
             return(ras)
           }
