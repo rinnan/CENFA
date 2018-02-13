@@ -107,7 +107,7 @@
 #' @name cnfa
 #'
 #' @importFrom stats cov
-#' @importFrom methods as
+#' @importFrom methods as is
 #' @importFrom raster rasterTmpFile intersect extent values mask crop values<-
 
 setGeneric("cnfa", function(x, s.dat, ...){
@@ -119,6 +119,7 @@ setMethod("cnfa",
           function(x, s.dat, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
+            call <- match.call(cnfa, call)
 
             if(file.exists(filename)) {
               params <- list(...)
@@ -218,6 +219,7 @@ setMethod("cnfa",
           function(x, s.dat, field, fun = "last", filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
+            call <- match.call(cnfa, call)
 
             if(file.exists(filename)) {
               params <- list(...)
@@ -253,6 +255,7 @@ setMethod("cnfa",
           function(x, s.dat, scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
+            call <- match.call(cnfa, call)
 
             if(file.exists(filename)) {
               params <- list(...)
@@ -288,6 +291,7 @@ setMethod("cnfa",
           function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
+            call <- match.call(cnfa, call)
 
             if(file.exists(filename)) {
               params <- list(...)

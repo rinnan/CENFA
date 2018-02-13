@@ -105,6 +105,7 @@ setMethod("enfa",
           function(x, s.dat, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
+            call <- match.call(enfa, call)
 
             if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
@@ -190,6 +191,7 @@ setMethod("enfa",
           function(x, s.dat, field, fun = "last", filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
+            call <- match.call(enfa, call)
 
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
@@ -214,6 +216,7 @@ setMethod("enfa",
           function(x, s.dat, scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
+            call <- match.call(enfa, call)
 
             if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
             if (!identicalCRS(x, s.dat)) stop("projections do not match")
@@ -237,6 +240,7 @@ setMethod("enfa",
           function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
 
             call <- sys.call(sys.parent())
+            call <- match.call(enfa, call)
 
             if (!inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
             if (!identicalCRS(x, s.dat)) stop("projections do not match")
