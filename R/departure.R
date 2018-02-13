@@ -79,6 +79,8 @@ setMethod("departure",
           function(x, s.dat, filename = '', ...){
 
             call <- sys.call(sys.parent())
+            call <- match.call(departure, call)
+
             s.dat.ras <- s.dat@weights
             ras <- x@global_difras
             ext <- extent(ras)
@@ -120,6 +122,8 @@ setMethod("departure",
           function(x, s.dat, field, fun = "last", filename = '', ...){
 
             call <- sys.call(sys.parent())
+            call <- match.call(departure, call)
+
             ras <- x@global_difras
             ext <- extent(ras)
             ext.s <- extent(s.dat)
@@ -161,6 +165,7 @@ setMethod("departure",
           function(x, y, s.dat, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, ...) {
 
             call <- sys.call(sys.parent())
+            call <- match.call(departure, call)
 
             GLdep <- GLdeparture(x, y, center = center, scale = scale, progress = progress, parallel = parallel, n = n)
             dep <- departure(x = GLdep, s.dat = s.dat, filename = filename, ...)
@@ -175,6 +180,7 @@ setMethod("departure",
           function(x, y, s.dat, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, ...) {
 
             call <- sys.call(sys.parent())
+            call <- match.call(departure, call)
 
             GLdep <- GLdeparture(x, y, center = center, scale = scale, progress = progress, parallel = parallel, n = n)
             dep <- departure(x = GLdep, s.dat = s.dat, filename = filename, ...)
