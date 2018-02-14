@@ -142,7 +142,7 @@ setMethod("predict",
 #' @rdname predict
 setMethod("predict",
           signature(object = "vulnerability"),
-          function(object, newdata, filename = "", ...){
+          function(object, newdata, filename = "", parallel = FALSE, n = 1, ...){
 
             x <- get(as.character(object@call$cnfa))
             y <- get(as.character(object@call$dep))
@@ -159,11 +159,11 @@ setMethod("predict",
             }
 
             if (missing(newdata)) {
-              s.map <- predict(x)
+              s.map <- predict(x, parallel = parallel, n = n)
             } else {
-              s.map <- predict(x, newdata = newdata)
+              s.map <- predict(x, newdata = newdata, parallel = parallel, n = n)
             }
-            e.map <- predict(y)
+            e.map <- predict(y, parallel = parallel, n = n)
 
             if (method == "arithmetic") {
               f1 <- function(x,y) (x*w[1] + y*w[2]) / sum(w)
