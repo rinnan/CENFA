@@ -9,7 +9,8 @@
 parScale(x, ...)
 
 \S4method{parScale}{Raster}(x, center = TRUE, scale = TRUE, filename = "",
-  progress = FALSE, parallel = FALSE, n = 1, ...)
+  progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
+  keep.open = FALSE, ...)
 }
 \arguments{
 \item{x}{Raster* object}
@@ -38,6 +39,11 @@ printed}
 \item{parallel}{logical. If \code{TRUE} then multiple cores are utilized}
 
 \item{n}{numeric. Number of CPU cores to utilize for parallel processing}
+
+\item{cl}{optional cluster object}
+
+\item{keep.open}{logical. If \code{TRUE} and \code{parallel = TRUE}, the
+cluster object will not be closed after the function has finished}
 }
 \value{
 Raster* object

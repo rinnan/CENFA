@@ -21,6 +21,9 @@
 #'   printed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
+#' @param cl optional cluster object
+#' @param keep.open logical. If \code{TRUE} and \code{parallel = TRUE}, the
+#'   cluster object will not be closed after the function has finished
 #' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
 #'
 #' @examples
@@ -41,7 +44,7 @@ setGeneric("parScale", function(x, ...){
 #' @rdname parScale
 setMethod("parScale",
           signature(x = "Raster"),
-          function(x, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, ...){
+          function(x, center = TRUE, scale = TRUE, filename = '', progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...){
 
             if (is.logical(center) & is.logical(scale)) {
               if (!center & !scale) return(x) }
@@ -61,20 +64,21 @@ setMethod("parScale",
               return(x)
             }
 
-            on.exit(closeAllConnections())
             nl <- nlayers(x)
             s <- 1:nl
             if (is.logical(center)) center <- rep(center, nl)
             if (is.logical(scale)) scale <- rep(scale, nl)
 
-            if (n < 1 | !is.numeric(n)) {
-              n <- min(parallel::detectCores() - 1, nl)
-              if (progress) message('incorrect number of cores specified, using ', n)
-            } else if (n > parallel::detectCores()) {
-              n <- min(parallel::detectCores() - 1, nl)
-              if (progress) message('too many cores specified, using ', n)
-            }
-            cl <- snow::makeCluster(getOption("cl.cores", n))
+            if (parallel && n > 1) {
+              if (!keep.open) on.exit(closeAllConnections())
+              if(!is.numeric(n) && is.null(cl)) {
+                n <- min(detectCores() - 1, floor(length(s)/2))
+                if (progress) message('incorrect number of cores specified, using ', n)
+              } else if(is.null(cl) && n > detectCores()) {
+                n <- min(detectCores() - 1, floor(length(s)/2))
+                if (progress) message('too many cores specified, using ', n)
+              }
+            if (is.null(cl)) cl <- snow::makeCluster(getOption("cl.cores", n))
             snow::clusterExport(cl, c("x", "s", "scale", "center", "subset"),
                                 envir = environment())
             doSNOW::registerDoSNOW(cl)
@@ -91,7 +95,8 @@ setMethod("parScale",
                 do.call(raster::scale, list(x = raster::subset(x, i), center = center[i], scale = scale[i]))
               }
             }
-            snow::stopCluster(cl)
+            if (!keep.open || is.null(cl)) snow::stopCluster(cl)
+            }
 
             # resolves error message for global binding of i
             for(i in s){}
@@ -99,7 +104,6 @@ setMethod("parScale",
             x <- stack(result)
             x <- brick(x, filename = filename, ...)
 
-            closeAllConnections()
             return(x)
           }
 )

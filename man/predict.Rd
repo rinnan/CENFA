@@ -18,7 +18,8 @@
 \S4method{predict}{departure}(object, filename = "", parallel = FALSE,
   n = 1, ...)
 
-\S4method{predict}{vulnerability}(object, newdata, filename = "", ...)
+\S4method{predict}{vulnerability}(object, newdata, filename = "",
+  parallel = FALSE, n = 1, ...)
 }
 \arguments{
 \item{object}{model object}

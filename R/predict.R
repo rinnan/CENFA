@@ -97,7 +97,7 @@ setMethod("predict",
               ras <- clusterR(x, fun = .calc, args = list(fun = f1, forceapply = T, names = nm), filename = filename, ...)
               endCluster()
             } else {
-              ras <- .calc(x, fun = f1, forceapply = T, filename = filename, names = "Sensitivity", ...)
+              ras <- .calc(x, fun = f1, forceapply = T, filename = filename, names = nm, ...)
             }
 
             return(ras)

@@ -27,6 +27,9 @@
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized for the
 #'   calculation of the covariance matrices
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
+#' @param cl optional cluster object
+#' @param keep.open logical. If \code{TRUE} and \code{parallel = TRUE}, the
+#'   cluster object will not be closed after the function has finished
 #' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
 #'
 #' @examples
@@ -116,7 +119,7 @@ setGeneric("cnfa", function(x, s.dat, ...){
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "GLcenfa", s.dat = "Raster"),
-          function(x, s.dat, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...){
 
             call <- sys.call(sys.parent())
             call <- match.call(cnfa, call)
@@ -147,7 +150,7 @@ setMethod("cnfa",
               filename <- rasterTmpFile()
             }
 
-            if (canProcessInMemory(x.crop) & !parallel) {
+            if (canProcessInMemory(x.crop) && !parallel) {
               pres <- which(!is.na(values(s.dat)) & !is.na(values(max(x.crop))))
               S <- values(x.crop)[pres, ]
               nS <- nrow(S)
@@ -166,8 +169,12 @@ setMethod("cnfa",
               DpS <- x.mask * s.dat
               mar <- cellStats(DpS, sum) / p.sum
               if (progress) cat("Calculating species covariance matrix...\n")
-              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, progress = F)
-              Rs <- parCov(x = Sm, w = s.dat, parallel = parallel, n = n, progress = progress)
+              if (parallel) {
+                if (!keep.open) on.exit(closeAllConnections())
+                if (missing(cl) && n > 1) cl <- snow::makeCluster(getOption("cl.cores", n))
+              }
+              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, progress = F, keep.open = keep.open, cl = cl)
+              Rs <- parCov(x = Sm, w = s.dat, parallel = parallel, n = n, progress = progress, keep.open = keep.open, cl = cl)
             }
 
             cZ <- nlayers(ras)
@@ -202,10 +209,16 @@ setMethod("cnfa",
               names(s.ras) <- nm
             } else {
               if (progress) cat("Creating factor rasters...")
-              s.ras <- .calc(x.mask, function(x) {x %*% U}, forceapply = T, filename = filename, names = nm, ...)
+              f1 <- function(x) x %*% U
+              if(parallel && !missing(cl)) {
+                s.ras <- clusterR(x, fun = .calc, args = list(fun = f1, forceapply = T, names = nm), cl = cl, filename = filename, ...)
+              } else {
+                s.ras <- .calc(x, fun = f1, forceapply = T, filename = filename, names = nm, ...)
+              }
             }
             colnames(U) <- names(s) <- nm
             rownames(U) <- names(sf) <- names(mar) <- names(ras)
+            if (!keep.open || missing(cl)) snow::stopCluster(cl)
 
             mod <- methods::new("cnfa", call = call, mf = mar, marginality = m, sf = sf,
                                  sensitivity = sens, eig = s, co = U, cov = Rs, g.cov = Rg, ras = s.ras, weights = s.dat)
@@ -216,7 +229,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "GLcenfa", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...){
 
             call <- sys.call(sys.parent())
             call <- match.call(cnfa, call)
@@ -243,7 +256,7 @@ setMethod("cnfa",
             x.crop <- crop(ras, ext.s)
             s.dat.ras <- rasterize(s.dat, x.crop, field = field, fun = fun)
 
-            mod <- cnfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, ...)
+            mod <- cnfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, cl = cl, keep.open = keep.open, ...)
             mod@call <- call
             return(mod)
           }
@@ -252,7 +265,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "Raster", s.dat = "Raster"),
-          function(x, s.dat, scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = keep.open, ...){
 
             call <- sys.call(sys.parent())
             call <- match.call(cnfa, call)
@@ -276,10 +289,10 @@ setMethod("cnfa",
             if (scale) {
               if (progress) cat("Scaling raster data...\n")
               #x <- parScale(x, center = T, scale = T, parallel = parallel, n = n, progress = progress)
-              x <- GLcenfa(x = x, center = T, scale = T, progress = progress, parallel = parallel, n = n)
-            } else x <- GLcenfa(x = x, center = F, scale = F, progress = progress, parallel = parallel, n = n)
+              x <- GLcenfa(x = x, center = T, scale = T, progress = progress, parallel = parallel, n = n, cl = cl, keep.open = keep.open)
+            } else x <- GLcenfa(x = x, center = F, scale = F, progress = progress, parallel = parallel, n = n, cl = cl, keep.open = keep.open)
 
-            mod <- cnfa(x = x, s.dat = s.dat, filename = filename, progress = progress, parallel = parallel, n = n, ...)
+            mod <- cnfa(x = x, s.dat = s.dat, filename = filename, progress = progress, parallel = parallel, n = n, cl = cl, keep.open = keep.open, ...)
             mod@call <- call
             return(mod)
           }
@@ -288,7 +301,7 @@ setMethod("cnfa",
 #' @rdname cnfa
 setMethod("cnfa",
           signature(x = "Raster", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...){
 
             call <- sys.call(sys.parent())
             call <- match.call(cnfa, call)
@@ -311,10 +324,10 @@ setMethod("cnfa",
 
             s.dat.ras <- rasterize(s.dat, raster(x), field = field, fun = fun)
             if (scale) {
-              x <- GLcenfa(x = x, center = T, scale = T, progress = progress, parallel = parallel, n = n)
-            } else x <- GLcenfa(x = x, center = F, scale = F, progress = progress, parallel = parallel, n = n)
+              x <- GLcenfa(x = x, center = T, scale = T, progress = progress, parallel = parallel, n = n, cl = cl, keep.open = keep.open)
+            } else x <- GLcenfa(x = x, center = F, scale = F, progress = progress, parallel = parallel, n = n, cl = cl, keep.open = keep.open)
 
-            mod <- cnfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, ...)
+            mod <- cnfa(x = x, s.dat = s.dat.ras, filename = filename, progress = progress, parallel = parallel, n = n, cl = cl, keep.open = keep.open, ...)
             mod@call <- call
             return(mod)
           }

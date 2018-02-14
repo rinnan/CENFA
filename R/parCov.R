@@ -17,6 +17,9 @@
 #'   printed
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
+#' @param cl optional cluster object
+#' @param keep.open logical. If \code{TRUE} and \code{parallel = TRUE}, the
+#'   cluster object will not be closed after the function has finished
 #'
 #' @examples
 #' mat1 <- parCov(climdat.hist)
@@ -60,9 +63,9 @@ setGeneric("parCov", function(x, y, ...){
 #' @rdname parCov
 setMethod("parCov",
           signature(x = "Raster", y = "missing"),
-          function(x, w = NULL, sample = TRUE, progress = FALSE, parallel = FALSE, n = 1){
+          function(x, w = NULL, sample = TRUE, progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE){
 
-            if (canProcessInMemory(x) & !parallel) {
+            if (canProcessInMemory(x) && !parallel) {
               dat <- na.omit(values(x))
               mat <- stats::cov(dat, method = "pearson")
               return(mat)
@@ -77,7 +80,7 @@ setMethod("parCov",
             for(i in 2:nl) jj <- c(jj, i:nl)
             s <- 1:length(ii)
 
-            if (!parallel | n == 1) {
+            if (!parallel || n == 1) {
               if (progress) {
                 pboptions(char = "-", txt.width = NA, type = "txt")
                 result <- pbsapply(s, function(p) do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample)))
@@ -86,17 +89,17 @@ setMethod("parCov",
               }
             }
 
-            if (parallel & n > 1) {
-              on.exit(closeAllConnections())
-              if(!is.numeric(n)) {
+            if (parallel && n > 1) {
+              if (!keep.open) on.exit(closeAllConnections())
+              if(!is.numeric(n) && is.null(cl)) {
                 n <- min(detectCores() - 1, floor(length(s)/2))
                 if (progress) message('incorrect number of cores specified, using ', n)
-              } else if(n > detectCores()) {
+              } else if(is.null(cl) && n > detectCores()) {
                 n <- min(detectCores() - 1, floor(length(s)/2))
                 if (progress) message('too many cores specified, using ', n)
               }
               w <- w
-              cl <- makeCluster(getOption("cl.cores", n))
+              if (is.null(cl)) cl <- makeCluster(getOption("cl.cores", n))
               clusterExport(cl, c(".covij", "raster", "cellStats", "x", "ii", "jj", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
                             envir = environment())
               registerDoSNOW(cl)
@@ -113,14 +116,13 @@ setMethod("parCov",
                   do.call(.covij, list(x = subset(x, ii[p]), y = subset(x, jj[p]), w = w, sample = sample))
                 }
               }
-              snow::stopCluster(cl)
+              if (!keep.open || is.null(cl)) snow::stopCluster(cl)
             }
 
             for (p in s) {
               mat[ii[p], jj[p]] <- mat[jj[p], ii[p]] <- result[p]
             }
 
-            closeAllConnections()
             return(mat)
           }
 )
@@ -128,7 +130,7 @@ setMethod("parCov",
 #' @rdname parCov
 setMethod("parCov",
           signature(x = "Raster", y = "Raster"),
-          function(x, y, w = NULL, sample = TRUE, progress = FALSE, parallel = FALSE, n = 1){
+          function(x, y, w = NULL, sample = TRUE, progress = FALSE, parallel = FALSE, n = 1, cl, keep.open = FALSE){
 
             if (canProcessInMemory(x) & !parallel) {
               x.dat <- values(x)
@@ -154,16 +156,17 @@ setMethod("parCov",
               }
             }
 
-            if (parallel & n > 1) {
-              if (!is.numeric(n)) {
-                n <- min(parallel::detectCores() - 1, floor(length(s)/2))
+            if (parallel && n > 1) {
+              if (!keep.open) on.exit(closeAllConnections())
+              if(!is.numeric(n) && is.null(cl)) {
+                n <- min(detectCores() - 1, floor(length(s)/2))
                 if (progress) message('incorrect number of cores specified, using ', n)
-              } else if (n > parallel::detectCores()) {
-                n <- min(parallel::detectCores() - 1, floor(length(s)/2))
+              } else if(is.null(cl) && n > detectCores()) {
+                n <- min(detectCores() - 1, floor(length(s)/2))
                 if (progress) message('too many cores specified, using ', n)
               }
               w <- w
-              cl <- snow::makeCluster(getOption("cl.cores", n))
+              if (is.null(cl)) cl <- snow::makeCluster(getOption("cl.cores", n))
               snow::clusterExport(cl, c(".covij", "raster", "cellStats", "x", "y", "z", "s", "w", "canProcessInMemory", "values", "sample", "subset"),
                                   envir = environment())
               doSNOW::registerDoSNOW(cl)
@@ -180,15 +183,13 @@ setMethod("parCov",
                   do.call(.covij, list(x = subset(x, z[p, 1]), y = subset(y, z[p, 2]), w = w, sample = sample))
                 }
               }
-              snow::stopCluster(cl)
+              if (!keep.open || is.null(cl)) snow::stopCluster(cl)
             }
 
             for (p in s) {
               mat[ z[p,2], z[p,1] ] <- result[p]
               if(nlx > 1 & nly > 1) mat[ z[p,1], z[p,2] ] <- mat[ z[p,2], z[p,1] ]
             }
-
-            closeAllConnections()
             return(mat)
           }
 )
