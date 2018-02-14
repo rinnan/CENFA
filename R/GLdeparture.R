@@ -78,7 +78,7 @@ setMethod("GLdeparture",
             }
 
             #x.dif <- abs(y - x)
-            x.dif <- overlay(x, y, fun = function(x, y) { return(abs(x - y)) }, filename = filename, ...)
+            x.dif <- overlay(x, y, fun = function(x, y) { return(abs(x - y)) }, forcefun = TRUE, filename = filename, ...)
             names(x.dif) <- names(x)
 
 
