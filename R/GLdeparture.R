@@ -67,7 +67,7 @@ setMethod("GLdeparture",
               if (progress) cat("Scaling historical raster data...\n")
               means <- cellStats(x, mean)
               sds <- cellStats(x, sd)
-              x <- parScale(x, center = means, scale = sds, filename = '', progress = progress, parallel = parallel, n = n)
+              x <- parScale(x, center = center, scale = scale, filename = '', progress = progress, parallel = parallel, n = n)
               if (progress) cat("Scaling future raster data...\n")
               y <- parScale(y, center = means, scale = sds, filename = '', progress = progress, parallel = parallel, n = n)
             }
