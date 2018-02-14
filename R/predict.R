@@ -158,9 +158,11 @@ setMethod("predict",
               method <- as.character(object@call$method)
             }
 
-            ifelse(missing(newdata),
-                   s.map <- predict(x),
-                   s.map <- predict(x, newdata = newdata))
+            if (missing(newdata)) {
+              s.map <- predict(x)
+            } else {
+              s.map <- predict(x, newdata = newdata)
+            }
             e.map <- predict(y)
 
             if (method == "arithmetic") {
