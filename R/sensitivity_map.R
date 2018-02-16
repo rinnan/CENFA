@@ -29,19 +29,23 @@ sensitivity_map <- function(cnfa, parallel = FALSE, n = 1, filename = "", ...){
   ras <- cnfa@ras
   m <- cnfa@mf
   s <- cnfa@sf
+  U.inv <- solve(cnfa@co)
   filename <- trim(filename)
   if (!canProcessInMemory(ras) && filename == '') {
     filename <- rasterTmpFile()
   }
 
-  f1 <- function(x) (abs(x - m) %*%  s) / length(s)
+  f1 <- function(x) x %*% U.inv
+  f2 <- function(x) (abs(x - m) %*%  s) / length(s)
 
   if(parallel) {
     beginCluster(n)
-    sens.ras <- clusterR(ras, fun = .calc, args = list(fun = f1, forceapply = T, names = "Sensitivity"), filename = filename, ...)
+    S <- clusterR(ras, fun = calc, args = list(fun = f1, forceapply = T))
+    sens.ras <- clusterR(S, fun = .calc, args = list(fun = f2, forceapply = T, names = "Sensitivity"), filename = filename, ...)
     endCluster()
   } else {
-    sens.ras <- .calc(ras, fun = f1, forceapply = T, filename = filename, names = "Sensitivity", ...)
+    S <- calc(ras, fun = f1, forceapply = T)
+    sens.ras <- .calc(S, fun = f2, forceapply = T, filename = filename, names = "Sensitivity", ...)
   }
 
   return(sens.ras)
