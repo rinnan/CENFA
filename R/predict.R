@@ -21,39 +21,40 @@ setMethod("predict",
           function(object, newdata, filename = "", parallel = FALSE, n = 1, ...){
 
             x <- get(as.character(object@call$x))
-            if (!is(x, "Raster")) x <- raster(x)
-            nm <- names(x)
+            if (is(x, "GLcenfa")) y <- raster(x) else {
+              if (is(x, "Raster")) y <- x}
+            nm <- names(y)
             if (!missing(newdata)){
               if (!all.equal(nm, names(newdata))) stop("layer names of newdata do not match layer names of model")
             }
             if (is.null(object@call$scale) || as.logical(as.character(object@call$scale))) {
-              center <- cellStats(x, 'mean', na.rm = TRUE)
-              sd <- cellStats(x, 'sd', na.rm = TRUE)
-              if (missing(newdata)) x <- parScale(x, center = center, scale = sd, parallel = parallel, n = n)
+              center <- cellStats(y, 'mean', na.rm = TRUE)
+              sd <- cellStats(y, 'sd', na.rm = TRUE)
+              if (missing(newdata) && is(x, "Raster")) y <- parScale(y, center = center, scale = sd, parallel = parallel, n = n)
             }
 
             if (!missing(newdata)) {
               if (is.null(object@call$scale) || as.logical(as.character(object@call$scale))) {
-                x <- parScale(newdata, center = center, scale = sd, parallel = parallel, n = n)
+                y <- parScale(newdata, center = center, scale = sd, parallel = parallel, n = n)
               } else {
-                x <- newdata
+                y <- newdata
               }
             }
 
             m <- object@mf
             s <- object@sf
             filename <- trim(filename)
-            if (!canProcessInMemory(x) && filename == '') {
+            if (!canProcessInMemory(y) && filename == '') {
               filename <- rasterTmpFile()
             }
 
             f1 <- function(x) (abs(x - m) %*%  s) / length(s)
             if(parallel) {
               beginCluster(n)
-              ras <- clusterR(x, fun = .calc, args = list(fun = f1, forceapply = T, names = "Sensitivity"), filename = filename, ...)
+              ras <- clusterR(y, fun = .calc, args = list(fun = f1, forceapply = T, names = "Sensitivity"), filename = filename, ...)
               endCluster()
             } else {
-              ras <- .calc(x, fun = f1, forceapply = T, filename = filename, names = "Sensitivity", ...)
+              ras <- .calc(y, fun = f1, forceapply = T, filename = filename, names = "Sensitivity", ...)
             }
 
             return(ras)

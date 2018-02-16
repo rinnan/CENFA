@@ -210,7 +210,7 @@ setMethod("cnfa",
             } else {
               if (progress) cat("Creating factor rasters...")
               f1 <- function(x) x %*% U
-              if(parallel && !missing(cl)) {
+              if(parallel) {
                 s.ras <- clusterR(x, fun = .calc, args = list(fun = f1, forceapply = T, names = nm), cl = cl, filename = filename, ...)
               } else {
                 s.ras <- .calc(x, fun = f1, forceapply = T, filename = filename, names = nm, ...)
