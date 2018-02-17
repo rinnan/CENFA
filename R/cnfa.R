@@ -181,7 +181,9 @@ setMethod("cnfa",
             m <- sqrt(as.numeric(t(mar) %*% mar))
             if (max(Im(eigen(Rs)$values)) > 1e-05) stop("complex eigenvalues. Try removing correlated variables.")
             eigRs <- lapply(eigen(Rs), Re)
-            Rs12 <- eigRs$vectors %*% diag(eigRs$values^(-0.5)) %*% t(eigRs$vectors)
+            keep <- (eigRs$values > 1e-09)
+            Rs12 <- eigRs$vectors[, keep] %*% diag(eigRs$values[keep]^(-0.5)) %*% t(eigRs$vectors[, keep])
+            #Rs12 <- eigRs$vectors %*% diag(eigRs$values^(-0.5)) %*% t(eigRs$vectors)
             W <- Rs12 %*% Rg %*% Rs12
             z <- Rs12 %*% mar
             y <- z/sqrt(sum(z^2))
