@@ -48,7 +48,6 @@ Collate:
     'departure.R'
     'enfa-class.R'
     'enfa.R'
-    'enfa2.R'
     'exposure_map.R'
     'names.R'
     'overlay.R'
