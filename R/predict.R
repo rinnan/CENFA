@@ -127,7 +127,7 @@ setMethod("predict",
             }
 
             d <- object@df
-            f1 <- function(x) (x %*% d) / length(d)
+            f1 <- function(x) (x %*% d) #/ length(d)
             if(parallel) {
               beginCluster(n)
               ras <- clusterR(x, fun = .calc, args = list(fun = f1, forceapply = T, names = "Exposure"), filename = filename, ...)
