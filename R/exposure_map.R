@@ -36,7 +36,7 @@ exposure_map <- function(dep, parallel = FALSE, n, filename = "", ...){
     filename <- rasterTmpFile()
   }
 
-  f1 <- function(x) (x %*% d) / length(d)
+  f1 <- function(x) (x %*% d) #/ length(d)
 
   if(parallel) {
     beginCluster(n)
