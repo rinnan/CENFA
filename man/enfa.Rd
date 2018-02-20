@@ -14,16 +14,19 @@
 enfa(x, s.dat, ...)
 
 \S4method{enfa}{GLcenfa,Raster}(x, s.dat, filename = "", progress = FALSE,
-  parallel = FALSE, n = 1, ...)
+  parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...)
 
 \S4method{enfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", progress = FALSE, parallel = FALSE, n = 1, ...)
+  filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
+  keep.open = FALSE, ...)
 
 \S4method{enfa}{Raster,Raster}(x, s.dat, scale = TRUE, filename = "",
-  progress = FALSE, parallel = FALSE, n = 1, ...)
+  progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
+  keep.open = FALSE, ...)
 
 \S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", progress = FALSE, parallel = FALSE, n = 1, ...)
+  filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
+  keep.open = FALSE, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers,
@@ -44,6 +47,11 @@ printed}
 calculation of the covariance matrices}
 
 \item{n}{numeric. Number of CPU cores to utilize for parallel processing}
+
+\item{cl}{optional cluster object}
+
+\item{keep.open}{logical. If \code{TRUE} and \code{parallel = TRUE}, the
+cluster object will not be closed after the function has finished}
 
 \item{field}{field of \code{s.dat} that specifies presence or abundance. This
 is equivalent to the \code{field} argument in the \code{raster} package}
