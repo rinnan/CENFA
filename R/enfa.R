@@ -27,6 +27,9 @@
 #' @param parallel logical. If \code{TRUE} then multiple cores are utilized for the
 #'   calculation of the covariance matrices
 #' @param n numeric. Number of CPU cores to utilize for parallel processing
+#' @param cl optional cluster object
+#' @param keep.open logical. If \code{TRUE} and \code{parallel = TRUE}, the
+#'   cluster object will not be closed after the function has finished
 #' @param ... Additional arguments for \code{\link[raster]{writeRaster}}
 #'
 #' @details
@@ -102,10 +105,21 @@ setGeneric("enfa", function(x, s.dat, ...){
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "GLcenfa", s.dat = "Raster"),
-          function(x, s.dat, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...){
 
             call <- sys.call(sys.parent())
             call <- match.call(enfa, call)
+
+            if(file.exists(filename)) {
+              params <- list(...)
+              if(length(params) > 0) {
+                if(is.null(params$overwrite)) {
+                  stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+                } else if(!(params$overwrite)) {
+                  stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+                }
+              } else stop(paste0(filename, " exists. use 'overwrite=TRUE' if you want to overwrite it"))
+            }
 
             if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
@@ -141,8 +155,12 @@ setMethod("enfa",
               DpS <- x.mask * s.dat
               mar <- cellStats(DpS, sum) / p.sum
               if (progress) cat("Calculating species covariance matrix...\n")
-              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, progress = F)
-              Rs <- parCov(x = Sm, w = s.dat, parallel = parallel, n = n, progress = progress)
+              if (parallel) {
+                if (!keep.open) on.exit(closeAllConnections())
+                if (missing(cl) && n > 1) cl <- snow::makeCluster(getOption("cl.cores", n))
+              }
+              Sm <- parScale(x.mask, center = mar, scale = F, parallel = parallel, n = n, progress = F, keep.open = keep.open, cl = cl)
+              Rs <- parCov(x = Sm, w = s.dat, parallel = parallel, n = n, progress = progress, keep.open = keep.open, cl = cl)
             }
 
             cZ <- nlayers(ras)
@@ -161,28 +179,32 @@ setMethod("enfa",
             s <- c(s.p, sf)
             spec <- sqrt(mean(s))
             s.p <- abs(s)/sum(abs(s))
-            v <- eigen(H)$vectors
-            co <- matrix(nrow = cZ, ncol = cZ)
-            co[, 1] <- mar/sqrt(t(mar) %*% mar)
+            v <- Re(eigen(H)$vectors)
+            U <- matrix(nrow = cZ, ncol = cZ)
             u <- as.matrix((Rs12 %*% v)[, 1:(cZ-1)])
             norw <- sqrt(diag(t(u) %*% u))
-            co[, -1] <- sweep(u, 2, norw, "/")
-            co[, 1] <- mar
+            U[, -1] <- sweep(u, 2, norw, "/")
+            U[, 1] <- mar
             nm <- c("Marg", paste0("Spec", (1:(cZ-1))))
             if (canProcessInMemory(x.crop)) {
               s.ras <- brick(x.crop)
               if (progress) cat("Creating factor rasters...")
-              values(s.ras)[pres, ] <- S %*% co
+              values(s.ras)[pres, ] <- S %*% U
               names(s.ras) <- nm
             } else {
               if (progress) cat("Creating factor rasters...")
-              s.ras <- .calc(x.mask, function(x) {x %*% co}, forceapply = T, filename = filename, names = nm, ...)
+              if(parallel) {
+                f1 <- function(x) x %*% U
+                s.ras <- clusterR(x.mask, fun = .calc, args = list(fun = f1, forceapply = T, names = nm), cl = cl, filename = filename, ...)
+              } else {
+                s.ras <- .calc(x.mask, fun = f1, forceapply = T, filename = filename, names = nm, ...)
+              }
             }
-            colnames(co) <- names(s.p) <- names(s) <- nm
-            rownames(co) <- names(x)
+            colnames(U) <- names(s.p) <- names(s) <- nm
+            rownames(U) <- names(mar) <- names(ras)
 
             mod <- methods::new("enfa", call = call, mf = mar, marginality = m, sf = s,
-                                 specialization = spec, sf.prop = s.p, co = co, cov = Rs, ras = s.ras, weights = s.dat)
+                                 specialization = spec, sf.prop = s.p, co = U, cov = Rs, ras = s.ras, weights = s.dat)
             return(mod)
           }
 )
@@ -190,7 +212,7 @@ setMethod("enfa",
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "GLcenfa", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...){
 
             call <- sys.call(sys.parent())
             call <- match.call(enfa, call)
@@ -215,7 +237,7 @@ setMethod("enfa",
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "Raster", s.dat = "Raster"),
-          function(x, s.dat, scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...){
 
             call <- sys.call(sys.parent())
             call <- match.call(enfa, call)
@@ -239,7 +261,7 @@ setMethod("enfa",
 #' @rdname enfa
 setMethod("enfa",
           signature(x = "Raster", s.dat = "Spatial"),
-          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, ...){
+          function(x, s.dat, field, fun = "last", scale = TRUE, filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...){
 
             call <- sys.call(sys.parent())
             call <- match.call(enfa, call)
