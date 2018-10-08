@@ -17,7 +17,7 @@ This package was created with three goals in mind:
   to quantify different aspects of species vulnerability to climate change,
   and to facilitate quantitative comparisons of vulnerability between species.
 
-- To correct a minor error in the ENFA method itself, that persisted in the
+- To correct a minor error in the ENFA method itself, that has persisted in the
   literature since Hirzel et al. first introduced ENFA in 2002.
 
 
