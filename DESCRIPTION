@@ -49,7 +49,6 @@ Collate:
     'enfa-class.R'
     'enfa.R'
     'exposure_map.R'
-    'names.R'
     'overlay.R'
     'parCov.R'
     'parScale.R'
@@ -62,3 +61,4 @@ Collate:
     'tree-data.R'
     'vulnerability.R'
     'vulnerability_map.R'
+Encoding: UTF-8
