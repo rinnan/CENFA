@@ -42,7 +42,8 @@ setMethod ("show", "cnfa", function(object){
   cat("\nOverall sensitivity: ", round(object@sensitivity, 3), "\n")
   cat("\nSignificant CNFA factors: \n")
   n <- brStick(object@eig[-1])
-  co <- as.data.frame(object@co[order(abs(object@co[,1]), decreasing = T), ])
+  co <- as.data.frame(object@co)
+  #co <- as.data.frame(object@co[order(abs(object@co[,1]), decreasing = T), ])
   print(round(co[, 1:(n+1)], 2))
 }
 )

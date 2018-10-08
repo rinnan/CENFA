@@ -40,7 +40,8 @@ setMethod ("show", "enfa", function(object){
   cat("\nOverall specialization: ", round(object@specialization, 3), "\n")
   cat("\nSignificant ENFA factors: \n")
   n <- brStick(object@sf.prop[-1])
-  co <- as.data.frame(object@co[order(abs(object@co[,1]), decreasing = T), ])
+  co <- as.data.frame(object@co)
+  #co <- as.data.frame(object@co[order(abs(object@co[,1]), decreasing = T), ])
   print(round(co[, 1:(n+1)], 2))
 }
 )
