@@ -49,14 +49,15 @@ setMethod("parScale",
             if (is.logical(center) & is.logical(scale)) {
               if (!center & !scale) return(x) }
 
+            filename <- trim(filename)
+            if (filename == '') filename <- rasterTmpFile()
+
             if (canProcessInMemory(x) & !parallel) {
               v <- values(x)
               x <- setValues(x, scale(v, center = center, scale = scale))
+              writeRaster(x, filename = filename, ...)
               return(x)
             }
-
-            filename <- trim(filename)
-            if (filename == '') filename <- rasterTmpFile()
 
             if (!parallel) {
               x <- scale(x, center = center, scale = scale)
