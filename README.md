@@ -11,13 +11,13 @@ created with three goals in mind:
 
   - To update the ENFA method for use with large datasets and modern
     data formats.
-  - To correct a critical error in the ENFA method itself, that has
-    managed to persist since Hirzel et al. first introduced ENFA in
-    2002.
   - To expand the application of ENFA in the context of climate change
     in order to quantify different aspects of species vulnerability to
     climate change, and to facilitate quantitative comparisons of
     vulnerability between species.
+  - To correct a minor error in the ENFA method itself, that has
+    persisted in the literature since Hirzel et al. first introduced
+    ENFA in 2002.
 
 `CENFA` takes advantage of the `raster` and `sp` packages, allowing the
 user to conduct analyses directly with raster, shapefile, and point
@@ -26,7 +26,7 @@ and parallelization.
 
 ## Installation
 
-You can install CENFA from GitHub with:
+You can install the most recent version of CENFA from GitHub with:
 
 ``` r
 # install.packages("devtools")
