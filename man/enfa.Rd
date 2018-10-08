@@ -34,7 +34,7 @@ enfa(x, s.dat, ...)
 or a \code{GLcenfa} object}
 
 \item{s.dat}{RasterLayer, SpatialPolygons*, or SpatialPoints* object indicating
-species presence}
+species presence or abundance}
 
 \item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 

@@ -8,7 +8,7 @@
 #' @param x Raster* object, typically a brick or stack of ecological raster layers,
 #'  or a \code{GLcenfa} object
 #' @param s.dat RasterLayer, SpatialPolygons*, or SpatialPoints* object indicating
-#'   species presence
+#'   species presence or abundance
 #' @param field field of \code{s.dat} that specifies presence or abundance. This
 #'   is equivalent to the \code{field} argument in the \code{raster} package
 #' @param fun function or character. Determines what values to assign to cells
