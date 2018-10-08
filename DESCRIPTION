@@ -1,7 +1,7 @@
 Package: CENFA
 Type: Package
 Title: Climate and Ecological Niche Factor Analysis
-Version: 0.1.0.9000
+Version: 1.0.0
 Date: 2018-10-8
 Author: D. Scott Rinnan
 Maintainer: D. Scott Rinnan <scott.rinnan@yale.edu>
