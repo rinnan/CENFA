@@ -49,6 +49,7 @@ Collate:
     'enfa-class.R'
     'enfa.R'
     'exposure_map.R'
+    'names.R'
     'overlay.R'
     'parCov.R'
     'parScale.R'
