@@ -38,12 +38,13 @@ setMethod("stretchPlot",
           function(x, type = "linear", n, ...) {
 
             xx <- pretty(values(x), 2)
+            p <- length(xx)
 
             if(type == "hist.equal") {
               y <- .stretch(x, type = "hist.equal")
               plot(y[[1]], breaks = .quantile_breaks(y[[1]]),
-                   axis.args = list(at = y[[2]],
-                                    labels = xx), ...)
+                   axis.args = list(at = y[[2]][-p],
+                                    labels = xx[-p]), ...)
             }
             if(type == "linear") {
               y <- .stretch(x, type = "linear")
