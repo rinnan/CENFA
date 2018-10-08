@@ -20,8 +20,8 @@
 #' @importFrom grDevices chull
 #' @importFrom magrittr %>%
 #' @importFrom stats ecdf sd
-#' @importFrom graphics abline arrows legend par points polygon text
-#' @importFrom raster quantile
+#' @importFrom graphics abline arrows legend par points polygon
+# @importFrom raster quantile
 #'
 #' @include CENFA.R cnfa-class.R enfa-class.R GLcenfa-class.R
 #'
@@ -206,7 +206,7 @@ setMethod("scatter",
   p[x < 0] <- -p[x < 0]
   q <- rep(yfact/40, length(y))
   q[y < 0] <- -q[y < 0]
-  text(x * xfact + p, y * yfact + q, ...)
+  graphics::text(x * xfact + p, y * yfact + q, ...)
 }
 
 #' @keywords internal

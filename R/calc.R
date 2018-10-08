@@ -1,7 +1,7 @@
 #' @keywords internal
 #'
-#' @importFrom raster brick trim canProcessInMemory setValues writeRaster pbStep
-#'   nlayers getValues writeStart blockSize pbCreate writeValues writeStop pbClose
+# @importFrom raster brick trim canProcessInMemory setValues writeRaster pbStep
+#   nlayers getValues writeStart blockSize pbCreate writeValues writeStop pbClose
 #' @importFrom foreach %dopar% foreach
 #' @importFrom stats cov na.omit
 #' @importFrom utils setTxtProgressBar txtProgressBar

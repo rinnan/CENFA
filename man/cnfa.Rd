@@ -13,20 +13,21 @@
 \usage{
 cnfa(x, s.dat, ...)
 
-\S4method{cnfa}{GLcenfa,Raster}(x, s.dat, filename = "", progress = FALSE,
-  parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...)
+\S4method{cnfa}{GLcenfa,Raster}(x, s.dat, filename = "",
+  progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
+  keep.open = FALSE, ...)
 
 \S4method{cnfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
-  keep.open = FALSE, ...)
+  filename = "", progress = FALSE, parallel = FALSE, n = 1,
+  cl = NULL, keep.open = FALSE, ...)
 
 \S4method{cnfa}{Raster,Raster}(x, s.dat, scale = TRUE, filename = "",
   progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
   keep.open = keep.open, ...)
 
-\S4method{cnfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
-  keep.open = FALSE, ...)
+\S4method{cnfa}{Raster,Spatial}(x, s.dat, field, fun = "last",
+  scale = TRUE, filename = "", progress = FALSE, parallel = FALSE,
+  n = 1, cl = NULL, keep.open = FALSE, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack with p climate
@@ -110,8 +111,8 @@ the marginality factor. As such, the sensitivity factor offers a more complete
 measure of specialization than ENFA's specialization factor, which does
 not calculate the amount of specialization found in the marginality factor.
 As such, CNFA's overall sensitivity (found in the slot \code{sensitivity})
-is likely more meaningful than ENFA's overall specialization (found in the
-slot \code{specialization}).
+offers a more complete measure of niche specialization than ENFA's overall
+specialization (found in the slot \code{specialization}).
 
 The default \code{fun = 'last'} gives equal weight to each occupied cell.
 If multiple species observations occur in the same cell, the cell will only

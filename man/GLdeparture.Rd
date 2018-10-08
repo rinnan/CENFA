@@ -13,13 +13,13 @@ GLdeparture(x, y, center = TRUE, scale = TRUE, filename = "",
   progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
   keep.open = FALSE, ...)
 
-\S4method{GLdeparture}{Raster,Raster}(x, y, center = TRUE, scale = TRUE,
-  filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
-  keep.open = FALSE, ...)
+\S4method{GLdeparture}{Raster,Raster}(x, y, center = TRUE,
+  scale = TRUE, filename = "", progress = FALSE, parallel = FALSE,
+  n = 1, cl = NULL, keep.open = FALSE, ...)
 
-\S4method{GLdeparture}{Raster,missing}(x, y, center = TRUE, scale = TRUE,
-  filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
-  keep.open = FALSE, ...)
+\S4method{GLdeparture}{Raster,missing}(x, y, center = TRUE,
+  scale = TRUE, filename = "", progress = FALSE, parallel = FALSE,
+  n = 1, cl = NULL, keep.open = FALSE, ...)
 }
 \arguments{
 \item{x}{Raster* object of p historical climate layers}

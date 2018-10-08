@@ -7,7 +7,8 @@
 \alias{scatter,enfa,GLcenfa-method}
 \title{Biplots of \code{cnfa} and \code{enfa} objects.}
 \usage{
-scatter(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...)
+scatter(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE,
+  ...)
 
 \S4method{scatter}{cnfa,GLcenfa}(x, y, xax = 1, yax = 2, p = 0.99,
   n = 5, plot = TRUE, ...)

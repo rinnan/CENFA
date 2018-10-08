@@ -8,12 +8,13 @@
 \alias{GLcenfa,Raster-method}
 \title{Climate-niche factor analysis for reference study area}
 \usage{
-GLcenfa(x, center = TRUE, scale = TRUE, filename = "", progress = FALSE,
-  parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...)
-
-\S4method{GLcenfa}{Raster}(x, center = TRUE, scale = TRUE, filename = "",
+GLcenfa(x, center = TRUE, scale = TRUE, filename = "",
   progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
   keep.open = FALSE, ...)
+
+\S4method{GLcenfa}{Raster}(x, center = TRUE, scale = TRUE,
+  filename = "", progress = FALSE, parallel = FALSE, n = 1,
+  cl = NULL, keep.open = FALSE, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of p environmental raster

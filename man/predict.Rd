@@ -9,11 +9,11 @@
 \alias{predict,vulnerability-method}
 \title{Predict methods}
 \usage{
-\S4method{predict}{cnfa}(object, newdata, filename = "", parallel = FALSE,
-  n = 1, ...)
+\S4method{predict}{cnfa}(object, newdata, filename = "",
+  parallel = FALSE, n = 1, ...)
 
-\S4method{predict}{enfa}(object, newdata, filename = "", parallel = FALSE,
-  n = 1, ...)
+\S4method{predict}{enfa}(object, newdata, filename = "",
+  parallel = FALSE, n = 1, ...)
 
 \S4method{predict}{departure}(object, filename = "", parallel = FALSE,
   n = 1, ...)

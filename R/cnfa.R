@@ -83,8 +83,8 @@
 #' measure of specialization than ENFA's specialization factor, which does
 #' not calculate the amount of specialization found in the marginality factor.
 #' As such, CNFA's overall sensitivity (found in the slot \code{sensitivity})
-#' is likely more meaningful than ENFA's overall specialization (found in the
-#' slot \code{specialization}).
+#' offers a more complete measure of niche specialization than ENFA's overall
+#' specialization (found in the slot \code{specialization}).
 #'
 #' The default \code{fun = 'last'} gives equal weight to each occupied cell.
 #' If multiple species observations occur in the same cell, the cell will only
@@ -111,7 +111,7 @@
 #'
 #' @importFrom stats cov
 #' @importFrom methods as is
-#' @importFrom raster rasterTmpFile intersect extent values mask crop values<-
+# @importFrom raster rasterTmpFile intersect extent values mask crop values<-
 
 setGeneric("cnfa", function(x, s.dat, ...){
   standardGeneric("cnfa")})

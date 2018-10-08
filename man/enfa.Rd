@@ -13,20 +13,21 @@
 \usage{
 enfa(x, s.dat, ...)
 
-\S4method{enfa}{GLcenfa,Raster}(x, s.dat, filename = "", progress = FALSE,
-  parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE, ...)
+\S4method{enfa}{GLcenfa,Raster}(x, s.dat, filename = "",
+  progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
+  keep.open = FALSE, ...)
 
 \S4method{enfa}{GLcenfa,Spatial}(x, s.dat, field, fun = "last",
-  filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
-  keep.open = FALSE, ...)
+  filename = "", progress = FALSE, parallel = FALSE, n = 1,
+  cl = NULL, keep.open = FALSE, ...)
 
 \S4method{enfa}{Raster,Raster}(x, s.dat, scale = TRUE, filename = "",
   progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
   keep.open = FALSE, ...)
 
-\S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last", scale = TRUE,
-  filename = "", progress = FALSE, parallel = FALSE, n = 1, cl = NULL,
-  keep.open = FALSE, ...)
+\S4method{enfa}{Raster,Spatial}(x, s.dat, field, fun = "last",
+  scale = TRUE, filename = "", progress = FALSE, parallel = FALSE,
+  n = 1, cl = NULL, keep.open = FALSE, ...)
 }
 \arguments{
 \item{x}{Raster* object, typically a brick or stack of ecological raster layers,

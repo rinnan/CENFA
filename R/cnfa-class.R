@@ -22,7 +22,8 @@
 #' @export
 
 setClass("cnfa", slots = list(call = "call", mf = "numeric", marginality = "numeric", sf = "numeric",
-                           sensitivity = "numeric", eig = "numeric", co = "matrix", cov = "matrix", g.cov = "matrix", ras = "Raster", weights = "Raster"))
+                           sensitivity = "numeric", eig = "numeric", co = "matrix", cov = "matrix",
+                           g.cov = "matrix", ras = "Raster", weights = "Raster"))
 
 setMethod ("show", "cnfa", function(object){
   if (!inherits(object, "cnfa"))

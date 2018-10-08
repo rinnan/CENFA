@@ -11,7 +11,8 @@
 \usage{
 departure(x, y, s.dat, ...)
 
-\S4method{departure}{GLdeparture,missing,cnfa}(x, s.dat, filename = "", ...)
+\S4method{departure}{GLdeparture,missing,cnfa}(x, s.dat, filename = "",
+  ...)
 
 \S4method{departure}{GLdeparture,missing,Spatial}(x, s.dat, field,
   fun = "last", filename = "", ...)

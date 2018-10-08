@@ -1,5 +1,5 @@
 #' @keywords internal
-#' @importFrom raster cellStats filename extension
+# @importFrom raster cellStats filename extension
 
 # This function calculates the covariance between two raster layers.
 

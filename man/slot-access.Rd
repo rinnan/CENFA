@@ -10,11 +10,6 @@
 \alias{sensitivity}
 \alias{cov}
 \alias{raster}
-\alias{m.factor}
-\alias{s.factor}
-\alias{marginality}
-\alias{specialization}
-\alias{sensitivity}
 \alias{cov.cnfa}
 \alias{cov.enfa}
 \alias{cov.GLcenfa}
