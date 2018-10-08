@@ -15,7 +15,11 @@ In current development.
 
 -   Fixed bugs in `parScale` function involving parallel methods.
 
--   Added predict methods for `enfa`, `cnfa`, and `departure` objects.
+-   Added predict methods for `enfa`, `cnfa`, `departure` and `vulnerability` objects.
+
+-   Fixed bug in `GLcenfa` that prevented writing of Raster\* objects.
+
+-   Imports `raster` package instead of depends.
 
 CENFA 0.1.0
 -----------
