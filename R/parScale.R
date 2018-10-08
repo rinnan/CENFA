@@ -36,7 +36,7 @@
 #' @export
 #' @importFrom pbapply pbsapply pboptions
 #' @importFrom foreach '%dopar%'
-#' @importFrom raster subset stack brick
+# @importFrom raster subset stack brick
 
 setGeneric("parScale", function(x, ...){
   standardGeneric("parScale")})

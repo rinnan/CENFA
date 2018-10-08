@@ -1,8 +1,8 @@
 #' @keywords internal
 #'
-#' @importFrom raster brick trim canProcessInMemory setValues writeRaster pbStep
-#'   nlayers getValues writeStart blockSize pbCreate writeValues writeStop pbClose
-#'   extract ncell
+# @importFrom raster brick trim canProcessInMemory setValues writeRaster pbStep
+#   nlayers getValues writeStart blockSize pbCreate writeValues writeStop pbClose
+#   extract ncell
 #' @importFrom foreach %dopar% foreach
 #' @importFrom stats cov na.omit
 #' @importFrom utils setTxtProgressBar txtProgressBar
@@ -32,12 +32,12 @@
   lst$forcefun <- forcefun
   lst$x <- x
   lst$names <- names
-  do.call(.overlaylist, lst)
+  do.call(.overlayList, lst)
 }
 
 
 
-.overlaylist <- function(x, fun, filename="", recycle=TRUE, forcefun=FALSE, names, ...){
+.overlayList <- function(x, fun, filename="", recycle=TRUE, forcefun=FALSE, ...){
 
   ln <- length(x)
   if (ln < 1) {
@@ -93,7 +93,6 @@
     out <- raster(x[[1]])
   } else {
     out <- brick(x[[1]], values=FALSE, nl=nlout)
-    names(out) <- names
   }
 
   if ( canProcessInMemory(out, sum(nl)+maxnl) ) {
@@ -131,7 +130,6 @@
     }
     pbStep(pb, 3)
     out <- setValues(out, vals)
-    names(out) <- names
     if (filename != "") {
       out <- writeRaster(out, filename=filename, ...)
     }

@@ -23,8 +23,8 @@
 #'
 #' @seealso \code{\link{departure}}, \code{\link{sensitivity_map}}, \code{\link{vulnerability_map}}
 #'
-#' @importFrom raster beginCluster clusterR endCluster
-#' @importMethodsFrom raster raster
+# @importFrom raster beginCluster clusterR endCluster
+# @importMethodsFrom raster raster
 #' @export
 
 exposure_map <- function(dep, parallel = FALSE, n, filename = "", ...){

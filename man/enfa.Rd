@@ -99,7 +99,7 @@ function in the \code{adehabitatHS} package. \code{CENFA::enfa} will give
 different results than \code{adehabitatHS::enfa} for versions of \code{adehabitatHS}
 0.3.13 or earlier, however, for two primary reasons.
 
-First, \code{CENFA::enfa} corrects a critical mistake in the calculation of
+First, \code{CENFA::enfa} corrects a minor mistake in the calculation of
 the species covariance matrix. This correction influences the values of the
 coefficients of specialization in each ecological variable, which will lead to
 a different interpretation of the degree of specialization. Second, we define

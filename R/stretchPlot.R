@@ -23,8 +23,8 @@
 #' stretchPlot(sm, type = "sd", n = 2)
 #'
 #' @importFrom stats ecdf sd
-#' @importFrom raster calc cellStats
-#' @importMethodsFrom raster [ plot
+# @importFrom raster calc cellStats
+# @importMethodsFrom raster [ plot
 #'
 #' @export
 
