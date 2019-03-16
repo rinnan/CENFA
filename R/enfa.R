@@ -72,11 +72,9 @@
 #'   \item{call}{Original function call}
 #'   \item{mf}{Marginality factor. Vector that describes the location of the
 #'    species Hutchinsonian niche relative to the global niche}
-#'   \item{marginality}{Magnitude of the marginality factor, scaled by the
-#'   global covariance matrix}
+#'   \item{marginality}{Magnitude of the marginality factor}
 #'   \item{sf}{Specialization factor. Vector of eigenvalues of specialization}
-#'   \item{specialization}{Overall specialization, equal to the square root of the sum
-#'   of eigenvalues, divided by the length of \code{sf}}
+#'   \item{specialization}{Square root of the mean of the specialization factor}
 #'   \item{sf.prop}{Vector representing the proportion of specialization found in each
 #'   ENFA factor}
 #'   \item{co}{A matrix describing the amount of marginality and specialization
