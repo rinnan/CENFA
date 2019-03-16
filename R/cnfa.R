@@ -50,12 +50,10 @@
 #'   \item{call}{Original function call}
 #'   \item{mf}{Marginality factor. Vector of length p that describes the location
 #'   of the species Hutchinsonian niche relative to the global niche}
-#'   \item{marginality}{Magnitude of the marginality factor, scaled by the
-#'   global covariance matrix}
+#'   \item{marginality}{Magnitude of the marginality factor}
 #'   \item{sf}{Sensitivity factor. Vector of length p that describes the amount of
 #'    sensitivity for each climate variable}
-#'   \item{sensitivity}{Magnitude of the sensitivity factor, scaled by the
-#'   global covariance matrix}
+#'   \item{sensitivity}{Square root of the mean of the sensitivity factor}
 #'   \item{eig}{Named vector of eigenvalues of specialization for each CNFA factor}
 #'   \item{co}{A p x p matrix describing the amount of marginality and specialization
 #'    in each CNFA factor.}
