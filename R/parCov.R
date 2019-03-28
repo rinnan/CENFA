@@ -66,8 +66,8 @@ setMethod("parCov",
           function(x, w = NULL, sample = TRUE, progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE){
 
             if (canProcessInMemory(x) && !parallel) {
-              dat <- na.omit(values(x))
-              mat <- stats::cov(dat, method = "pearson")
+              dat <- values(x)
+              mat <- stats::cov(dat, method = "pearson", use = "pairwise.complete.obs")
               return(mat)
             }
             nl <- nlayers(x)
@@ -135,7 +135,7 @@ setMethod("parCov",
             if (canProcessInMemory(x) & !parallel) {
               x.dat <- values(x)
               y.dat <- values(y)
-              mat <- stats::cov(x.dat, y.dat, method = "pearson", use = "na.or.complete")
+              mat <- stats::cov(x.dat, y.dat, method = "pearson", use = "pairwise.complete.obs")
               return(mat)
             }
 
