@@ -2,6 +2,7 @@
 [![Build
 Status](https://travis-ci.org/rinnan/CENFA.svg?branch=master)](https://travis-ci.org/rinnan/CENFA)
 [![CRAN](http://www.r-pkg.org/badges/version/CENFA)]()
+![](https://cranlogs.r-pkg.org/badges/last-month/CENFA)
 
 # CENFA: Climate and Ecological Niche Factor Analysis
 
@@ -307,6 +308,11 @@ I welcome contributions and suggestions for improving this package.
 Please do not hesitate to submit any issues you may encounter.
 
 ## References
+
+Rinnan, D. Scott and Lawler, Joshua. Climate‐niche factor analysis: a
+spatial approach to quantifying species vulnerability to climate change.
+Ecography (2019).
+[doi:10.1111/ecog.03937](https://doi.org/10.1111/ecog.03937)
 
 Basille, Mathieu, et al. Assessing habitat selection using multivariate
 statistics: Some refinements of the ecological-niche factor analysis.
