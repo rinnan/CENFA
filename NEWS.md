@@ -8,6 +8,8 @@
   - Fixed small bug in `parCov()` function that caused NA observations
     to be discarded.
 
+  - Added more informative error messages for `cnfa()` function.
+
 ## CENFA 1.0.0
 
 Published on CRAN, 2018/11/06.
