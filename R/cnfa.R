@@ -95,6 +95,10 @@
 #' and \code{marginality} and \code{sensitivity} are both returned as \code{NA}.
 #'
 #' @references
+#' Rinnan, D. Scott and Lawler, Joshua. Climate-niche factor analysis: a spatial
+#' approach to quantifying species vulnerability to climate change. Ecography (2019):
+#' \href{https://doi.org/10.1111/ecog.03937}{doi:10.1111/ecog.03937}.
+#'
 #' Basille, Mathieu, et al. Assessing habitat selection using multivariate
 #' statistics: Some refinements of the ecological-niche factor analysis. Ecological
 #' Modelling 211.1 (2008): 233-240.
@@ -135,6 +139,8 @@ setMethod("cnfa",
 
             if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
             if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
+            nS <- length(which(values(s.dat) > 0))
+            if(nS == 1) stop("CNFA is not meaningful for single observations")
             ras <- raster(x)
             ext <- extent(ras)
             ext.s <- extent(s.dat)
