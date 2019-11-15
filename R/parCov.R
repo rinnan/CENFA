@@ -130,7 +130,7 @@ setMethod("parCov",
 #' @rdname parCov
 setMethod("parCov",
           signature(x = "Raster", y = "Raster"),
-          function(x, y, w = NULL, sample = TRUE, progress = FALSE, parallel = FALSE, n = 1, cl, keep.open = FALSE){
+          function(x, y, w = NULL, sample = TRUE, progress = FALSE, parallel = FALSE, n = 1, cl = NULL, keep.open = FALSE){
 
             if (canProcessInMemory(x) & !parallel) {
               x.dat <- values(x)
@@ -144,7 +144,7 @@ setMethod("parCov",
             mat <- matrix(NA, nrow = nlx, ncol = nly)
             rownames(mat) <- names(x)
             colnames(mat) <- names(y)
-            z <- .expand.grid.unique(1:nlx, 1:nly)
+            z <- expand.grid(1:nlx, 1:nly)
             s <- 1:nrow(z)
 
             if (!parallel | n == 1) {
@@ -161,7 +161,7 @@ setMethod("parCov",
               if(!is.numeric(n) && is.null(cl)) {
                 n <- min(detectCores() - 1, floor(length(s)/2))
                 if (progress) message('incorrect number of cores specified, using ', n)
-              } else if(is.null(cl) && n > detectCores()) {
+              } else if(is.null(cl) && n > parallel::detectCores()) {
                 n <- min(detectCores() - 1, floor(length(s)/2))
                 if (progress) message('too many cores specified, using ', n)
               }
@@ -188,7 +188,7 @@ setMethod("parCov",
 
             for (p in s) {
               mat[ z[p,2], z[p,1] ] <- result[p]
-              if(nlx > 1 & nly > 1) mat[ z[p,1], z[p,2] ] <- mat[ z[p,2], z[p,1] ]
+              #if(nlx > 1 & nly > 1) mat[ z[p,1], z[p,2] ] <- mat[ z[p,2], z[p,1] ]
             }
             return(mat)
           }
