@@ -36,6 +36,9 @@ In current development.
 
   - Imports `raster` package instead of depends.
 
+  - Fixes bug in `parCov` function involving covariance calculations
+    between two Raster\* objects.
+
 ## CENFA 0.1.0
 
 Published on CRAN, as of 2018/02/06\!
