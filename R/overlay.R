@@ -65,7 +65,7 @@
 
   test1 <- try ( apply(testmat, 1, fun) , silent=TRUE )
 
-  if (class(test1) != "try-error" & (!forcefun)) {
+  if ( !("try-error" %in% class(test1)) & (!forcefun)) {
     doapply <- TRUE
     if (! is.null(dim(test1))) {
       test1 <- t(test1)
@@ -78,12 +78,12 @@
     dovec <- FALSE
     test2 <- try ( do.call(fun, testlst), silent=TRUE )
     nlout <- length(test2)/5
-    if (class(test2) == "try-error" | length(test2) < 5) {
+    if ( "try-error" %in% class(test2) | length(test2) < 5) {
       dovec <- TRUE
       testlst <- lapply(testlst, as.vector)
       test3 <- try ( do.call(fun, testlst), silent=TRUE )
       nlout <- length(test3)/5
-      if (class(test3) == "try-error" | length(test3) < 5) {
+      if ("try-error" %in% class(test3) | length(test3) < 5) {
         stop('cannot use this formula, probably because it is not vectorized')
       }
     }
