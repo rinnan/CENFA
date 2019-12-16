@@ -1,9 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
-^README\.md$
 ^NEWS\.Rmd$
-^NEWS\.md$
 ^README-.*\.png$
 ^\.travis\.yml$
 ^cran-comments\.md$
