@@ -18,7 +18,7 @@
   \item{PDQ}{precip of driest quarter}
 }}
 \source{
-\url{www.worldclim.org}
+\url{http://www.worldclim.org}
 }
 \usage{
 climdat.fut
