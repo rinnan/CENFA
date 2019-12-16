@@ -24,6 +24,6 @@
 #   \item{PHQ}{precip of hottest quarter}
 #   \item{PCQ}{precip of coldest quarter}
 #' }
-#' @source \url{www.worldclim.org}
+#' @source \url{http://www.worldclim.org}
 #' @seealso \code{\link{climdat.fut}}, \code{\link{tree-data}}
 "climdat.hist"

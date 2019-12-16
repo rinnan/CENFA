@@ -19,9 +19,9 @@ library(CENFA)
 ```
 # An introduction to the `CENFA` package
 
-`Version: 0.1.0.9000`
+`Version: 0.1.1.0`
 
-`Date: 2018-10-8`
+`Date: 2019-12-16`
 
 `Author: D. Scott Rinnan`
 
