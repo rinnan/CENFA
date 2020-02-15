@@ -1,6 +1,6 @@
 #' Historical climate data
 #'
-#' Historical climate dataset of 10 bioclimate variables (\url{http://www.worldclim.org}).
+#' Historical climate dataset of 10 bioclimate variables (\url{https://www.worldclim.org}).
 #'
 #' @format A RasterBrick with 10 layers:
 #' \describe{
@@ -24,6 +24,6 @@
 #   \item{PHQ}{precip of hottest quarter}
 #   \item{PCQ}{precip of coldest quarter}
 #' }
-#' @source \url{http://www.worldclim.org}
+#' @source \url{https://www.worldclim.org}
 #' @seealso \code{\link{climdat.fut}}, \code{\link{tree-data}}
 "climdat.hist"

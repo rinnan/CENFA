@@ -18,13 +18,13 @@
   \item{PDQ}{precip of driest quarter}
 }}
 \source{
-\url{http://www.worldclim.org}
+\url{https://www.worldclim.org}
 }
 \usage{
 climdat.hist
 }
 \description{
-Historical climate dataset of 10 bioclimate variables (\url{http://www.worldclim.org}).
+Historical climate dataset of 10 bioclimate variables (\url{https://www.worldclim.org}).
 }
 \seealso{
 \code{\link{climdat.fut}}, \code{\link{tree-data}}
