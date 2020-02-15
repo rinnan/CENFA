@@ -1,6 +1,6 @@
 #' Historical climate data
 #'
-#' Historical climate dataset of 10 bioclimate variables (\url{www.worldclim.org}).
+#' Historical climate dataset of 10 bioclimate variables (\url{http://www.worldclim.org}).
 #'
 #' @format A RasterBrick with 10 layers:
 #' \describe{

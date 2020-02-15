@@ -24,7 +24,7 @@
 climdat.hist
 }
 \description{
-Historical climate dataset of 10 bioclimate variables (\url{www.worldclim.org}).
+Historical climate dataset of 10 bioclimate variables (\url{http://www.worldclim.org}).
 }
 \seealso{
 \code{\link{climdat.fut}}, \code{\link{tree-data}}
