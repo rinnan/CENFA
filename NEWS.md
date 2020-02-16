@@ -2,6 +2,11 @@
 News
 ====
 
+CENFA 1.1.0.9000
+----------------
+
+In current development.
+
 CENFA 1.1.0
 -----------
 
@@ -25,8 +30,6 @@ Published on CRAN, 2018/11/06.
 
 CENFA 0.1.0.9000
 ----------------
-
-In current development.
 
 -   Changed `quiet = TRUE` arguments to `progress = FALSE` for more intuitive interface.
 
