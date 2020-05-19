@@ -191,8 +191,8 @@ setMethod("enfa",
               names(s.ras) <- nm
             } else {
               if (progress) cat("Creating factor rasters...")
+              f1 <- function(x) x %*% U
               if(parallel) {
-                f1 <- function(x) x %*% U
                 s.ras <- clusterR(x.mask, fun = .calc, args = list(fun = f1, forceapply = T, names = nm), cl = cl, filename = filename, ...)
               } else {
                 s.ras <- .calc(x.mask, fun = f1, forceapply = T, filename = filename, names = nm, ...)
