@@ -176,7 +176,7 @@ all.equal(s.factor(mod1), s.factor(mod2))
 \references{
 Rinnan, D. Scott and Lawler, Joshua. Climate-niche factor analysis: a spatial
 approach to quantifying species vulnerability to climate change. Ecography (2019):
-\href{https://doi.org/10.1111/ecog.03937}{doi:10.1111/ecog.03937}.
+<doi:10.1111/ecog.03937>.
 
 Basille, Mathieu, et al. Assessing habitat selection using multivariate
 statistics: Some refinements of the ecological-niche factor analysis. Ecological
