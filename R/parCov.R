@@ -90,7 +90,7 @@ setMethod("parCov",
             }
 
             if (parallel && n > 1) {
-              if (!keep.open) on.exit(closeAllConnections())
+              #if (!keep.open) on.exit(closeAllConnections())
               if(!is.numeric(n) && is.null(cl)) {
                 n <- min(detectCores() - 1, floor(length(s)/2))
                 if (progress) message('incorrect number of cores specified, using ', n)
@@ -157,7 +157,7 @@ setMethod("parCov",
             }
 
             if (parallel && n > 1) {
-              if (!keep.open) on.exit(closeAllConnections())
+              #if (!keep.open) on.exit(closeAllConnections())
               if(!is.numeric(n) && is.null(cl)) {
                 n <- min(detectCores() - 1, floor(length(s)/2))
                 if (progress) message('incorrect number of cores specified, using ', n)

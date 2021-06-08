@@ -57,5 +57,5 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
 .onUnload <- function (libpath) {
   library.dynam.unload("CENFA", libpath)
-  closeAllConnections()
+  #closeAllConnections()
 }
