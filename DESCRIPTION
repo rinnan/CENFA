@@ -26,9 +26,10 @@ License: GPL (>= 3)
 LazyData: TRUE
 RoxygenNote: 7.0.2
 Suggests: 
-        knitr,
+        markdown,
+        rmarkdown,
         maps,
-        rmarkdown
+
 VignetteBuilder: knitr
 Collate: 
     'CENFA.R'
