@@ -28,7 +28,8 @@ RoxygenNote: 7.0.2
 Suggests: 
         markdown,
         rmarkdown,
-        maps
+        maps,
+	knitr
 VignetteBuilder: knitr
 Collate: 
     'CENFA.R'
