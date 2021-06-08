@@ -11,6 +11,9 @@ In current development.
   - Fixed bug in `predict()` methods for `enfa` objects that returned
     raster brick instead of layer.
 
+  - Removed `closeAllConnections()` command that may cause unwanted
+    behavior.
+
 ## CENFA 1.1.0
 
 Published on CRAN, 2020/02/15.
