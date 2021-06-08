@@ -1,8 +1,0 @@
-package,old,new,delta
-CENFA,1.1.0,1.1.1,*
-doSNOW,NA,1.0.19,*
-foreach,NA,1.5.1,*
-iterators,NA,1.0.13,*
-pbapply,NA,1.4-3,*
-raster,NA,3.4-10,*
-sp,NA,1.4-5,*
