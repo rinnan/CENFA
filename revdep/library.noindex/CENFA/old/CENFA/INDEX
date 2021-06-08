@@ -1,0 +1,31 @@
+CENFA-package           Tools for climate- and ecological-niche factor
+                        analysis
+GLcenfa                 Climate-niche factor analysis for reference
+                        study area
+GLcenfa-class           GLcenfa-class
+GLdeparture             Climatic departure of reference study area
+GLdeparture-class       GLdeparture-class
+brStick                 Broken-stick method for detection of
+                        significant factors
+climdat.fut             Future climate data
+climdat.hist            Historical climate data
+cnfa                    Climate-niche factor analysis
+cnfa-class              cnfa-class
+departure               Climatic departure
+departure-class         departure-class
+enfa                    Ecological-niche factor analysis
+enfa-class              enfa-class
+exposure_map            Create an exposure map
+names                   names
+parCov                  Efficient calculation of covariance matrices
+                        for Raster* objects
+parScale                Efficient scaling of Raster* objects
+predict                 Predict methods
+scatter                 Biplots of 'cnfa' and 'enfa' objects.
+sensitivity_map         Create a sensitivity map
+slot-access             Accessing CENFA slots
+stretchPlot             Contrast adjustments for RasterLayer plots
+tree-data               Tree distribution data
+vulnerability           Climatic vulnerability
+vulnerability-class     vulnerability-class
+vulnerability_map       Create a vulnerability map
