@@ -1,6 +1,10 @@
 
 # News
 
+## CENFA 1.1.1
+
+Published on CRAN, 2021-06-08.
+
 ## CENFA 1.1.0.9000
 
 In current development.
@@ -16,7 +20,7 @@ In current development.
 
 ## CENFA 1.1.0
 
-Published on CRAN, 2020/02/15.
+Published on CRAN, 2020-02-15.
 
 ## CENFA 1.0.0.9000
 
@@ -31,7 +35,7 @@ Published on CRAN, 2020/02/15.
 
 ## CENFA 1.0.0
 
-Published on CRAN, 2018/11/06.
+Published on CRAN, 2018-11-06.
 
 ## CENFA 0.1.0.9000
 
@@ -58,4 +62,4 @@ Published on CRAN, 2018/11/06.
 
 ## CENFA 0.1.0
 
-Published on CRAN, as of 2018/02/06\!
+Published on CRAN, as of 2018-02-06\!
