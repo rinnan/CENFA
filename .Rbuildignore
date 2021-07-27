@@ -5,3 +5,6 @@
 ^README-.*\.png$
 ^\.travis\.yml$
 ^cran-comments\.md$
+^CRAN-RELEASE$
+^doc$
+^Meta$
