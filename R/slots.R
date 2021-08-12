@@ -6,6 +6,8 @@
 #'
 #' @param x cnfa or enfa object
 #'
+#' @return Object stored in slot.
+#'
 #' @examples
 #' mod1 <- cnfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
 #' m.factor(mod1)
