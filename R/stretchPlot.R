@@ -15,6 +15,8 @@
 #' \code{x} will be scaled between values that fall between \code{n} standard
 #' deviations of the mean.
 #'
+#' @return Returns a RasterLayer plot.
+#'
 #' @examples
 #' mod <- enfa(x = climdat.hist, s.dat = ABPR, field = "CODE")
 #' sm <- sensitivity_map(mod)
@@ -59,6 +61,7 @@ setMethod("stretchPlot",
                    axis.args = list(at = y[[2]][!f],
                                     labels = xx[!f]), ...)
             }
+            return(NULL)
           }
 )
 
