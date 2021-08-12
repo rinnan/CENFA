@@ -54,14 +54,15 @@
 
   testmat <- NULL
   testlst <- vector(length=length(x), mode='list')
-  w <- getOption('warn')
-  options('warn'=-1)
+  #w <- getOption('warn')
+  suppressWarnings({
   for (i in 1:length(testlst)) {
     v <- extract(x[[i]], 1:5)
     testmat <- cbind(testmat, as.vector(v))
     testlst[[i]] <- v
   }
-  options('warn'= w)
+  })
+  #options('warn'= w)
 
   test1 <- try ( apply(testmat, 1, fun) , silent=TRUE )
 
@@ -102,9 +103,11 @@
       valmat <- matrix(nrow=ncell(out)*maxnl, ncol=length(x))
       for (i in 1:length(x)) {
         if (ncell(x[[i]]) < nrow(valmat)) {
-          options('warn'=-1)
+          #options('warn'=-1)
+          suppressWarnings({
           valmat[,i] <- as.vector(getValues(x[[i]])) * rep(1, nrow(valmat))
-          options('warn'= w)
+          })
+          #options('warn'= w)
         } else {
           valmat[,i] <- as.vector(getValues(x[[i]]))
         }
@@ -156,9 +159,11 @@
         for (j in 1:length(x)) {
           v <- as.vector(getValues(x[[j]], row=tr$row[i], nrows=tr$nrows[i]))
           if (length(v) < nrow(valmat)) {
-            options('warn'=-1)
+            # options('warn'=-1)
+            suppressWarnings({
             valmat[,j] <- v * rep(1, nrow(valmat))
-            options('warn'=w)
+            })
+            # options('warn'=w)
           } else {
             valmat[,j] <- v
           }
