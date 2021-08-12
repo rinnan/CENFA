@@ -9,7 +9,6 @@
 #' @param p the proportion of observations to include in the calculations of
 #'   the minimum convex polygons
 #' @param n the number of projected variables to label
-#' @param plot if \code{TRUE}, plot will be returned on function call
 #' @param ... additional \code{plot} arguments
 #'
 #' @examples
@@ -23,19 +22,21 @@
 #' @importFrom graphics abline arrows legend par points polygon
 # @importFrom raster quantile
 #'
+#' @return Returns a biplot of the \code{cnfa} or \code{enfa} object.
+#'
 #' @include CENFA.R cnfa-class.R enfa-class.R GLcenfa-class.R
 #'
 #' @seealso \code{\link[stats]{biplot}}
 #'
 #' @export
 
-setGeneric("scatter", function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...){
+setGeneric("scatter", function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, ...){
   standardGeneric("scatter")})
 
 #' @rdname scatter
 setMethod("scatter",
           signature(x = "cnfa", y = "GLcenfa"),
-          function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...){
+          function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, ...){
 
   s.ras <- raster(x)
   g.ras <- raster(y)
@@ -82,18 +83,18 @@ setMethod("scatter",
   xmin <- min(g.in[ ,1], s.in[ ,1], co[ ,1])
   xmax <- max(g.in[ ,1], s.in[ ,1], co[ ,1])
   xfact <- xmax - xmin
-  xmin <- xmin - xfact*.1
-  xmax <- xmax + xfact*.1
+  xmin <- xmin - xfact*.25
+  xmax <- xmax + xfact*.25
 
   ymin <- min(g.in[ ,2], s.in[ ,2], co[ ,2])
   ymax <- max(g.in[ ,2], s.in[ ,2], co[ ,2])
   yfact <- ymax - ymin
-  ymin <- ymin - yfact*.1
-  ymax <- ymax + yfact*.1
+  ymin <- ymin - yfact*.25
+  ymax <- ymax + yfact*.25
 
   mags <- apply(co, 1, norm, "2") %>% order(decreasing = T) %>% .[1:n]
 
-  par(mar = c(1, 1, 1, 1))
+  #par(mar = c(1, 1, 1, 1))
   plot(NA, xlim = c(xmin, xmax), ylim = c(ymin, ymax),
        xlab = NA, ylab = NA, axes = F, ann = F, ...)
   abline(v = g.centroid[1], h = g.centroid[2])#, col = "grey70")
@@ -101,8 +102,8 @@ setMethod("scatter",
   polygon(s.in[s.ch, ], col = "grey60", xpd = T)
   points(s.centroid[1], s.centroid[2], pch = 21, bg = "white")
 
-  .adjust_arrows(x = co[, 1], y = co[, 2], xfact, yfact, xpd=T, length = .05)
-  .adjust_labels(co[mags, 1], co[mags, 2], xfact, yfact, labels = rownames(co[mags, ]), cex = .7, xpd = T)
+  .adjust_arrows(x = co[, 1], y = co[, 2], xfact / 2, yfact / 2, xpd=T, length = .05)
+  .adjust_labels(co[mags, 1], co[mags, 2], xfact / 1.8, yfact / 1.8, labels = rownames(co[mags, ]), cex = .7, xpd = T)
   legend("topright",
          legend = c("reference habitat",
                     "species habitat",
@@ -112,6 +113,7 @@ setMethod("scatter",
          fill = c("white", "grey60", NA, NA, NA),
          border = c("black", "black", NA, NA, NA),
          bty = "n")
+  return(NULL)
           }
 )
 
@@ -119,7 +121,7 @@ setMethod("scatter",
 #' @rdname scatter
 setMethod("scatter",
           signature(x = "enfa", y = "GLcenfa"),
-          function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...){
+          function(x, y, xax = 1, yax = 2, p = 0.99, n = 5, ...){
 
   s.ras <- raster(x)
   g.ras <- raster(y)
@@ -181,7 +183,7 @@ setMethod("scatter",
 
   mags <- apply(co, 1, norm, "2") %>% order(decreasing = T) %>% .[1:n]
 
-  par(mar = c(1, 1, 1, 1))
+  #par(mar = c(1, 1, 1, 1))
   plot(NA, xlim = c(xmin, xmax), ylim = c(ymin, ymax),
        xlab = NA, ylab = NA, axes = F, ann = F, ...)
   abline(v = g.centroid[1], h = g.centroid[2])#, col = "grey70")
@@ -189,8 +191,8 @@ setMethod("scatter",
   polygon(s.in[s.ch, ], col = "grey60", xpd = T)
   points(s.centroid[1], s.centroid[2], pch = 21, bg = "white")
 
-  .adjust_arrows(x = co[, 1], y = co[, 2], xfact, yfact, xpd=T, length = .05)
-  .adjust_labels(co[mags, 1], co[mags, 2], xfact, yfact, labels = rownames(co[mags, ]), cex = .7, xpd = T)
+  .adjust_arrows(x = co[, 1], y = co[, 2], xfact / 2, yfact / 2, xpd=T, length = .05)
+  .adjust_labels(co[mags, 1], co[mags, 2], xfact / 1.8, yfact / 1.8, labels = rownames(co[mags, ]), cex = .7, xpd = T)
   legend("topright",
          legend = c("reference habitat",
                     "species habitat",
@@ -200,6 +202,7 @@ setMethod("scatter",
          fill = c("white", "grey60", NA, NA, NA),
          border = c("black", "black", NA, NA, NA),
          bty = "n")
+  return(NULL)
           }
 )
 
