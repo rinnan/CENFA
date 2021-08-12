@@ -7,7 +7,7 @@ Author: D. Scott Rinnan
 Maintainer: D. Scott Rinnan <scott.rinnan@yale.edu>
 Description: Tools for climate- and ecological-niche factor analysis of spatial data, including methods for visualization of spatial variability of species sensitivity, exposure, and vulnerability to climate change. Processing of large files and parallel methods are supported. Climate-niche factor analysis is described in Rinnan and Lawler (2019) <doi:10.1111/ecog.03937>.
 Depends:
-        R (>= 4.1.0),
+        R (>= 3.5.0),
 	      raster (>= 2.6.7)
 Imports:
         doSNOW (>= 1.0.16),

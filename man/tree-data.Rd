@@ -6,7 +6,9 @@
 \alias{QUGA}
 \alias{SESE}
 \title{Tree distribution data}
-\format{SpatialPolygonDataFrame}
+\format{
+SpatialPolygonDataFrame
+}
 \source{
 \url{https://www.usgs.gov/}
 }

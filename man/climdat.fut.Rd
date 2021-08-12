@@ -4,7 +4,8 @@
 \name{climdat.fut}
 \alias{climdat.fut}
 \title{Future climate data}
-\format{A RasterBrick with 10 layers:
+\format{
+A RasterBrick with 10 layers:
 \describe{
   \item{MDR}{mean diurnal range (mean of monthly max temp - min temp)}
   \item{ISO}{isothermality (MDR/TAR * 100)}
@@ -16,7 +17,8 @@
   \item{PS}{precip seasonality (sd/mean monthly precip)}
   \item{PWQ}{precip of wettest quarter}
   \item{PDQ}{precip of driest quarter}
-}}
+}
+}
 \source{
 \url{https://www.worldclim.org}
 }

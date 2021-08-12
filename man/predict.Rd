@@ -31,6 +31,10 @@ to file. If this is not provided, a temporary file will be created for large
 
 \item{...}{Additional arguments for \code{\link[raster]{writeRaster}}}
 }
+\value{
+Returns a RasterLayer of sensitivity, departure, or vulnerability predictions,
+depending on the class of object.
+}
 \description{
 Make a RasterLayer with predictions from a fitted model object.
 }

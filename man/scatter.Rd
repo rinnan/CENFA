@@ -6,11 +6,11 @@
 \alias{scatter,enfa,GLcenfa-method}
 \title{Biplots of \code{cnfa} and \code{enfa} objects.}
 \usage{
-scatter(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...)
+scatter(x, y, xax = 1, yax = 2, p = 0.99, n = 5, ...)
 
-\S4method{scatter}{cnfa,GLcenfa}(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...)
+\S4method{scatter}{cnfa,GLcenfa}(x, y, xax = 1, yax = 2, p = 0.99, n = 5, ...)
 
-\S4method{scatter}{enfa,GLcenfa}(x, y, xax = 1, yax = 2, p = 0.99, n = 5, plot = TRUE, ...)
+\S4method{scatter}{enfa,GLcenfa}(x, y, xax = 1, yax = 2, p = 0.99, n = 5, ...)
 }
 \arguments{
 \item{x}{an object of class \code{cnfa} or \code{enfa} describing the
@@ -28,9 +28,10 @@ the minimum convex polygons}
 
 \item{n}{the number of projected variables to label}
 
-\item{plot}{if \code{TRUE}, plot will be returned on function call}
-
 \item{...}{additional \code{plot} arguments}
+}
+\value{
+Returns a biplot of the \code{cnfa} or \code{enfa} object.
 }
 \description{
 Biplots of \code{cnfa} and \code{enfa} objects.

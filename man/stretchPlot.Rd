@@ -18,6 +18,9 @@ stretchPlot(x, type = "linear", n, ...)
 
 \item{...}{Additional arguments for raster::plot}
 }
+\value{
+Returns a RasterLayer plot.
+}
 \description{
 A plotting function that provides methods for improving the contrast
 between values.

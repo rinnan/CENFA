@@ -60,6 +60,9 @@ cov.GLcenfa(x)
 \arguments{
 \item{x}{cnfa or enfa object}
 }
+\value{
+Object stored in slot.
+}
 \description{
 Functions for extracting data from slots of objects of classes \code{cnfa} and \code{enfa}.
 }
