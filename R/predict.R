@@ -13,6 +13,8 @@
 #'
 #' @include CENFA.R vulnerability-class.R
 #' @name predict
+#' @return Returns a RasterLayer of sensitivity, departure, or vulnerability predictions,
+#' depending on the class of object.
 NULL
 
 #' @rdname predict
