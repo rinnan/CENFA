@@ -97,8 +97,8 @@ the number of cores to use. `n` has a default value of 1, so only setting
 # does not enable parallelization
 mod <- enfa(x = climdat.hist, s.dat = QUGA, field = "CODE", parallel = TRUE)
 
-# enables parallelization across 4 cores
-mod <- enfa(x = climdat.hist, s.dat = QUGA, field = "CODE", parallel = TRUE, n = 4)
+# enables parallelization across 2 cores
+mod <- enfa(x = climdat.hist, s.dat = QUGA, field = "CODE", parallel = TRUE, n = 2)
 ```
 
 The function will attempt to match the value provided to `n` with the number of 
