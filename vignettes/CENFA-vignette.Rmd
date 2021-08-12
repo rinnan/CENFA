@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # library(raster)
 # library(sp)
 library(CENFA)
+oldpar <- par(no.readonly = TRUE)
 ```
 # An introduction to the `CENFA` package
 
@@ -248,3 +249,7 @@ Modelling 211.1 (2008): 233-240.
 
 Hirzel, Alexandre H., et al. Ecological-niche factor analysis: how to compute
 habitat-suitability maps without absence data?. Ecology 83.7 (2002): 2027-2036.
+
+```{r, echo = FALSE, message=FALSE}
+par(oldpar)
+```
