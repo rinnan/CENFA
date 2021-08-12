@@ -122,7 +122,7 @@ mod.cnfa
 ```
 
 Using the `sensitivity_map` function, we can create a habitat map that identifies 
-where we expect the species to be most sensitivite to changes in climate.
+where we expect the species to be most sensitive to changes in climate.
 
 ```{r "sensitivity-map", echo=1}
 s.map <- sensitivity_map(mod.cnfa)
