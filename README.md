@@ -1,11 +1,9 @@
 
-    ## Warning: package 'raster' was built under R version 4.1.2
-
-    ## Warning: package 'sp' was built under R version 4.1.2
-
 [![R-CMD-check](https://github.com/rinnan/CENFA/workflows/R-CMD-check/badge.svg)](https://github.com/rinnan/CENFA/actions)
 [![CRAN](https://www.r-pkg.org/badges/version/CENFA)]()
 ![](https://cranlogs.r-pkg.org/badges/last-month/CENFA)
+
+<!-- [![Build Status](https://travis-ci.org/rinnan/CENFA.svg?branch=master)](https://travis-ci.org/rinnan/CENFA) -->
 
 # CENFA: Climate and Ecological Niche Factor Analysis
 
