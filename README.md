@@ -1,19 +1,33 @@
 
-[![Build Status](https://travis-ci.org/rinnan/CENFA.svg?branch=master)](https://travis-ci.org/rinnan/CENFA) [![CRAN](https://www.r-pkg.org/badges/version/CENFA)]() ![](https://cranlogs.r-pkg.org/badges/last-month/CENFA)
+    ## Warning: package 'raster' was built under R version 4.1.2
 
-CENFA: Climate and Ecological Niche Factor Analysis
-===================================================
+    ## Warning: package 'sp' was built under R version 4.1.2
 
-`CENFA` provides tools for performing ecological-niche factor analysis (ENFA) and climate-niche factor analysis (CNFA). This package was created with three goals in mind:
+[![R-CMD-check](https://github.com/rinnan/CENFA/workflows/R-CMD-check/badge.svg)](https://github.com/rinnan/CENFA/actions)
+[![CRAN](https://www.r-pkg.org/badges/version/CENFA)]()
+![](https://cranlogs.r-pkg.org/badges/last-month/CENFA)
 
--   To update the ENFA method for use with large datasets and modern data formats.
--   To expand the application of ENFA in the context of climate change in order to quantify different aspects of species vulnerability to climate change, and to facilitate quantitative comparisons of vulnerability between species.
--   To correct a minor error in the ENFA method itself, that has persisted in the literature since Hirzel et al. first introduced ENFA in 2002.
+# CENFA: Climate and Ecological Niche Factor Analysis
 
-`CENFA` takes advantage of the `raster` and `sp` packages, allowing the user to conduct analyses directly with raster, shapefile, and point data, and to handle large datasets efficiently via partial data loading and parallelization.
+`CENFA` provides tools for performing ecological-niche factor analysis
+(ENFA) and climate-niche factor analysis (CNFA). This package was
+created with three goals in mind:
 
-Installation
-------------
+- To update the ENFA method for use with large datasets and modern data
+  formats.
+- To expand the application of ENFA in the context of climate change in
+  order to quantify different aspects of species vulnerability to
+  climate change, and to facilitate quantitative comparisons of
+  vulnerability between species.
+- To correct a minor error in the ENFA method itself, that has persisted
+  in the literature since Hirzel et al. first introduced ENFA in 2002.
+
+`CENFA` takes advantage of the `raster` and `sp` packages, allowing the
+user to conduct analyses directly with raster, shapefile, and point
+data, and to handle large datasets efficiently via partial data loading
+and parallelization.
+
+## Installation
 
 You can install the most recent version of CENFA from GitHub with:
 
@@ -22,21 +36,31 @@ You can install the most recent version of CENFA from GitHub with:
 devtools::install_github("rinnan/CENFA")
 ```
 
-Examples
---------
+## Examples
 
 ### `enfa`
 
-We will use some example datasets to perform a basic ENFA. The historical climate dataset `climdat.hist` is a RasterBrick of 10 climate variables, covering much of the western US coast. `QUGA` is a SpatialPolygonsDataFrame of the historical range map of Oregon white oak (*Quercus garryana*).
+We will use some example datasets to perform a basic ENFA. The
+historical climate dataset `climdat.hist` is a RasterBrick of 10 climate
+variables, covering much of the western US coast. `QUGA` is a
+SpatialPolygonsDataFrame of the historical range map of Oregon white oak
+(*Quercus garryana*).
 
 A plot of the data, using the one of the layers of `climdat.hist`:
 
-![](man/figures/README-QUGA-plot-1.png)
+![](man/figures/README-QUGA-plot-1.png)<!-- -->
 
-The `enfa` function takes three basic arguments: the dataset of ecological variables (`climdat.hist`), the map of species presence (`QUGA`), and the values of `QUGA` that specify presence (in this case, a column named "CODE"). Calling the `enfa` object by name provides a standard summary of the ENFA results.
+The `enfa` function takes three basic arguments: the dataset of
+ecological variables (`climdat.hist`), the map of species presence
+(`QUGA`), and the values of `QUGA` that specify presence (in this case,
+a column named “CODE”). Calling the `enfa` object by name provides a
+standard summary of the ENFA results.
 
 ``` r
 mod.enfa <- enfa(x = climdat.hist, s.dat = QUGA, field = "CODE")
+#> Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj
+#> = prefer_proj): Discarded datum Unknown based on WGS84 ellipsoid in Proj4
+#> definition
 mod.enfa
 #> ENFA
 #> 
@@ -74,16 +98,28 @@ mod.enfa
 
 ### `scatter`
 
-We can visualize the ENFA results via the `scatter` function, which produces a biplot of the marginality axis and one of the specialization axes. This gives us a portrait of the species' niche to compare with the global niche of the reference study area, with the ecological axes projected onto the ENFA dimensions. (Note: since `mod.enfa` only contains information about the species habitat, we must first construct a `GLcenfa` object that also describes the global habitat.)
+We can visualize the ENFA results via the `scatter` function, which
+produces a biplot of the marginality axis and one of the specialization
+axes. This gives us a portrait of the species’ niche to compare with the
+global niche of the reference study area, with the ecological axes
+projected onto the ENFA dimensions. (Note: since `mod.enfa` only
+contains information about the species habitat, we must first construct
+a `GLcenfa` object that also describes the global habitat.)
 
 ``` r
 glc <- GLcenfa(x = climdat.hist)
 scatter(x = mod.enfa, y = glc)
 ```
 
-![](man/figures/README-scatter-1.png)
+![](man/figures/README-scatter-1.png)<!-- -->
 
-For larger datasets, we can speed up the computation via parallelization. We provide two additional arguments, `parallel = TRUE`, and `n`, which specifies the number of cores to use. `n` has a default value of 1, so only setting `parallel = TRUE` will not parallelize the function by itself.
+    #> NULL
+
+For larger datasets, we can speed up the computation via
+parallelization. We provide two additional arguments, `parallel = TRUE`,
+and `n`, which specifies the number of cores to use. `n` has a default
+value of 1, so only setting `parallel = TRUE` will not parallelize the
+function by itself.
 
 ``` r
 # does not enable parallelization
@@ -93,11 +129,22 @@ mod <- enfa(x = climdat.hist, s.dat = QUGA, field = "CODE", parallel = TRUE)
 mod <- enfa(x = climdat.hist, s.dat = QUGA, field = "CODE", parallel = TRUE, n = 4)
 ```
 
-The function will attempt to match the value provided to `n` with the number of cores detected on the local device via `parallel::detectCores()`; if the provided `n` is greater than the number of available cores `k`, a warning will be issued and `n` will be set to `k - 1`.
+The function will attempt to match the value provided to `n` with the
+number of cores detected on the local device via
+`parallel::detectCores()`; if the provided `n` is greater than the
+number of available cores `k`, a warning will be issued and `n` will be
+set to `k - 1`.
 
 ### `cnfa`
 
-The `cnfa` function is very similar to `enfa`, but performs a slightly different analysis. Whereas ENFA returns a *specialization factor* (the eigenvalues of specialization) describing the amount of specialization found in each *ENFA factor*, CNFA returns a *sensitivity factor* that reflects the amount of sensitivity found in each *ecological variable*. This makes the sensitivity factor more directly comparable to the marginality factor, and more interpretable in the context of species' sensitivity to a given variable.
+The `cnfa` function is very similar to `enfa`, but performs a slightly
+different analysis. Whereas ENFA returns a *specialization factor* (the
+eigenvalues of specialization) describing the amount of specialization
+found in each *ENFA factor*, CNFA returns a *sensitivity factor* that
+reflects the amount of sensitivity found in each *ecological variable*.
+This makes the sensitivity factor more directly comparable to the
+marginality factor, and more interpretable in the context of species’
+sensitivity to a given variable.
 
 ``` r
 mod.cnfa <- cnfa(x = climdat.hist, s.dat = QUGA, field = "CODE")
@@ -136,17 +183,24 @@ mod.cnfa
 #> PDQ    0.13  0.00 -0.11 -0.04
 ```
 
-Using the `sensitivity_map` function, we can create a habitat map that identifies where we expect the species to be most sensitive to changes in climate.
+Using the `sensitivity_map` function, we can create a habitat map that
+identifies where we expect the species to be most sensitive to changes
+in climate.
 
 ``` r
 s.map <- sensitivity_map(mod.cnfa)
 ```
 
-![](man/figures/README-sensitivity-map-1.png)
+![](man/figures/README-sensitivity-map-1.png)<!-- -->
+
+    #> NULL
 
 ### `departure`
 
-The `departure` function provides a measure of a species' potential exposure to climate change. It takes a future climate dataset as an additional argument, and calculates the absolute differences between historical and future values.
+The `departure` function provides a measure of a species’ potential
+exposure to climate change. It takes a future climate dataset as an
+additional argument, and calculates the absolute differences between
+historical and future values.
 
 ``` r
 dep <- departure(x = climdat.hist, y = climdat.fut, s.dat = QUGA, field = "CODE")
@@ -160,17 +214,25 @@ dep
 #> Overall departure: 0.909
 ```
 
-The departure factor tells us the average amount of change that is expected in each climate variable across the species' range. Using the `exposure_map` function, we can create a habitat map that identifies where we expect the species to be most exposed to climate change.
+The departure factor tells us the average amount of change that is
+expected in each climate variable across the species’ range. Using the
+`exposure_map` function, we can create a habitat map that identifies
+where we expect the species to be most exposed to climate change.
 
 ``` r
 e.map <- exposure_map(dep)
 ```
 
-![](man/figures/README-exposure-map-1.png)
+![](man/figures/README-exposure-map-1.png)<!-- -->
+
+    #> NULL
 
 ### `vulnerability`
 
-The `vulnerability` function provides a measure of a species' potential vulnerability to climate change, taking both sensitivity and exposure into account. It takes a `cnfa` object and a `departure` object as its arguments.
+The `vulnerability` function provides a measure of a species’ potential
+vulnerability to climate change, taking both sensitivity and exposure
+into account. It takes a `cnfa` object and a `departure` object as its
+arguments.
 
 ``` r
 vuln <- vulnerability(cnfa = mod.cnfa, dep = dep)
@@ -184,22 +246,33 @@ vuln
 #> Overall vulnerability: 1.368
 ```
 
-Using the `vulnerability_map` function, we can create a habitat map that identifies where we expect the species to be most vulnerable to climate change.
+Using the `vulnerability_map` function, we can create a habitat map that
+identifies where we expect the species to be most vulnerable to climate
+change.
 
 ``` r
 v.map <- vulnerability_map(vuln)
 ```
 
-![](man/figures/README-vulnerability-map-1.png)
+![](man/figures/README-vulnerability-map-1.png)<!-- -->
 
-Useful raster functions
------------------------
+    #> NULL
 
-The `raster` package contains the `clusterR` function, which enables parallelization methods for certain raster operations. `clusterR` only works on functions that operate on a cell-by-cell basis, however, which limits its usefulness. The `CENFA` package contains a few functions that speed up some basic `raster` functions considerably by parallelizing on a layer-by-layer basis rather than a cell-by-cell basis.
+## Useful raster functions
+
+The `raster` package contains the `clusterR` function, which enables
+parallelization methods for certain raster operations. `clusterR` only
+works on functions that operate on a cell-by-cell basis, however, which
+limits its usefulness. The `CENFA` package contains a few functions that
+speed up some basic `raster` functions considerably by parallelizing on
+a layer-by-layer basis rather than a cell-by-cell basis.
 
 ### `parScale`
 
-The `parScale` function is identical to `raster::scale`, but has a parallelization option that will scale each raster layer in parallel. The `center` and `scale` arguments can be logical (`TRUE` or `FALSE`) or numeric vectors.
+The `parScale` function is identical to `raster::scale`, but has a
+parallelization option that will scale each raster layer in parallel.
+The `center` and `scale` arguments can be logical (`TRUE` or `FALSE`) or
+numeric vectors.
 
 ``` r
 clim.scaled <- parScale(x = climdat.hist, parallel = TRUE, n = 4)
@@ -207,13 +280,19 @@ clim.scaled <- parScale(x = climdat.hist, parallel = TRUE, n = 4)
 
 ### `parCov`
 
-The `parCov` function returns the covariance matrix of a Raster\* object `x`, computing the covariance between each layer of `x`. This is similar to `raster::layerStats(x, stat = 'cov')`, but much faster when parallelization is employed.
+The `parCov` function returns the covariance matrix of a Raster\* object
+`x`, computing the covariance between each layer of `x`. This is similar
+to `raster::layerStats(x, stat = 'cov')`, but much faster when
+parallelization is employed.
 
 ``` r
 mat <- parCov(x = climdat.hist, parallel = TRUE, n = 4)
 ```
 
-Additionally, `parCov` can accept two Raster\* objects as arguments, similar to `stats::cov(x, y)`. If two Raster\* objects are supplied, then the covariance is calculated between the layers of `x` and the layers of `y`.
+Additionally, `parCov` can accept two Raster\* objects as arguments,
+similar to `stats::cov(x, y)`. If two Raster\* objects are supplied,
+then the covariance is calculated between the layers of `x` and the
+layers of `y`.
 
 ``` r
 mat <- parCov(x = climdat.hist, y = climdat.fut, parallel = TRUE, n = 4)
@@ -221,28 +300,40 @@ mat <- parCov(x = climdat.hist, y = climdat.fut, parallel = TRUE, n = 4)
 
 ### `stretchPlot`
 
-The `stretchPlot` function provides a simple way to adjust the contrast of plots of RasterLayers to emphasize difference in values. It can perform histogram equalization and standard deviation stretching.
+The `stretchPlot` function provides a simple way to adjust the contrast
+of plots of RasterLayers to emphasize difference in values. It can
+perform histogram equalization and standard deviation stretching.
 
 ``` r
 sm <- sensitivity_map(mod.cnfa)
 par(mfrow = c(1, 3), oma = c(1,1,1,1))
 stretchPlot(sm, main = "linear")
+#> NULL
 stretchPlot(sm, type = "hist.equal", main = "Histogram equalization")
+#> NULL
 stretchPlot(sm, type = "sd", n = 2, main = "Standard deviation (n = 2)")
 ```
 
-![](man/figures/README-stretchPlot-1.png)
+![](man/figures/README-stretchPlot-1.png)<!-- -->
 
-Guidelines for contributing
----------------------------
+    #> NULL
 
-I welcome contributions and suggestions for improving this package. Please do not hesitate to submit any issues you may encounter.
+## Guidelines for contributing
 
-References
-----------
+I welcome contributions and suggestions for improving this package.
+Please do not hesitate to submit any issues you may encounter.
 
-Rinnan, D. Scott and Lawler, Joshua. Climate‐niche factor analysis: a spatial approach to quantifying species vulnerability to climate change. Ecography (2019). [doi:10.1111/ecog.03937](https://doi.org/10.1111/ecog.03937)
+## References
 
-Basille, Mathieu, et al. Assessing habitat selection using multivariate statistics: Some refinements of the ecological-niche factor analysis. Ecological Modelling 211.1 (2008): 233-240.
+Rinnan, D. Scott and Lawler, Joshua. Climate‐niche factor analysis: a
+spatial approach to quantifying species vulnerability to climate change.
+Ecography (2019).
+[doi:10.1111/ecog.03937](https://doi.org/10.1111/ecog.03937)
 
-Hirzel, Alexandre H., et al. Ecological-niche factor analysis: how to compute habitat-suitability maps without absence data?. Ecology 83.7 (2002): 2027-2036.
+Basille, Mathieu, et al. Assessing habitat selection using multivariate
+statistics: Some refinements of the ecological-niche factor analysis.
+Ecological Modelling 211.1 (2008): 233-240.
+
+Hirzel, Alexandre H., et al. Ecological-niche factor analysis: how to
+compute habitat-suitability maps without absence data?. Ecology 83.7
+(2002): 2027-2036.

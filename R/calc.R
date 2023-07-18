@@ -32,7 +32,7 @@
   names(out) <- names
 
   fun <- .makeTextFun(fun)
-  if (class(fun) == 'character') {
+  if (inherits(fun, 'character')) {
     doapply <- FALSE
     fun <- .getRowFun(fun)
   }
@@ -132,8 +132,7 @@
         test <- try(apply(tstdat, 1, fun, na.rm = na.rm),
                     silent = TRUE)
       }
-      if (length(test) < length(tstdat) | class(test) ==
-          "try-error") {
+      if (length(test) < length(tstdat) | inherits(test, "try-error")) {
         stop("cannot forceapply this function")
       }
       if (is.matrix(test)) {
@@ -145,11 +144,11 @@
     else {
       if (!missing(na.rm)) {
         test <- try(fun(tstdat, na.rm = na.rm), silent = TRUE)
-        if (class(test) == "try-error") {
+        if (inherits(test, "try-error")) {
           test <- try(apply(tstdat, 1, fun, na.rm = na.rm),
                       silent = TRUE)
           doapply <- TRUE
-          if (class(test) == "try-error") {
+          if (inherits(test, "try-error")) {
             stop("cannot use this function. Perhaps add '...' or 'na.rm' to the function arguments?")
           }
           if (is.matrix(test)) {
@@ -161,13 +160,12 @@
       }
       else {
         test <- try(fun(tstdat), silent = TRUE)
-        if (length(test) < length(tstdat) | class(test) ==
-            "try-error") {
+        if (length(test) < length(tstdat) | inherits(test, "try-error")) {
           doapply <- TRUE
           makemat <- TRUE
           tstdat <- matrix(tstdat, ncol = 1)
           test <- try(apply(tstdat, 1, fun), silent = TRUE)
-          if (class(test) == "try-error") {
+          if (inherits(test, "try-error")) {
             stop("cannot use this function")
           }
           if (is.matrix(test)) {
@@ -189,10 +187,10 @@
       if (!missing(na.rm)) {
         test <- try(apply(tstdat, 1, fun, na.rm = na.rm),
                     silent = TRUE)
-        if (class(test) == "try-error") {
+        if (inherits(test, "try-error")) {
           doapply <- FALSE
           test <- try(fun(tstdat, na.rm = na.rm), silent = TRUE)
-          if (class(test) == "try-error") {
+          if (inherits(test, "try-error")) {
             stop("cannot use this function. Perhaps add '...' or 'na.rm' to the function arguments?")
           }
         }
@@ -202,10 +200,10 @@
       }
       else {
         test <- try(apply(tstdat, 1, fun), silent = TRUE)
-        if (class(test) == "try-error") {
+        if (inherits(test, "try-error")) {
           doapply <- FALSE
           test <- try(fun(tstdat), silent = TRUE)
-          if (class(test) == "try-error") {
+          if (inherits(test, "try-error")) {
             stop("cannot use this function")
           }
         }
@@ -254,7 +252,7 @@
 }
 
 .makeTextFun <- function (fun) {
-  if (class(fun) != "character") {
+  if (!inherits(fun, "character")) {
     if (is.primitive(fun)) {
       test <- try(deparse(fun)[[1]], silent = TRUE)
       if (test == ".Primitive(\"sum\")") {
