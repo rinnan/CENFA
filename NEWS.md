@@ -3,7 +3,7 @@
 
 ## CENFA 1.1.2
 
-Published on CRAN, 2021-07-18.
+Published on CRAN, 2023-07-18.
 
 - Updated methods for detecting projection mismatches between climate
   and species data. (`sp::identicalCRS()` no longer works reliably with
