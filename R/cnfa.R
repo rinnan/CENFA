@@ -139,7 +139,7 @@ setMethod("cnfa",
 
             if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
             # if (!identicalCRS(raster(x), s.dat)) stop("climate and species projections do not match")
-            if (CRS(raster(x)) != CRS(s.dat)) stop("climate and species projections do not match")
+            if (crs(raster(x)) != crs(s.dat)) stop("climate and species projections do not match")
             nS <- length(which(values(s.dat) > 0))
             if(nS == 1) stop("CNFA is not meaningful for single observations")
             ras <- raster(x)
@@ -253,7 +253,7 @@ setMethod("cnfa",
             }
 
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
-            if (CRS(raster(x)) != CRS(s.dat)) stop("climate and species projections do not match")
+            if (crs(raster(x)) != crs(s.dat)) stop("climate and species projections do not match")
             ras <- raster(x)
             ext <- extent(ras)
             ext.s <- extent(s.dat)
@@ -289,7 +289,7 @@ setMethod("cnfa",
             }
 
             if (nlayers(s.dat) > 1) stop('"s.dat" should be a single RasterLayer')
-            if (CRS(x) != CRS(s.dat)) stop("climate and species projections do not match")
+            if (crs(x) != crs(s.dat)) stop("climate and species projections do not match")
             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
             if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
 
@@ -325,7 +325,7 @@ setMethod("cnfa",
             }
 
             if (! inherits(s.dat, c('SpatialPolygons', 'SpatialPoints'))) stop('"s.dat" should be a "SpatialPolygons*" or "SpatialPoints*" object')
-            if (CRS(x) != CRS(s.dat)) stop("climate and species projections do not match")
+            if (crs(x) != crs(s.dat)) stop("climate and species projections do not match")
             if(is.null(intersect(extent(x), extent(s.dat)))) stop("climate and species data do not overlap")
             if(raster::union(extent(x), extent(s.dat)) != extent(x)) stop("extent of species data not contained within extent of climate data")
 
