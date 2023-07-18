@@ -1,8 +1,8 @@
 Package: CENFA
 Type: Package
 Title: Climate and Ecological Niche Factor Analysis
-Version: 1.1.1
-Date: 2021-07-27
+Version: 1.1.2
+Date: 2023-07-18
 Author: D. Scott Rinnan
 Maintainer: D. Scott Rinnan <scott.rinnan@yale.edu>
 Description: Tools for climate- and ecological-niche factor analysis of spatial data, including methods for visualization of spatial variability of species sensitivity, exposure, and vulnerability to climate change. Processing of large files and parallel methods are supported. Climate-niche factor analysis is described in Rinnan and Lawler (2019) <doi:10.1111/ecog.03937>.
