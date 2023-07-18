@@ -1,5 +1,5 @@
 
-[![R-CMD-check](https://github.com/rinnan/CENFA/workflows/R-CMD-check/badge.svg)](https://github.com/rinnan/CENFA/actions)
+[![R-CMD-check](https://github.com/rinnan/CENFA/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rinnan/CENFA/actions/workflows/R-CMD-check.yaml)
 [![CRAN](https://www.r-pkg.org/badges/version/CENFA)]()
 ![](https://cranlogs.r-pkg.org/badges/last-month/CENFA)
 
